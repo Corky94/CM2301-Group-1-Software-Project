@@ -1,5 +1,4 @@
 import java.security.*;
-import java.lang.System.*;
 import javax.crypto.*;
 
 public class Encryption{
@@ -24,16 +23,11 @@ public class Encryption{
 		return aesKey;
 	}
 
-	public String hashKey(byte[] key) throws NoSuchAlgorithmException {
+	public byte[] hashKey(byte[] key) throws NoSuchAlgorithmException {
 		MessageDigest hash = MessageDigest.getInstance("SHA-256");
 		hash.update(key); 
-		//byte[] digest = hash.digest();
-
-		String password = new String(Hex.encodeHex(hash.digest()),
-                             CharSet.forName("UTF-8"));
-
-		return password; 
-
+		byte[] digest = hash.digest();
+		return digest; 
 	}
 
 	public byte[] encodeString (Key publicKey, String data) throws NoSuchAlgorithmException, NoSuchPaddingException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException{
