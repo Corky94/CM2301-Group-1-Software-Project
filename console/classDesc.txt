@@ -1,0 +1,39 @@
+Marc 
+	User
+		- Initialzation and basic functions via command line
+	SecureDetails
+		- Stores: 
+			ID
+			savedMessages	
+			remotePassword
+			registered
+	Register
+		- Adds details to remote and local storage (keygen, id & pw gen)
+	Sql
+		- Handles server side sql post deserialization 
+
+Chris
+	Message
+		- Message construction object
+	Serialize
+		- Gets user input, ready for message construction
+	Deserialize
+		-Reverse of serialize
+	Send
+		- Sends messages to server using sockets
+	Receive
+		- Listens for messages
+
+
+Max
+	KeyVault
+		- Stores AES SecretKey, RSA KeyPair, checks if password is correct by opening keyvault
+	KeyGen
+		- Generates AES Key, RSA KeyPair, hashtostring, hashtobyte[]
+	Encryption
+		- Encryptes messages and remotePassword to be stored
+
+Joel
+	SSL Connections
+		Server
+		Client
