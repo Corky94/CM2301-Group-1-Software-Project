@@ -32,7 +32,10 @@ public class Encryption{
 	}
 
 	public byte[] decryptString(byte[] data){
-		//CALL PRI KEY as Key privateKey
+		KeyVault kv = new KeyVault();
+		KeyPair rsaKeys = kv.getRSAKeys("password".toCharArray(
+			));
+		PrivateKey privateKey = rsaKeys.getPrivate();
 		try{
 			Cipher decrypt = Cipher.getInstance("RSA");
 			decrypt.init(Cipher.DECRYPT_MODE, privateKey);
@@ -56,8 +59,26 @@ public class Encryption{
 		}
 	}
 
-	public static void main (String[] args){
-		Encryption exampleEncryption = new Encryption();
+	public String bTS(byte[] input){
+		//ONLY FOR DEBUG -> byteToString
+		String s = new String(input);
+		return s;
+	}
+	/*
+	public byte[] encryptRemotePassword(byte[] passowrd){
+
 	}
 
+	public byte[] decryptRemotePassword(byte[] encryptedPassword){
+		//Will decrypt remote password using AES
+	}
+	*/
+	public static void main (String[] args){
+		Encryption exampleEncryption = new Encryption();
+		KeyVault kv = new KeyVault();
+		KeyPair kp = kv.getRSAKeys("password".toCharArray());
+		PublicKey pk = kp.getPublic();
+		byte[] encrypted = exampleEncryption.encryptString(pk, "String to encrypt");
+		System.out.println(exampleEncryption.bTS(exampleEncryption.decryptString(encrypted)));
+	}
 }

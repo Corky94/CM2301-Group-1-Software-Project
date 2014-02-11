@@ -1,16 +1,50 @@
-import java.security.*;
 import javax.crypto.*;
 import java.util.*;
 import java.math.*;
-//import org.bouncycastle.*;
-//import org.bouncycastle.asn1.ASN1Encodable;
+import java.lang.*;
+import java.security.*;
+
+import java.security.cert.X509Certificate;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateParsingException;
+import java.security.cert.CertificateFactory;
+
+import javax.security.auth.x500.X500Principal;
+
+import java.security.spec.RSAPrivateCrtKeySpec;
+import java.security.spec.RSAPublicKeySpec;
+import java.security.spec.InvalidKeySpecException;
+
+import java.io.IOException;
+import java.io.ByteArrayInputStream;
+
+import java.text.MessageFormat;
+
+import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.misc.MiscObjectIdentifiers;
+import org.bouncycastle.asn1.misc.NetscapeCertType;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.KeyUsage;
+import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
+import org.bouncycastle.asn1.x509.X509Extensions;
+import org.bouncycastle.asn1.x509.BasicConstraints;
+import org.bouncycastle.jce.X509Principal;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.x509.AttributeCertificateHolder;
+import org.bouncycastle.x509.AttributeCertificateIssuer;
+import org.bouncycastle.x509.X509Attribute;
+import org.bouncycastle.x509.X509V1CertificateGenerator;
+import org.bouncycastle.x509.X509V2AttributeCertificate;
+import org.bouncycastle.x509.X509V2AttributeCertificateGenerator;
+import org.bouncycastle.x509.X509V3CertificateGenerator;
 
 
 public class KeyGen{
-	final private int rsaKeyLength = 2048;
-	final private int aesKeyLength = 256;
-	final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
-
+	final private int RSA_KEY_LENGTH = 2048;
+	final private int AES_KEY_LENGTH = 256;
+	final protected static char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+	static { Security.addProvider(new BouncyCastleProvider());}
 
 	KeyGen(){
 	}
@@ -19,7 +53,7 @@ public class KeyGen{
 	public KeyPair generateRSAKeys(){
 		try{
 			KeyPairGenerator rsaPairGenerator = KeyPairGenerator.getInstance("RSA");
-			rsaPairGenerator.initialize(rsaKeyLength);
+			rsaPairGenerator.initialize(RSA_KEY_LENGTH);
 			KeyPair rsaKeyPair = rsaPairGenerator.genKeyPair();
 			return rsaKeyPair;
 		}catch(NoSuchAlgorithmException ex){
@@ -28,11 +62,66 @@ public class KeyGen{
 		}
 	} 
 
+	public static X509Certificate[] generateCertificate(PublicKey pubKey, PrivateKey priKey){
+		try{
+			X509V3CertificateGenerator  v3CertGen = new X509V3CertificateGenerator();
+		    Hashtable                   attrs = new Hashtable();
+        	Vector                      order = new Vector();
+
+			attrs.put(X509Principal.C, "AU");
+	        attrs.put(X509Principal.O, "The Legion of the Bouncy Castle");
+	        attrs.put(X509Principal.L, "Melbourne");
+	        attrs.put(X509Principal.CN, "Eric H. Echidna");
+	        attrs.put(X509Principal.EmailAddress, "feedback-crypto@spongycastle.org");
+
+	        order.addElement(X509Principal.C);
+	        order.addElement(X509Principal.O);
+	        order.addElement(X509Principal.L);
+	        order.addElement(X509Principal.CN);
+	        order.addElement(X509Principal.EmailAddress);
+
+	        String  issuer = "C=AU, O=The Legion of the Bouncy Castle, OU=Bouncy Primary Certificate";
+
+			v3CertGen.reset();
+
+	        v3CertGen.setSerialNumber(BigInteger.valueOf(20));
+	        v3CertGen.setIssuerDN(new X509Principal(issuer));
+	        v3CertGen.setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30));
+	        v3CertGen.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 30)));
+       		v3CertGen.setSubjectDN(new X509Principal(order, attrs));
+	        v3CertGen.setPublicKey(pubKey);
+	        v3CertGen.setSignatureAlgorithm("SHA256WithRSA");
+
+	        X509Certificate cert = v3CertGen.generate(priKey);
+
+			cert.checkValidity(new Date());
+		    cert.verify(pubKey);
+
+		    X509Certificate[] chain = new X509Certificate[1];
+		    chain[0] = cert;
+		    return chain;
+		}catch(CertificateEncodingException ex){
+            throw new RuntimeException(ex);
+		}catch(NoSuchAlgorithmException ex){
+            throw new RuntimeException(ex);
+		}catch(SignatureException ex){
+            throw new RuntimeException(ex);
+		}catch(InvalidKeyException ex){
+            throw new RuntimeException(ex);
+		}catch(CertificateParsingException ex){
+			throw new RuntimeException(ex);
+		}catch(NoSuchProviderException ex){
+			throw new RuntimeException(ex);
+		}catch(Exception ex){
+			throw new RuntimeException(ex);
+		}
+	}
+
 	public SecretKey generateAESKey(){
 		try{
 			//different methods in this one, uses javax.crypto instead of java.security
 			KeyGenerator aesGenerator = KeyGenerator.getInstance("AES");
-			aesGenerator.init(aesKeyLength);
+			aesGenerator.init(AES_KEY_LENGTH);
 			SecretKey aesKey = aesGenerator.generateKey();
 			return aesKey;
 		}catch(NoSuchAlgorithmException ex){
@@ -40,29 +129,26 @@ public class KeyGen{
             throw new RuntimeException(ex);
 		}
 	}
-	/*
-	public X509Certificate[] generateCertificate(PrivateKey priKey){
-
-	    Date startDate = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000);
-	    Date endDate = new Date(System.currentTimeMillis() + 365 * 24 * 60 * 60 * 1000);
-
-	    //ContentSigner sigGen = new JcaContentSignerBuilder("SHA1withRSA").setProvider("BC").build(privKey);
-
-	    org.bouncycastle.asn1.SubjectPublicKeyInfo pubKey = new SubjectPublicKeyInfo("RSA", priKey);
-
-		X509v1CertificateBuilder certBuilder = new X509v1CertificateBuilder(
-												new X500Name("CN=Test"), 
-												BigInteger.ONE, 
-												startDate, endDate, 
-												new X500Name("CN=Test"), 
-												subPubKeyInfo);
-
-		X509CertificateHolder certHolder = v1CertGen.build(sigGen);
-
+	
+	public byte[] generateRemotePassword(char[] localPassword){
+		KeyVault kv = new KeyVault();
+		KeyGen kg = new KeyGen();
+		KeyPair rsaPair = kv.getRSAKeys(localPassword);
+		PrivateKey rsaPri = rsaPair.getPrivate();
+		byte[] remotePassword = kg.hashKeyToByte(rsaPri);
+		return remotePassword;
 	}
-	*/
+	
+	public String generateUserID(char[] localPassword){
+		KeyVault kv = new KeyVault();
+		KeyGen kg = new KeyGen();
+		KeyPair rsaPair = kv.getRSAKeys(localPassword);
+		Key rsaPub = rsaPair.getPublic();
+		String userID = kg.hashKeyToString(rsaPub);
+		return userID;
+	}
 
-	public String hashKey(Key inputKey){
+	public String hashKeyToString(Key inputKey){
 		byte[] key = inputKey.getEncoded();
 		try{
 			MessageDigest hash = MessageDigest.getInstance("SHA-256");
@@ -72,8 +158,8 @@ public class KeyGen{
 			char[] hexChars = new char[bytes.length * 2];
 			    for ( int j = 0; j < bytes.length; j++ ) {
 			        int v = bytes[j] & 0xFF;
-			        hexChars[j * 2] = hexArray[v >>> 4];
-			        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+			        hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+			        hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
 			    }
 			return new String(hexChars);
 		}catch(NoSuchAlgorithmException ex){
@@ -82,14 +168,38 @@ public class KeyGen{
 		}
 	}
 
+	public byte[] hashKeyToByte(Key inputKey){
+			byte[] key = inputKey.getEncoded();
+			try{
+				MessageDigest hash = MessageDigest.getInstance("SHA-256");
+				hash.update(key); 
+				byte[] bytes = hash.digest();
+				return bytes;
+			}catch(NoSuchAlgorithmException ex){
+			//logger.error("Cannot close connection");
+            throw new RuntimeException(ex);
+		}
+	}
 
 	public static void main (String[] args){
-		KeyGen kg = new KeyGen();
+		//KeyGen kg = new KeyGen();
+		//KeyPair kp = kg.generateRSAKeys();
+		/*
+		CertificateGenerator cg = new CertificateGenerator();
+		try{
+			X509Certificate cert = cg.createAcIssuerCert(kp.getPublic(), kp.getPrivate());
+			cert.checkValidity(new Date());
+		    cert.verify(kp.getPublic());
+		}catch(Exception ex){
+			throw new RuntimeException(ex);
+
+		}*/
+		//kg.generateCertificate(kp.getPublic(), kp.getPrivate());
 		//System.out.println(kg.hashKey(kg.generateAESKey()));
 		//USER ID
-		System.out.println(kg.hashKey(kg.generateRSAKeys().getPublic()));
+		//System.out.println(kg.hashKey(kg.generateRSAKeys().getPublic()));
 		//USER REMOTE PASSWORD
-		System.out.println(kg.hashKey(kg.generateRSAKeys().getPrivate()));
+		//System.out.println(kg.hashKey(kg.generateRSAKeys().getPrivate()));
 	}
 
 }
