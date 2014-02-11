@@ -6,8 +6,7 @@
 
 package Server;
 
-import Connection.*;
-import Encryption.*;
+
 import com.sun.corba.se.impl.util.Version;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -82,20 +81,19 @@ public class Sql {
         
     }
     
-    public PublicKey getKey(String id) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException{
+    public byte[] getKey(String id) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException{
         
         Connection con = this.connectionID();
         PreparedStatement pst = null;
         ResultSet rs = null;
         
-        Encryption e = new Encryption();
         
         pst = con.prepareStatement("SELECT public FROM id WHERE User = (?)");
         pst.setString(1, id);
         rs = pst.executeQuery();
         rs.next();
         rs.getBytes(1);
-        return e.convertToKey(rs.getBytes(1)); 
+        return rs.getBytes(1); 
         
 
         
