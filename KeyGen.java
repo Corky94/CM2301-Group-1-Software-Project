@@ -77,7 +77,6 @@ public class KeyGen{
 	        attrs.put(X509Name.EmailAddress, "anon@gmail.com");
 
         	Vector                      order = new Vector();
-        	
 	        order.addElement(X509Name.C);
 	        order.addElement(X509Name.O);
 	        order.addElement(X509Name.L);
@@ -173,17 +172,21 @@ public class KeyGen{
 		}
 	}
 
+	/*
+	//
+	// Left in for testing purposes
+	//
 	public static void main (String[] args){
-		KeyGen kg = new KeyGen();
-		KeyPair kp = kg.generateRSAKeys();
-		char[] localPassword = "password".toCharArray();
-
+		//KeyGen kg = new KeyGen();
+		//KeyPair kp = kg.generateRSAKeys();
+		//char[] localPassword = "password".toCharArray();
 		//REMOTE PASSWORD
 		//kg.generateRemotePassword(localPassword);
 		//USER ID
 		//kg.generateUserID(localPassword);
 		//CERT GEN
-		kg.generateCertificate(kp.getPublic(), kp.getPrivate());
+		//kg.generateCertificate(kp.getPublic(), kp.getPrivate());
 	}
+	*/
 
 }
