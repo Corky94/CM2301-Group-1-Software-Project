@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -115,8 +116,8 @@ public class Sql {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement("INSERT INTO Messages(UserId, Sender, Message) VALUES(?,?,?)");
-            pst.setBytes(2, sender);
             pst.setString(1, reciever);
+            pst.setBytes(2, sender);            
             pst.setBytes(3, contents);
             pst.executeUpdate();
         } catch (SQLException ex) {
@@ -144,9 +145,22 @@ public class Sql {
             rs = pst.executeQuery();
             rs.next();
             newMessage.sender = rs.getBytes(1);
-            newMessage.message = rs.getBytes(2);
             
+            //(assuming you have a ResultSet named RS)
+            System.out.println("Sender done");
+            Blob blob = rs.getBlob(2);
+            System.out.println("Blob created");
+            int blobLength = (int) blob.length();  
+            byte[] blobAsBytes = blob.getBytes(1, blobLength);
+
+            //release the blob and free up memory. (since JDBC 4.0)
+            blob.free();
+            newMessage.message = blobAsBytes;
             
+            for (int i = 0; i < newMessage.message.length; i++){
+                System.out.print(newMessage.message[i]);
+            }
+            System.out.println();
         } catch (SQLException ex) {
             Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
         }

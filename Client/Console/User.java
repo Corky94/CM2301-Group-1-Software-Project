@@ -5,6 +5,7 @@ package Console;
 import Message.Message;
 import Connection.*;
 import Crypto.*;
+import java.nio.charset.Charset;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
@@ -108,8 +109,14 @@ public class User {
             Encryption e = new Encryption();
             
 
-//            m.sender = e.decryptString(m.sender,password);
+
+            m.sender = e.decryptString(m.sender,password);
             m.message = e.decryptString(m.message, password);
+    
+            System.out.println(e.bTS(m.sender));
+            System.out.println(e.bTS(m.message));
+            
+           
             //input method
             
             return m;
@@ -130,19 +137,27 @@ public class User {
             m.receiver = recipitent;
             PublicKey pk =  e.getKey(m.receiver);
            
-            m.sender = s.getID().getBytes();
-            
+
             
             
             System.out.println("Please enter the message contents: ");
             
             contents = in.nextLine();
             
-            m.message = contents.getBytes();
+    
+
+            m.sender = e.encryptString(pk, s.getID());
             
-            m.sender = e.encryptString(pk, m.sender.toString());
-            m.message = e.encryptString(pk, m.message.toString());
+            m.message = e.encryptString(pk, contents);
             
+            for (int i = 0; i < m.message.length; i++){
+                System.out.print(m.message[i]);
+            }
+            System.out.println();
+            
+            
+            
+
             ClientSend.sendMessage(m);
             
             

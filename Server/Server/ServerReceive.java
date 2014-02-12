@@ -39,21 +39,19 @@ public class ServerReceive {
   
                         
 			//store message
-			if(m.message != null && m.receiver != null) {
+                        
+                        if (m.key != null){
+
+                            registerUser(m);
+                        }else if (m.needingKey == true) {
+
+                                getKey(m,s);
+                            
+                        }else if(m.message != null && m.receiver != null) {
 				storeMessage(m);
                         
-			}
-                        else if (m.key != null){
-                            System.out.println("Wrong");
-                            registerUser(m);
-                        }
-//                        else if (m.message == null && m.sender == null ) {
-//                                System.out.println("Wrong2");
-//                                getKey(m,s);
-//                            
-//                        }
-                        else {  //send messages to client  
-                                System.out.println("Correct");
+			}else {  //send messages to client  
+
 				getMessages(s, ss, m.receiver);
 			}
 			is.close();  
@@ -72,12 +70,11 @@ public class ServerReceive {
 	} 
 
 	private static Message getMessages(Socket s, ServerSocket ss, String id) {
-		System.out.println(id);
+
                 Message m = new Message();
                 Sql sq = new Sql();
                 m = sq.getMessage(id);
                 m.receiver = id;
-                System.out.println(m.sender);
 
 		try{
 			OutputStream os = s.getOutputStream();  

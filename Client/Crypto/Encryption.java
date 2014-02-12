@@ -67,9 +67,13 @@ public class Encryption{
 	}
 
 	public String bTS(byte[] input){
-		//ONLY FOR DEBUG -> byteToString
-		String s = new String(input);
-		return s;
+            try {
+                //ONLY FOR DEBUG -> byteToString
+                String s = new String(input, "UTF-8");
+                return s;
+            } catch (UnsupportedEncodingException ex) {
+                throw new RuntimeException(ex);
+            }
 	}
 	/*
 	public byte[] encryptRemotePassword(byte[] passowrd){
@@ -84,14 +88,10 @@ public class Encryption{
         public PublicKey getKey(String id){
             Message m = new Message();
             m.receiver = id;
-            
-            System.out.println(m.receiver);
+            m.needingKey = true;
             
             byte [] key = ClientReceive.getKey(m);
-            for (int i =0; i<key.length; i++){
-                System.out.print(key[i]);
-            }
-            System.out.println("\n" + key);
+           
             
             
             try {
@@ -111,9 +111,9 @@ public class Encryption{
 //	public static void main (String[] args){
 //		Encryption exampleEncryption = new Encryption();
 //		KeyVault kv = new KeyVault();
-//		KeyPair kp = kv.getRSAKeys("password".toCharArray());
+//		KeyPair kp = kv.getRSAKeys("".toCharArray());
 //		PublicKey pk = kp.getPublic();
 //		byte[] encrypted = exampleEncryption.encryptString(pk, "String to encrypt");
-//		System.out.println(exampleEncryption.bTS(exampleEncryption.decryptString(encrypted)));
+//		System.out.println(exampleEncryption.bTS(exampleEncryption.decryptString(encrypted, "")));
 //	}
 }

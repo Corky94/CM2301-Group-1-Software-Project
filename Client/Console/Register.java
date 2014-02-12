@@ -56,16 +56,14 @@ public class Register {
             KeyPair k = kg.generateRSAKeys();
             SecretKey sk =kg.generateAESKey();
             
-            byte[] key = (k.getPublic().getEncoded());
             
-            for (int i = 0; i< key.length; i++){
-                System.out.print(key[i]);
-            }
-            System.out.println();
             
             kv.setRSAKeys(pass.toCharArray());
             kv.setAESKey(pass.toCharArray());
             
+            byte[] key = kv.getRSAKeys(pass.toCharArray()).getPublic().getEncoded();
+            
+            System.out.println(kv.getRSAKeys(pass.toCharArray()).getPrivate());
 
 
 //            
@@ -75,6 +73,7 @@ public class Register {
 
             System.out.println(key);
             System.out.println(UserID);
+
             
             ClientSend.registerToServer(UserID, key);
             
