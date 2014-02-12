@@ -1,5 +1,6 @@
 package Connection;
 
+import Message.Message;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -52,7 +53,7 @@ public class ClientSend {
             m.receiver = id;
             try {
 
-                Socket s = new Socket("10.72.0.13", 12345);
+                Socket s = new Socket("localhost", 12345);
                 System.out.println("Created Socket");
                 OutputStream os = s.getOutputStream();
                 ObjectOutputStream oos = new ObjectOutputStream(os);
@@ -69,6 +70,7 @@ public class ClientSend {
             
             return false;
         }
+
         
   
           

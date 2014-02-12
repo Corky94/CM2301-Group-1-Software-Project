@@ -45,7 +45,8 @@ public class Java {
             
         if (s.getRegistered() == true && u.loggedIn != true){
             u.login();
-            u.createMessage();
+            u.recieveEmails();
+    
         
             
             

@@ -1,8 +1,14 @@
 package Crypto;
 
+import Connection.ClientReceive;
+import Message.Message;
 import java.security.*;
 import javax.crypto.*;
 import java.io.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Encryption{
 
@@ -33,10 +39,9 @@ public class Encryption{
 		}
 	}
 
-	public byte[] decryptString(byte[] data){
+	public byte[] decryptString(byte[] data, String password){
 		KeyVault kv = new KeyVault();
-		KeyPair rsaKeys = kv.getRSAKeys("password".toCharArray(
-			));
+		KeyPair rsaKeys = kv.getRSAKeys(password.toCharArray());
 		PrivateKey privateKey = rsaKeys.getPrivate();
 		try{
 			Cipher decrypt = Cipher.getInstance("RSA");
@@ -75,12 +80,40 @@ public class Encryption{
 		//Will decrypt remote password using AES
 	}
 	*/
-	public static void main (String[] args){
-		Encryption exampleEncryption = new Encryption();
-		KeyVault kv = new KeyVault();
-		KeyPair kp = kv.getRSAKeys("password".toCharArray());
-		PublicKey pk = kp.getPublic();
-		byte[] encrypted = exampleEncryption.encryptString(pk, "String to encrypt");
-		System.out.println(exampleEncryption.bTS(exampleEncryption.decryptString(encrypted)));
-	}
+        
+        public PublicKey getKey(String id){
+            Message m = new Message();
+            m.receiver = id;
+            
+            System.out.println(m.receiver);
+            
+            byte [] key = ClientReceive.getKey(m);
+            for (int i =0; i<key.length; i++){
+                System.out.print(key[i]);
+            }
+            System.out.println("\n" + key);
+            
+            
+            try {
+                X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(key);
+                KeyFactory kf = KeyFactory.getInstance("RSA");
+                PublicKey pk = kf.generatePublic(pubKeySpec);                
+                return pk;
+            } catch (NoSuchAlgorithmException ex) {
+                throw new RuntimeException(ex);
+            }catch (InvalidKeySpecException ex) {
+                throw new RuntimeException(ex);
+                }
+            
+            
+            
+        } 
+//	public static void main (String[] args){
+//		Encryption exampleEncryption = new Encryption();
+//		KeyVault kv = new KeyVault();
+//		KeyPair kp = kv.getRSAKeys("password".toCharArray());
+//		PublicKey pk = kp.getPublic();
+//		byte[] encrypted = exampleEncryption.encryptString(pk, "String to encrypt");
+//		System.out.println(exampleEncryption.bTS(exampleEncryption.decryptString(encrypted)));
+//	}
 }

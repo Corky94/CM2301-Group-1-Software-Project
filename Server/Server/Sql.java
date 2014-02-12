@@ -7,7 +7,7 @@
 package Server;
 
 
-import com.sun.corba.se.impl.util.Version;
+import Message.Message;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -41,8 +41,7 @@ public class Sql {
             
            
         } catch (SQLException ex) {
-            Logger lgr = Logger.getLogger(Version.class.getName());
-            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+
 
         } 
         return con;
@@ -62,18 +61,16 @@ public class Sql {
             
            
         } catch (SQLException ex) {
-            Logger lgr = Logger.getLogger(Version.class.getName());
-            lgr.log(Level.SEVERE, ex.getMessage(), ex);
 
         } 
         return con;
     }
     public void register(String id, byte[] key) throws SQLException, IOException{
-        
+        System.out.println(3);
         Connection con = this.connectionID();
         PreparedStatement pst = null;
         
-        pst = con.prepareStatement("INSERT INTO id(User, public) VALUES(?,?)");
+        pst = con.prepareStatement("INSERT INTO id(UserID, PublicKey) VALUES(?,?)");
         pst.setString(1, id);
         pst.setBytes(2, key);
         pst.executeUpdate();
@@ -88,7 +85,7 @@ public class Sql {
         ResultSet rs = null;
         
         
-        pst = con.prepareStatement("SELECT public FROM id WHERE User = (?)");
+        pst = con.prepareStatement("SELECT PublicKey FROM id WHERE UserID = (?)");
         pst.setString(1, id);
         rs = pst.executeQuery();
         rs.next();
@@ -117,7 +114,7 @@ public class Sql {
         Connection con = this.connectionID();
         PreparedStatement pst = null;
         try {
-            pst = con.prepareStatement("INSERT INTO Messages(UserId, Sender, Contents) VALUES(?,?,?)");
+            pst = con.prepareStatement("INSERT INTO Messages(UserId, Sender, Message) VALUES(?,?,?)");
             pst.setBytes(2, sender);
             pst.setString(1, reciever);
             pst.setBytes(3, contents);
@@ -142,10 +139,12 @@ public class Sql {
         
         
         try {
-            pst = con.prepareStatement("SELECT Sender FROM Messages WHERE UserID = (?)");
+            pst = con.prepareStatement("SELECT Sender, Message FROM Messages WHERE UserID = (?)");
             pst.setString(1, id);
             rs = pst.executeQuery();
             rs.next();
+            newMessage.sender = rs.getBytes(1);
+            newMessage.message = rs.getBytes(2);
             
             
         } catch (SQLException ex) {

@@ -4,6 +4,7 @@
  */
 package Console;
 
+import Message.Message;
 import Connection.*;
 import java.io.*;
 import java.security.*;
@@ -16,18 +17,19 @@ import java.util.HashMap;
 public class SecureDetails {
     
     private HashMap details;
-    private final String dir = "/home/coding/Java/src/Console/user2.ser";
+    private final String dir = "user2.ser";
     
     public SecureDetails(){
         
         
     
         try{
-
+            
             FileInputStream fis = new FileInputStream(dir);
             ObjectInputStream ois = new ObjectInputStream(fis);
             details = (HashMap) ois.readObject();
             ois.close();
+
         }
         catch(FileNotFoundException e){
             try{
@@ -38,6 +40,7 @@ public class SecureDetails {
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(details);
                 oos.close();
+      
                 
             }
             catch(FileNotFoundException ex){
@@ -58,19 +61,12 @@ public class SecureDetails {
     }
     
     
-    public void setPassword(String pass){
+    public void setRegistered(){
         
         details.put("Registered", true);
-        
-        details.put("Password", pass);
-        
+
     }
     
-    public void setPrivateKey(PrivateKey Private){
-        
-        details.put("Key", Private);
-        
-    }
     
     
     public void setId(String key){
@@ -116,12 +112,7 @@ public class SecureDetails {
         
     }
     
-    public PrivateKey getPrivateKey(){
-        
-        PrivateKey  privateKey = (PrivateKey)details.get("Key");
-        
-        return privateKey;
-    }
+
     
     public String getID(){
         
@@ -131,14 +122,7 @@ public class SecureDetails {
         
     }
     
-    public String getPassword(){
-        
-        String password = (String)details.get("Password");
-        
-        return password;
-        
-        
-    }
+
     
     public boolean getRegistered(){
         

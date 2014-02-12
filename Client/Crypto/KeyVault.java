@@ -14,7 +14,7 @@ public class KeyVault{
 	private final String KEY_STORE_NAME = "keyStoreName";
 	private final String KEY_STORE_TYPE = "JCEKS";
 
-	KeyVault(){
+	public KeyVault(){
 	}
 
 	//WORKS
@@ -74,11 +74,16 @@ public class KeyVault{
 
 	//WORKS
 	private KeyStore loadKeyStore(char[] localPassword){
+            if (this.checkIfKsExists(KEY_STORE_NAME)== false){
+                createKeyStore(localPassword);
+            }
+                     
 		try{
 			KeyStore ks  = KeyStore.getInstance(KEY_STORE_TYPE);
 			ks.load(new FileInputStream(KEY_STORE_NAME), localPassword);
 			return ks;
 		}catch(FileNotFoundException ex){
+                   
 	    	//logger.error("Cannot close connection");
             throw new RuntimeException(ex);
 	    }catch(IOException ex){    	
@@ -236,19 +241,19 @@ public class KeyVault{
 	}
 
 	public static void main (String[] args){
-		//char[] password = "password".toCharArray();
-		//char[] badPassword = "wrongpassword".toCharArray();
-
-		//KeyVault kv = new KeyVault();
-		//kv.createKeyStore(password);
-		//kv.setAESKey(password);
-		//kv.setRSAKeys(password);
-		//System.out.println(kv.getRSAKeys(password));
-		//System.out.println(kv.getAESKey(password));
-		//System.out.println(kv.checkPassword(password));
-		//System.out.println(kv.checkPassword(badPassword));
-		//System.out.println(kv.loadKeyStore(password));
-		//System.out.println(kv.loadKeyStore(badPassword));
+//		char[] password = "password".toCharArray();
+//		char[] badPassword = "wrongpassword".toCharArray();
+//
+//		KeyVault kv = new KeyVault();
+//		kv.createKeyStore(password);
+//		kv.setAESKey(password);
+//		kv.setRSAKeys(password);
+//		System.out.println(kv.getRSAKeys(password));
+//		System.out.println(kv.getAESKey(password));
+//		System.out.println(kv.checkPassword(password));
+//		System.out.println(kv.checkPassword(badPassword));
+//		System.out.println(kv.loadKeyStore(password));
+//		System.out.println(kv.loadKeyStore(badPassword));
 
 
 	}

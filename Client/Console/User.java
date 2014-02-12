@@ -2,6 +2,7 @@
 // This is a basic structure of the User class, there is still much to be done and al the methods to be implimented
 package Console;
 
+import Message.Message;
 import Connection.*;
 import Crypto.*;
 import java.security.*;
@@ -22,6 +23,7 @@ public class User {
         private String realm;
         private ClientSend c;
         private byte[] publicKey;
+        private String password;
 
 	User() {
 	
@@ -35,19 +37,20 @@ public class User {
             
             s = new SecureDetails();
             
-            String password = "12qw12";
+            password = "1";
             
             Scanner in = new Scanner(System.in);
             
-            String pass = s.getPassword();
             
-            while (password.equals(pass) != true){
+            KeyVault kv = new KeyVault();
+            
+            while (kv.checkPassword(password.toCharArray()) != true){
                 
                 System.out.println("Please enter your password: ");
                 
                 password = in.nextLine();
             
-                if (password.equals(pass) == false){
+                if (kv.checkPassword(password.toCharArray()) == false){
                     System.out.println("Password Incorrect \n Press enter to try again");
                     
                     
@@ -62,6 +65,7 @@ public class User {
             realm = in.nextLine();
             
             loggedIn = true;
+
         
          
         }
@@ -97,13 +101,18 @@ public class User {
         }
         
         
-        public String recieveEmails() throws NoSuchAlgorithmException, NoSuchPaddingException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException{
+        public Message recieveEmails() {
+            
+            Message m = ClientReceive.receive(s.getID());
+
+            Encryption e = new Encryption();
             
 
-            
+//            m.sender = e.decryptString(m.sender,password);
+            m.message = e.decryptString(m.message, password);
             //input method
             
-            return null;
+            return m;
         }
         
         public void createMessage() throws NoSuchAlgorithmException, NoSuchPaddingException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException, SQLException, InvalidKeySpecException{
@@ -131,8 +140,8 @@ public class User {
             
             m.message = contents.getBytes();
             
-            m.sender = e.encryptString(pk, m.sender);
-            m.message = e.encryptString(pk, m.message);
+            m.sender = e.encryptString(pk, m.sender.toString());
+            m.message = e.encryptString(pk, m.message.toString());
             
             ClientSend.sendMessage(m);
             

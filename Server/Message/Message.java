@@ -1,4 +1,4 @@
-package Server; 
+package Message; 
 
 public class Message implements java.io.Serializable {
     public byte[] sender;

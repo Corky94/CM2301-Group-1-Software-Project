@@ -5,14 +5,13 @@
 package Console;
 
 import Connection.ClientSend;
-import Crypto.Encryption;
-import Crypto.KeyGen;
-import Server.*;
+import Crypto.*;
 import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
 import java.util.Scanner;
+import javax.crypto.SecretKey;
 
 /**
  *
@@ -51,25 +50,28 @@ public class Register {
             
             
             KeyGen kg = new KeyGen();
+            KeyVault kv = new KeyVault();
             Encryption e = new Encryption();
 //            
             KeyPair k = kg.generateRSAKeys();
+            SecretKey sk =kg.generateAESKey();
             
             byte[] key = (k.getPublic().getEncoded());
             
             for (int i = 0; i< key.length; i++){
-                
                 System.out.print(key[i]);
-                
             }
             System.out.println();
+            
+            kv.setRSAKeys(pass.toCharArray());
+            kv.setAESKey(pass.toCharArray());
+            
+
 
 //            
-            String UserID = kg.hashKeyToString(k.getPublic());
+            String UserID = kg.hashKeyToString(kv.getRSAKeys(pass.toCharArray()).getPublic());
 //            
-//            String UserID = e.bTS(hash);
-//            
-//            System.out.println(hash);
+
 
             System.out.println(key);
             System.out.println(UserID);
@@ -88,9 +90,8 @@ public class Register {
             
                         
             
-            setup.setId(UserID);
-            setup.setPrivateKey(k.getPrivate());          
-            setup.setPassword(pass);
+            setup.setId(UserID);         
+            setup.setRegistered();
             setup.saveDetails();
             
         
