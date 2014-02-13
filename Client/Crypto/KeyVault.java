@@ -4,9 +4,14 @@ import java.security.*;
 import javax.crypto.*;
 import java.io.*;
 
-//import java.security.cert.Certificate;
+import java.security.spec.X509EncodedKeySpec;
 import java.security.cert.X509Certificate;
+
 import org.bouncycastle.x509.X509V2AttributeCertificate;
+
+/*
+*KeyVault is responcible for storing and retreiving keys from the vault, it also provides a password check for user login. 
+*/
 
 public class KeyVault{
 
@@ -14,10 +19,10 @@ public class KeyVault{
 	private final String KEY_STORE_NAME = "keyStoreName";
 	private final String KEY_STORE_TYPE = "JCEKS";
 
-	public KeyVault(){
+	KeyVault(){
 	}
-
-	//WORKS
+		
+	//PASSWORD IN REFERENCE IS TO OPEN THE KEYVAULT (LOCAL PASSWORD)
 	public boolean checkPassword(char[] localPassword){
 		try{
 			KeyVault ks = new KeyVault();
@@ -27,13 +32,16 @@ public class KeyVault{
 			return false;
 		}
 	}
+	
+	public PublicKey bytesToKey(byte[] bytes){
+		try{
+			PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(bytes));
+    		return publicKey;
+    	}catch(Exception ex){
+    		throw new RuntimeException(ex);
+    	}
+	}
 
-	/*
-	public KeyPair byte[]tokeypair(){
-
-	}*/
-
-	//WORKS
 	//Keystore methods	
 	private void createKeyStore(char[] localPassword) {
 		try {
@@ -52,26 +60,11 @@ public class KeyVault{
 			else{
 				throw new RuntimeException("KEYSTORE ALREADY EXISTS");
 			}
-		    //These have been left seperate to design different errors in the future
-	    }catch(FileNotFoundException ex){
+	    }catch(Exception ex){
 	    	//logger.error("Cannot close connection");
             throw new RuntimeException(ex);
-	    }catch(IOException ex){    	
-	    	//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}catch(KeyStoreException ex){    	
-	    	//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}catch(NoSuchAlgorithmException ex){    	
-	    	//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}catch(java.security.cert.CertificateException ex){    	
-	    	//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}
-
+	    }
 	}
-
 	//WORKS
 	private KeyStore loadKeyStore(char[] localPassword){
             if (this.checkIfKsExists(KEY_STORE_NAME)== false){
@@ -82,26 +75,11 @@ public class KeyVault{
 			KeyStore ks  = KeyStore.getInstance(KEY_STORE_TYPE);
 			ks.load(new FileInputStream(KEY_STORE_NAME), localPassword);
 			return ks;
-		}catch(FileNotFoundException ex){
-                   
-	    	//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-	    }catch(IOException ex){    	
-	    	//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}
-		catch(NoSuchAlgorithmException ex){    	
-	    	//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}catch(java.security.cert.CertificateException ex){    	
-	    	//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}catch (KeyStoreException ex){
-            throw new RuntimeException(ex);
+		}catch(Exception ex){
+			throw new RuntimeException(ex);
 		}
 	}
 
-	//WORKS
 	private boolean checkIfKsExists(String keyStoreName){
 		File f = new File(keyStoreName);
 		if(f.exists() && !f.isDirectory()){
@@ -136,22 +114,10 @@ public class KeyVault{
 	    	}
 
 	    	return true;
-	    }catch(FileNotFoundException ex){
+	    }catch(Exception ex){
 	    	//logger.error("Cannot close connection");
             throw new RuntimeException(ex);
-	    }catch(IOException ex){    	
-	    	//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}catch(KeyStoreException ex){    	
-	    	//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}catch(NoSuchAlgorithmException ex){    	
-	    	//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}catch(java.security.cert.CertificateException ex){    	
-	    	//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}
+	    }
 	}
 	
 	public void setAESKey(char[] localPassword){
@@ -174,22 +140,10 @@ public class KeyVault{
 	         if (fos != null) {
 	            fos.close();
 	    	}
-	    }catch(FileNotFoundException ex){
+	    }catch(Exception ex){
 	    	//logger.error("Cannot close connection");
             throw new RuntimeException(ex);
-	    }catch(IOException ex){    	
-	    	//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}catch(KeyStoreException ex){    	
-	    	//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}catch(NoSuchAlgorithmException ex){    	
-	    	//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}catch(java.security.cert.CertificateException ex){    	
-	    	//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}
+	    }
 	}
 	
 	//Getter methods
@@ -206,14 +160,8 @@ public class KeyVault{
 			PublicKey pubKey = rsaCert.getPublicKey();
 			KeyPair rsaKeys = new KeyPair(pubKey, priKey);
 			return rsaKeys;
-		}catch(NoSuchAlgorithmException ex){
+		}catch(Exception ex){
 			//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}catch(KeyStoreException ex){
-			//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}catch(UnrecoverableEntryException ex){
-	    	//logger.error("Cannot close connection");
             throw new RuntimeException(ex);
 		}
 	}
@@ -228,33 +176,29 @@ public class KeyVault{
 			KeyStore.SecretKeyEntry aesKeyEntry = (KeyStore.SecretKeyEntry) ks.getEntry("aesKey", passwordProtection);
 			Key aesKey = aesKeyEntry.getSecretKey();
 			return aesKey;
-		}catch(NoSuchAlgorithmException ex){
+		}catch(Exception ex){
 			//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}catch(KeyStoreException ex){
-			//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}catch(UnrecoverableEntryException ex){
-	    	//logger.error("Cannot close connection");
             throw new RuntimeException(ex);
 		}
 	}
 
+	/*
+	//
+	// Left in for testing purposes
+	//
 	public static void main (String[] args){
-//		char[] password = "password".toCharArray();
-//		char[] badPassword = "wrongpassword".toCharArray();
-//
-//		KeyVault kv = new KeyVault();
-//		kv.createKeyStore(password);
-//		kv.setAESKey(password);
-//		kv.setRSAKeys(password);
-//		System.out.println(kv.getRSAKeys(password));
-//		System.out.println(kv.getAESKey(password));
-//		System.out.println(kv.checkPassword(password));
-//		System.out.println(kv.checkPassword(badPassword));
-//		System.out.println(kv.loadKeyStore(password));
-//		System.out.println(kv.loadKeyStore(badPassword));
-
-
+		//char[] password = "password".toCharArray();
+		//char[] badPassword = "wrongpassword".toCharArray();
+		//KeyVault kv = new KeyVault();
+		//kv.createKeyStore(password);
+		//kv.setAESKey(password);
+		//kv.setRSAKeys(password);
+		//System.out.println(kv.getRSAKeys(password));
+		//System.out.println(kv.getAESKey(password));
+		//System.out.println(kv.checkPassword(password));
+		//System.out.println(kv.checkPassword(badPassword));
+		//System.out.println(kv.loadKeyStore(password));
+		//System.out.println(kv.loadKeyStore(badPassword));
 	}
+	*/
 }
