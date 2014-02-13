@@ -94,7 +94,8 @@ public class KeyGen{
 	        v3CertGen.setSerialNumber(BigInteger.valueOf(20));
 	        v3CertGen.setIssuerDN(new X509Name(issuer));
 	        v3CertGen.setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30));
-	        v3CertGen.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 30)));
+	        	//Sign for 1 year
+	        v3CertGen.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365)));
        		v3CertGen.setSubjectDN(new X509Name(order, attrs));
 	        v3CertGen.setPublicKey(pubKey);
 	        v3CertGen.setSignatureAlgorithm("SHA256WithRSA");
