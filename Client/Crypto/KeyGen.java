@@ -51,7 +51,7 @@ public class KeyGen{
 	final protected static char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 	static { Security.addProvider(new BouncyCastleProvider());}
 
-	KeyGen(){
+	public KeyGen(){
 	}
 
 	//Keygen methods

@@ -19,7 +19,7 @@ public class KeyVault{
 	private final String KEY_STORE_NAME = "keyStoreName";
 	private final String KEY_STORE_TYPE = "JCEKS";
 
-	KeyVault(){
+	public KeyVault(){
 	}
 		
 	//PASSWORD IN REFERENCE IS TO OPEN THE KEYVAULT (LOCAL PASSWORD)

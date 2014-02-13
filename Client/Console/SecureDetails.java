@@ -40,21 +40,16 @@ public class SecureDetails {
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(details);
                 oos.close();
-      
-                
             }
             catch(FileNotFoundException ex){
-                
             } 
             catch (IOException ex) {
             }
     
         }
         catch(IOException e){
-            
         }
         catch(ClassNotFoundException e){
-            
         }
 
 
@@ -62,42 +57,30 @@ public class SecureDetails {
     
     
     public void setRegistered(){
-        
         details.put("Registered", true);
-
     }
     
     
     
     public void setId(String key){
-        
         details.put("ID", key);
-                
-        
     }
     
     public void addMessage(Message m){
         
         Message[] savedMessages = getMessages();
-        
         int i = savedMessages.length + 1;
-        
         savedMessages[i] = m;
-        
         details.put("Messages",savedMessages);
         this.saveDetails();
     }
     
     public void deleteMessage(Message m){
-        
         Message[] savedMessages = getMessages();
-        
         for(int i =0; i<= savedMessages.length; i++){
-            
             if(m == savedMessages[i]){
                 savedMessages[i] = null;
             }
-            
         }
         details.put("Messages",savedMessages);
         this.saveDetails();
@@ -105,9 +88,7 @@ public class SecureDetails {
     
     
     public Message[] getMessages(){
-        
         Message[] savedMessages = (Message[])details.get("Messages");
-        
         return savedMessages;
         
     }
@@ -117,9 +98,7 @@ public class SecureDetails {
     public String getID(){
         
         String id = (String)details.get("ID");
-        
         return id;
-        
     }
     
 
@@ -127,7 +106,6 @@ public class SecureDetails {
     public boolean getRegistered(){
         
         boolean registered = (boolean)details.get("Registered");
-
         return registered;
         
     }
@@ -136,7 +114,6 @@ public class SecureDetails {
         
          try{
 
-                
                 FileOutputStream fos = new FileOutputStream(dir);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(details);
@@ -150,11 +127,5 @@ public class SecureDetails {
             }
         
     }
-    
-    
-    
-    
-    
-    
-    
+
 }
