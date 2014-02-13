@@ -17,7 +17,7 @@ public class ClientSend {
 //		
 		try{  
 		
-			Socket s = new Socket("localhost", 12345);  
+			Socket s = new Socket("localhost", 12346);  
 			OutputStream os = s.getOutputStream();  
 			ObjectOutputStream oos = new ObjectOutputStream(os);  
 			oos.writeObject(m);   
@@ -37,7 +37,7 @@ public class ClientSend {
             m.receiver = id;
             try {
 
-                Socket s = new Socket("localhost", 12345);
+                Socket s = new Socket("localhost", 12346);
                 System.out.println("Created Socket");
                 OutputStream os = s.getOutputStream();
                 ObjectOutputStream oos = new ObjectOutputStream(os);

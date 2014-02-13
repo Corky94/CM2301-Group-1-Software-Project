@@ -6,10 +6,7 @@ package Console;
 
 import Connection.ClientSend;
 import Crypto.*;
-import java.io.IOException;
 import java.security.*;
-import java.security.spec.InvalidKeySpecException;
-import java.sql.SQLException;
 import java.util.Scanner;
 import javax.crypto.SecretKey;
 
@@ -21,7 +18,7 @@ public class Register {
     
             
     
-        Register() throws NoSuchAlgorithmException, SQLException, InvalidKeySpecException, IOException{
+        Register() {
         
             Scanner input = new Scanner(System.in);
             

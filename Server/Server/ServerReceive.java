@@ -22,7 +22,7 @@ public class ServerReceive {
 	private static boolean debug = true;
         
 	public static void main(String args[]) {  
-		int port = 12345;  
+		int port = 12346;  
 		Message m = new Message();
 		try {  
                     
@@ -110,7 +110,7 @@ public class ServerReceive {
             
             try {
                 message.key = s.getKey(m.receiver);
-                ServerSend.sendKeyToClient(message, soc);
+                sendKeyToClient(message, soc);
             } catch (NoSuchAlgorithmException ex) {
                 throw new RuntimeException(ex);
             } catch (InvalidKeySpecException ex) {
@@ -121,7 +121,24 @@ public class ServerReceive {
             
             
             } 
-    
         }
+            public static void sendKeyToClient(Message m, Socket s){
+    
+            try{  
+
+                OutputStream os = s.getOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(os);  
+                oos.writeObject(m);   
+                oos.close();  
+                os.close();  
+                s.close();  
+            
+            }catch(Exception e){
+			System.out.println(e);
+		}  
 }
+}
+    
+        
+
 

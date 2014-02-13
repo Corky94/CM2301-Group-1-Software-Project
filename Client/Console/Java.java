@@ -4,16 +4,7 @@
  */
 package Console;
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.sql.SQLException;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+
 
 /**
  *
@@ -24,7 +15,7 @@ public class Java {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws NoSuchAlgorithmException, NoSuchPaddingException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException, SQLException, InvalidKeySpecException, IOException {
+    public static void main(String[] args) {
 
 //        KeyGen kg = new KeyGen();
 //        
@@ -45,7 +36,7 @@ public class Java {
             
         if (s.getRegistered() == true && u.loggedIn != true){
             u.login();
-            //u.createMessage();
+
             u.recieveEmails();
 
             
@@ -55,9 +46,10 @@ public class Java {
         }
         else if(s.getRegistered() == false){
             
-            new Register();
-            u.login();
-            u.createMessage();
+                Register r = new Register();
+                u.login();
+                u.createMessage();
+            
 
             
             

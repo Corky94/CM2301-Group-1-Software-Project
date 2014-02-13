@@ -122,7 +122,7 @@ public class User {
             return m;
         }
         
-        public void createMessage() throws NoSuchAlgorithmException, NoSuchPaddingException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException, SQLException, InvalidKeySpecException{
+        public void createMessage() {
             c = new ClientSend();
             Message m = new Message();
             String recipitent = null;

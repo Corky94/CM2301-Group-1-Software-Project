@@ -27,7 +27,7 @@ public class ClientReceive {
 
 
 
-			Socket s = new Socket("localhost", 12345);  
+			Socket s = new Socket("localhost", 12346);  
 			OutputStream os = s.getOutputStream();  
 			ObjectOutputStream oos = new ObjectOutputStream(os);  
 			oos.writeObject(m);   
@@ -58,7 +58,7 @@ public class ClientReceive {
             System.out.println(m.receiver);
             try {
                 
-                Socket s = new Socket("localhost", 12345);  
+                Socket s = new Socket("localhost", 12346);  
                 OutputStream os = s.getOutputStream(); 
                  
                 ObjectOutputStream oos = new ObjectOutputStream(os);
