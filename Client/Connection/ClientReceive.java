@@ -1,56 +1,71 @@
 package Connection;
 
 import Message.Message;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
+import java.net.ConnectException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ClientReceive {
 	private static boolean  debug = true;
 	private static byte[] sender = "sender".getBytes();
-        
+        private static final String host = "10.72.0.13";
 
         
         
-	public static Message receive(String Id) {
-		try{  
+	public static Message[] receive(String Id) {
+		try{
+			Message[] allMessages;
 			Message m = new Message();
 			m.sender = null;
 			m.receiver = Id;
 			m.message = null;
 
 
+			while (true){
+					
+					Socket s = new Socket(host, 12346);
 
-			Socket s = new Socket("localhost", 12346);  
-			OutputStream os = s.getOutputStream();  
-			ObjectOutputStream oos = new ObjectOutputStream(os);  
-			oos.writeObject(m);   
-			
 
-			//get reply from server
-			InputStream is = s.getInputStream();  
-			ObjectInputStream ois = new ObjectInputStream(is);
-			m = (Message) ois.readObject();
-			//if(debug) System.out.println(m);
-			
 
-			oos.close();  
-			os.close(); 
-			is.close();
-			ois.close();
-			s.close();  
-			return m;
-		}catch(Exception e){
-			System.out.println(e);
+					OutputStream os = s.getOutputStream();  
+					ObjectOutputStream oos = new ObjectOutputStream(os);  
+					oos.writeObject(m);   
+
+
+					//get reply from server
+					InputStream is = s.getInputStream();  
+					ObjectInputStream ois = new ObjectInputStream(is);
+					allMessages = (Message[]) ois.readObject();
+					//if(debug) System.out.println(m);
+					int i = allMessages.length;
+					System.out.println("here");
+					
+
+					oos.close();  
+					os.close(); 
+					is.close();
+					ois.close();
+					s.close(); 
+					return allMessages;
+			}
 		}
+		catch(Exception e){
+			Logger.getLogger(ClientReceive.class.getName()).log(Level.SEVERE, null, e);
+		}
+			
 
-		return null;
+//		return null;
+		
+			
 	}  
         
         public static byte[] getKey(Message m){  
@@ -58,7 +73,7 @@ public class ClientReceive {
             System.out.println(m.receiver);
             try {
                 
-                Socket s = new Socket("localhost", 12346);  
+                Socket s = new Socket(host, 12346);  
                 OutputStream os = s.getOutputStream(); 
                  
                 ObjectOutputStream oos = new ObjectOutputStream(os);

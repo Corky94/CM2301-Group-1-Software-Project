@@ -1,16 +1,8 @@
 package Server;
 
 import Message.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
+import java.io.*;
 import java.net.Socket;
-import java.nio.channels.ServerSocketChannel;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
@@ -30,6 +22,7 @@ public class ClientHandler implements Runnable {
         }
         
 	public void run() {  
+                    System.out.print("Socket accepted");
                     Socket s = socket;
                     Message m = message;
                     try{
@@ -72,13 +65,11 @@ public class ClientHandler implements Runnable {
 		return true;
 	} 
 
-	private static Message getMessages(Socket s, String id) {
+	private static void getMessages(Socket s, String id) {
 
-                Message m = new Message();
+                
                 Sql sq = new Sql();
-                m = sq.getMessage(id);
-                m.receiver = id;
-
+                Message[] m = sq.getMessage(id);
 		try{
 			OutputStream os = s.getOutputStream();  
 			ObjectOutputStream oos = new ObjectOutputStream(os);  
@@ -88,7 +79,7 @@ public class ClientHandler implements Runnable {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-		return m;
+
 	}
   
         public static void registerUser(Message m){

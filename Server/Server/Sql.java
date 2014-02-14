@@ -130,37 +130,39 @@ public class Sql {
         
     }
         
-    public Message getMessage(String id){
+    public Message[] getMessage(String id){
         
         Message newMessage = new Message();
-        
         Connection con = this.connectionMessages();
         PreparedStatement pst = null;
         ResultSet rs = null;
-        
+        int arrayLength = 0;
         
         try {
             pst = con.prepareStatement("SELECT Sender, Message FROM Messages WHERE UserID = (?)");
             pst.setString(1, id);
             rs = pst.executeQuery();
-            rs.next();
-            newMessage.sender = rs.getBytes(1);
-            
-            //(assuming you have a ResultSet named RS)
-            System.out.println("Sender done");
-            Blob blob = rs.getBlob(2);
-            System.out.println("Blob created");
-            int blobLength = (int) blob.length();  
-            byte[] blobAsBytes = blob.getBytes(1, blobLength);
-
-            //release the blob and free up memory. (since JDBC 4.0)
-            blob.free();
-            newMessage.message = blobAsBytes;
-            
-            for (int i = 0; i < newMessage.message.length; i++){
-                System.out.print(newMessage.message[i]);
+            while (rs.next() == true){
+                arrayLength++;
             }
-            System.out.println();
+            System.out.println(arrayLength);
+            Message[] messages = new Message[arrayLength];
+            rs = pst.executeQuery();
+            rs.next();
+            int arrayLocation = 0;
+            while (rs.next() == true){
+                newMessage.receiver = id;
+                newMessage.sender = rs.getBytes(1);
+                Blob blob = rs.getBlob(2);
+                int blobLength = (int) blob.length();  
+                byte[] blobAsBytes = blob.getBytes(1, blobLength);
+                blob.free();
+                newMessage.message = blobAsBytes;
+                messages[arrayLocation] = newMessage;
+            
+            }
+            System.out.println(messages.length);
+            return messages;
         } catch (SQLException ex) {
             Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -168,12 +170,8 @@ public class Sql {
         
         
         
-        return newMessage;
+        return null;
         
-    }
-
-    public static void main(String[] args) {
-
 
 
     }

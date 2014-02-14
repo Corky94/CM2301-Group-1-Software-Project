@@ -11,13 +11,15 @@ import java.util.logging.Logger;
 
 public class ClientSend {
 	private static boolean  debug = true;
+        private static final String host = "10.72.0.13";
 
 	public static void sendMessage(Message m) {
 
 //		
 		try{  
 		
-			Socket s = new Socket("localhost", 12346);  
+			Socket s = new Socket(host, 12346);
+			Socket a = new Socket(host, 12346);
 			OutputStream os = s.getOutputStream();  
 			ObjectOutputStream oos = new ObjectOutputStream(os);  
 			oos.writeObject(m);   
@@ -37,7 +39,7 @@ public class ClientSend {
             m.receiver = id;
             try {
 
-                Socket s = new Socket("localhost", 12346);
+                Socket s = new Socket(host, 12346);
                 System.out.println("Created Socket");
                 OutputStream os = s.getOutputStream();
                 ObjectOutputStream oos = new ObjectOutputStream(os);

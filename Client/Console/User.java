@@ -14,7 +14,6 @@ public class User {
 
 //	private Message[] savedMessages;
         private SecureDetails s;
-	private Message[] newMessages; 
         public boolean loggedIn;
         private String realm;
         private ClientSend c;
@@ -61,34 +60,27 @@ public class User {
         
         public void readMessages(){
             
-            if (newMessages.length<=0){                
-                System.out.println("You have no new messages");                
-            }
-            else if(newMessages.length == 1){                
-                System.out.println("You have one new message");
-            }            
-            else{
-              System.out.println("You have " + newMessages.length + " new messages");
-            }            
-            System.out.println("You have " + s.getMessages().length + " saved messages");
-            
-            
+//            if (newMessages.length<=0){                
+//                System.out.println("You have no new messages");                
+//            }
+//            else if(newMessages.length == 1){                
+//                System.out.println("You have one new message");
+//            }            
+//            else{
+//              System.out.println("You have " + newMessages.length + " new messages");
+//            }            
+//            System.out.println("You have " + s.getMessages().length + " saved messages");
+//            
+//            
             
         }
         
         
-        public Message recieveEmails() {
+        public void recieveEmails() {
             
-            Message m = ClientReceive.receive(s.getID());
-            Encryption e = new Encryption();
+            ClientReceive.receive(s.getID());
 
-            m.sender = e.decryptString(m.sender,password.toCharArray());
-            m.message = e.decryptString(m.message, password.toCharArray());
-    
-            System.out.println(e.bTS(m.sender));
-            System.out.println(e.bTS(m.message));
-
-            return m;
+            //return m;
         }
         
         public void createMessage() {
@@ -127,7 +119,8 @@ public class User {
 
             if (s.getRegistered() == true && u.loggedIn != true){
                 u.login();
-                u.recieveEmails();
+                Message[] m = u.recieveEmails();
+                System.out.println("You have " + m.length + "new messages");
             }
             else if(s.getRegistered() == false){
                     Register r = new Register();
