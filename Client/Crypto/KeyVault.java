@@ -182,15 +182,31 @@ public class KeyVault{
 		}
 	}
 
-	/*
+	
 	//
-	// Left in for testing purposes
+	// Unit testing
 	//
 	public static void main (String[] args){
-		//char[] password = "password".toCharArray();
-		//char[] badPassword = "wrongpassword".toCharArray();
-		//KeyVault kv = new KeyVault();
-		//kv.createKeyStore(password);
+		//First initiate the keyvault kv
+		KeyVault kv = new KeyVault();
+		//Password and fake password created
+		char[] password = "password".toCharArray();
+		char[] badPassword = "wrongpassword".toCharArray();
+		//Create the kv, the kv directory and name needs to be clear else it'll throw an error.
+		kv.createKeyStore(password);
+		System.out.println("KeyVault created sucessfully");
+		//Test loading the keystore
+		if(kv.loadKeyStore(password) == KeyStore){
+			System.out.println("KeyVault loaded sucessfully");
+		}
+		//Test if correct password is accepted
+		if(kv.checkPassword(password) == true){
+			System.out.println("KeyVault accepts password correctly");
+		}
+		//Test if bad password is rejected
+		if(kv.checkPassword(badPassword) == false){
+			System.out.println("KeyVault rejects badPassword correctly");
+		}
 		//kv.setAESKey(password);
 		//kv.setRSAKeys(password);
 		//System.out.println(kv.getRSAKeys(password));
@@ -200,5 +216,4 @@ public class KeyVault{
 		//System.out.println(kv.loadKeyStore(password));
 		//System.out.println(kv.loadKeyStore(badPassword));
 	}
-	*/
 }
