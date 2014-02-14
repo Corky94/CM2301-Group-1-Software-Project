@@ -181,8 +181,7 @@ public class KeyVault{
             throw new RuntimeException(ex);
 		}
 	}
-
-	
+	/*
 	//
 	// Unit testing
 	//
@@ -193,6 +192,7 @@ public class KeyVault{
 		char[] password = "password".toCharArray();
 		char[] badPassword = "wrongpassword".toCharArray();
 		//Create the kv, the kv directory and name needs to be clear else it'll throw an error.
+		System.out.println("Testing KeyVault");
 		kv.createKeyStore(password);
 		System.out.println("KeyVault created sucessfully");
 		//Test loading the keystore
@@ -200,6 +200,7 @@ public class KeyVault{
 			System.out.println("KeyVault loaded sucessfully");
 		}
 		//Test if correct password is accepted
+		System.out.println("Testing KeyVault security (with local password)");
 		if(kv.checkPassword(password) == true){
 			System.out.println("KeyVault accepts password correctly");
 		}
@@ -207,13 +208,19 @@ public class KeyVault{
 		if(kv.checkPassword(badPassword) == false){
 			System.out.println("KeyVault rejects badPassword correctly");
 		}
-		//kv.setAESKey(password);
-		//kv.setRSAKeys(password);
-		//System.out.println(kv.getRSAKeys(password));
-		//System.out.println(kv.getAESKey(password));
-		//System.out.println(kv.checkPassword(password));
-		//System.out.println(kv.checkPassword(badPassword));
-		//System.out.println(kv.loadKeyStore(password));
-		//System.out.println(kv.loadKeyStore(badPassword));
+		System.out.println("Checking key creation and loading");
+		//Attempt to set AES Keys
+		kv.setAESKey(password);
+		System.out.println("AES Keys created sucessfully");
+		//Load AES keys
+		System.out.println(kv.getAESKey(password));
+		System.out.println("AES Keys loaded sucessfully");
+		//Attempt to set RSA Keys
+		kv.setRSAKeys(password);
+		System.out.println("RSA Keys created sucessfully");
+		//Load RSA Keys
+		System.out.println(kv.getRSAKeys(password));
+		System.out.println("RSA Keys loaded sucessfully");
 	}
+	*/
 }
