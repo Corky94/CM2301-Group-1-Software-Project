@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 public class ClientReceive {
 	private static boolean  debug = true;
 	private static byte[] sender = "sender".getBytes();
-        private static final String host = "10.72.0.13";
+        private static final String host = "192.168.0.2";
 
         
         
@@ -47,7 +47,7 @@ public class ClientReceive {
 					allMessages = (Message[]) ois.readObject();
 					//if(debug) System.out.println(m);
 					int i = allMessages.length;
-					System.out.println("here");
+					System.out.println(i);
 					
 
 					oos.close();  
@@ -63,7 +63,7 @@ public class ClientReceive {
 		}
 			
 
-//		return null;
+		return null;
 		
 			
 	}  

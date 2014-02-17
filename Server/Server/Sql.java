@@ -75,6 +75,7 @@ public class Sql {
         pst.setString(1, id);
         pst.setBytes(2, key);
         pst.executeUpdate();
+        con.close();
         
         
     }
@@ -106,19 +107,19 @@ public class Sql {
         pst = con.prepareStatement("SELECT PublicKey FROM id WHERE UserID = (?)");
         pst.setString(1, id);
         rs = pst.executeQuery();
-        
         return rs.next();
     }
     
-    public void sendMessage(byte[] sender, byte[] contents, String reciever){
+    public void sendMessage(byte[] sender, byte[] subject,  byte[] contents, String reciever){
         
         Connection con = this.connectionID();
         PreparedStatement pst = null;
         try {
-            pst = con.prepareStatement("INSERT INTO Messages(UserId, Sender, Message) VALUES(?,?,?)");
+            pst = con.prepareStatement("INSERT INTO Messages(UserId, Sender, Subject, Message) VALUES(?,?,?,?)");
             pst.setString(1, reciever);
-            pst.setBytes(2, sender);            
-            pst.setBytes(3, contents);
+            pst.setBytes(2, sender); 
+            pst.setBytes(3, subject);
+            pst.setBytes(4, contents);
             pst.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
@@ -132,14 +133,14 @@ public class Sql {
         
     public Message[] getMessage(String id){
         
-        Message newMessage = new Message();
+        Message newMessage;
         Connection con = this.connectionMessages();
         PreparedStatement pst = null;
         ResultSet rs = null;
         int arrayLength = 0;
         
         try {
-            pst = con.prepareStatement("SELECT Sender, Message FROM Messages WHERE UserID = (?)");
+            pst = con.prepareStatement("SELECT Sender, Subject, Message FROM Messages WHERE UserID = (?)");
             pst.setString(1, id);
             rs = pst.executeQuery();
             while (rs.next() == true){
@@ -148,17 +149,21 @@ public class Sql {
             System.out.println(arrayLength);
             Message[] messages = new Message[arrayLength];
             rs = pst.executeQuery();
-            rs.next();
             int arrayLocation = 0;
-            while (rs.next() == true){
+            while (rs.next()){
+                newMessage = new Message();
                 newMessage.receiver = id;
                 newMessage.sender = rs.getBytes(1);
-                Blob blob = rs.getBlob(2);
+                newMessage.subject = rs.getBytes(2);
+                Blob blob = rs.getBlob(3);
                 int blobLength = (int) blob.length();  
                 byte[] blobAsBytes = blob.getBytes(1, blobLength);
                 blob.free();
                 newMessage.message = blobAsBytes;
                 messages[arrayLocation] = newMessage;
+                
+                System.out.println(messages[arrayLocation]);
+                arrayLocation++;
             
             }
             System.out.println(messages.length);
@@ -174,5 +179,21 @@ public class Sql {
         
 
 
+    }
+     public void delete(){
+        try {
+            Connection con = this.connectionID();
+            PreparedStatement pst = null;
+            System.out.println(con);
+            
+            pst = con.prepareStatement("DELETE FROM id");
+            pst.executeUpdate();
+            pst = con.prepareStatement("DELETE FROM Messages");
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
     }
 }

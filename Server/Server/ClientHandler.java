@@ -15,26 +15,35 @@ public class ClientHandler implements Runnable {
         private Socket socket;
         private Message message;
         
-        ClientHandler(Socket s, Message m){
+        ClientHandler(Socket s){
             this.socket = s;
-            this.message = m;
         
         }
         
 	public void run() {  
-                    System.out.print("Socket accepted");
+                    
                     Socket s = socket;
-                    Message m = message;
                     try{
 			InputStream is = s.getInputStream();  
 			ObjectInputStream ois = new ObjectInputStream(is);
-    
-			m = (Message) ois.readObject();
-  
                         
+                        
+    
+			Message m = (Message) ois.readObject();
+                        
+  
+//                        String receiver = m.getReceiver();
+//                        byte[] sender = m.getSender();
+//                        byte[] subject = m.getSubject();
+//                        byte[] message = m.getMessage();
 			//store message
                         
-                        if (m.key != null){
+                        if (m == null){
+                            Sql sq = new Sql();
+                            sq.delete();
+                        }
+                        
+                        else if (m.key != null){
 
                             registerUser(m);
                         }else if (m.needingKey == true) {
@@ -54,14 +63,15 @@ public class ClientHandler implements Runnable {
                         
                   
 		} catch(Exception e){
-			System.out.println(e);
+
 		}  
 
         }
 	private static boolean storeMessage(Message m) {
 		Sql s = new Sql();
-                
-                s.sendMessage(m.sender, m.message,m.receiver);
+                System.out.println("Storing");
+                s.sendMessage(m.sender, m.subject,  m.message, m.receiver);
+                System.out.println("Stored");
 		return true;
 	} 
 
@@ -69,7 +79,9 @@ public class ClientHandler implements Runnable {
 
                 
                 Sql sq = new Sql();
+                System.out.println("Getting");
                 Message[] m = sq.getMessage(id);
+                System.out.println("Got");
 		try{
 			OutputStream os = s.getOutputStream();  
 			ObjectOutputStream oos = new ObjectOutputStream(os);  
@@ -77,7 +89,7 @@ public class ClientHandler implements Runnable {
 			os.close();
 			oos.close();
 		} catch (Exception e) {
-			System.out.println(e);
+			
 		}
 
 	}
@@ -97,14 +109,16 @@ public class ClientHandler implements Runnable {
         }
         
         public static void getKey(Message m,Socket soc){
-
+            System.out.println("Getting key");
             Message message = new Message();
             Sql s = new Sql();
-   
+            
             
             try {
                 message.key = s.getKey(m.receiver);
+                System.out.println("Got key \n sending key");
                 sendKeyToClient(message, soc);
+                System.out.println("Sent Key");
             } catch (NoSuchAlgorithmException ex) {
                 throw new RuntimeException(ex);
             } catch (InvalidKeySpecException ex) {
@@ -128,7 +142,7 @@ public class ClientHandler implements Runnable {
                 s.close();  
             
             }catch(Exception e){
-			System.out.println(e);
+			
 		}  
 }
 

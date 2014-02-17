@@ -11,17 +11,18 @@ import java.util.logging.Logger;
 
 public class ClientSend {
 	private static boolean  debug = true;
-        private static final String host = "10.72.0.13";
+        private static final String host = "192.168.0.2";
 
 	public static void sendMessage(Message m) {
 
 //		
 		try{  
-		
+                    
 			Socket s = new Socket(host, 12346);
-			Socket a = new Socket(host, 12346);
 			OutputStream os = s.getOutputStream();  
+                        
 			ObjectOutputStream oos = new ObjectOutputStream(os);  
+                        
 			oos.writeObject(m);   
 			oos.close();  
 			os.close();  

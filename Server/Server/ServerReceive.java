@@ -23,7 +23,7 @@ public class ServerReceive {
                     ServerSocket ss = new ServerSocket(port);
                   while (true){
                       ClientHandler h;
-                      h = new ClientHandler(ss.accept(), m);
+                      h = new ClientHandler(ss.accept());
                       
                       Thread t = new Thread(h);
                       t.start();

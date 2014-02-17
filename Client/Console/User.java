@@ -18,39 +18,34 @@ public class User {
         private String realm;
         private ClientSend c;
         private byte[] publicKey;
-        private String password;
-
-	User() {
+        public char[] pass;
+        
+	public User() {
 	
 	}
             
         
         
-        public void login(){
+        public void login(char[] password){
             
             realm = null;
             s = new SecureDetails();
-            password = "1";
             Scanner in = new Scanner(System.in);
             KeyVault kv = new KeyVault();
             
             
-            while (kv.checkPassword(password.toCharArray()) != true){
+            while (kv.checkPassword(password) != true){
                 
-                System.out.println("Please enter your password: ");
-                
-                password = in.nextLine();
-            
-                if (kv.checkPassword(password.toCharArray()) == false){
+               
+                if (kv.checkPassword(password) == false){
                     System.out.println("Password Incorrect \n Press enter to try again");                
  
                 }
 
             }
             
-            System.out.println("Please Choose your realm 1 or 2: ");                
-            realm = in.nextLine();            
-            loggedIn = true;       
+            loggedIn = true;   
+            pass = password;
          
         }
 
@@ -76,33 +71,31 @@ public class User {
         }
         
         
-        public void recieveEmails() {
-            
-            ClientReceive.receive(s.getID());
+        public Message[] receiveEmails() {
+            s = new SecureDetails();
+            return ClientReceive.receive(s.getID());
 
             //return m;
         }
         
-        public void createMessage() {
+        public void createMessage(String contents, String recipitent, String subject) {
             c = new ClientSend();
+            s = new SecureDetails();
             Message m = new Message();
-            String recipitent = null;
-            String contents = null;
-            Scanner in = new Scanner(System.in);
             Encryption e = new Encryption();
+        
             
-            System.out.println("Please enter recpitent Id:");
-            recipitent = in.nextLine();
-            
-            m.receiver = recipitent;
+            m.setReceiver(recipitent);
+          
             PublicKey pk =  e.getKey(m.receiver);
 
-            System.out.println("Please enter the message contents: ");
-            contents = in.nextLine();          
-    
-            m.sender = e.encryptString(pk, s.getID());
-            m.message = e.encryptString(pk, contents);
+            String sender = s.getID();
+
+            m.setSubject(e.encryptString(pk, subject));
+            m.setSender(e.encryptString(pk, sender));
+            m.setMessage(e.encryptString(pk, contents));
             ClientSend.sendMessage(m);
+            
 
             
         } 
@@ -118,14 +111,13 @@ public class User {
             SecureDetails s = new SecureDetails();
 
             if (s.getRegistered() == true && u.loggedIn != true){
-                u.login();
-                Message[] m = u.recieveEmails();
-                System.out.println("You have " + m.length + "new messages");
+                new GUI.GuiLogin();
+                System.out.println(s.getID());
             }
             else if(s.getRegistered() == false){
-                    Register r = new Register();
-                    u.login();
-                    u.createMessage();     
+
+                GUI.GuiRegister.NewRegister();
+                
         }
 
     }
