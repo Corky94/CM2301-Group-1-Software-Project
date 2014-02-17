@@ -47,7 +47,6 @@ public class ClientReceive {
 					allMessages = (Message[]) ois.readObject();
 					//if(debug) System.out.println(m);
 					int i = allMessages.length;
-					System.out.println(i);
 					
 
 					oos.close();  

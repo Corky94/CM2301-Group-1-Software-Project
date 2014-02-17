@@ -6,9 +6,9 @@ import Message.Message;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.security.PrivateKey;
 
 import javax.swing.*;
+import javax.swing.event.*;
 
 class GuiMenu	extends	JFrame
 {
@@ -16,11 +16,16 @@ class GuiMenu	extends	JFrame
 	private		JPanel		inboxPanel;
 	private		JPanel		composePanel;
         private         SecureDetails   s = new SecureDetails(); 
-
-
+        private         Message[]       m;
+        private         JFrame          mainFrame;
+        private         JList           inboxList;
 
 	public GuiMenu()
 	{   
+                
+	}
+        public void createMenu(){
+                
                 
 		JPanel topPanel = new JPanel();
               
@@ -31,7 +36,7 @@ class GuiMenu	extends	JFrame
 		topPanel.add(userID);
 		
 		topPanel.setLayout( new BorderLayout() );
-		getContentPane().add( topPanel );
+		
 
 		// Create the tab pages
 		createPage1();
@@ -42,15 +47,15 @@ class GuiMenu	extends	JFrame
 		tabbedPane.addTab( "Inbox", inboxPanel );
 		tabbedPane.addTab( "Compose", composePanel );
 		topPanel.add( tabbedPane, BorderLayout.CENTER );
-	}
-        public void createMenu(){
-            GuiMenu mainFrame	= new GuiMenu();
-		mainFrame.setTitle( "Menu" );
+                mainFrame = new JFrame();
+		mainFrame.setVisible( true );
+                mainFrame.setTitle( "Menu" );
 		mainFrame.setSize( 700, 700 );
 		mainFrame.setResizable(false);
 		mainFrame.setBackground( Color.blue );
-		mainFrame.setVisible( true );
+                mainFrame.getContentPane().add(topPanel);
         }
+
 
 	public void createPage1()
 	{
@@ -66,23 +71,26 @@ class GuiMenu	extends	JFrame
         inboxPanel.add(search);
         
         //adding buttons
-        JButton selectAll = new JButton("Select All");
+        final JButton read = new JButton("Read");
+        read.setEnabled(false);
         JButton delete = new JButton("Delete");
-		selectAll.setBounds(10, 50, 100, 25);
+		read.setBounds(10, 50, 100, 25);
 		delete.setBounds(120, 50, 100, 25);
-		inboxPanel.add(selectAll);
+		inboxPanel.add(read);
 		inboxPanel.add(delete);
+                
+
+                
+                
 		
                 User u = new User();
                 
-                Message[] m = u.receiveEmails();
-                
+                m = u.receiveEmails();
                 int length = m.length;
 		String[] listContent = new String[length];
                 Encryption e = new Encryption();
 
-//               byte[] test2 = e.decryptString(m[1].message, "pass".toCharArray());
-//               System.out.println(e.bTS(test2));
+
 //               
                 if (length >0){
                     
@@ -92,16 +100,56 @@ class GuiMenu	extends	JFrame
                     String sender = e.bTS(e.decryptString(m[i].sender, "pass".toCharArray()));
                     String subject = e.bTS(e.decryptString(m[i].subject, "pass".toCharArray()));
                     
-                    listContent[i] ="From: " +sender +"\n" + subject + "\n" +message +"\n \n";
+                    listContent[i] ="From: " +sender +"\n " + subject + "\n " +message +"\n   \n";
                     
                 }
                 }
-		JList inboxList = new JList(listContent);
-		inboxList.setBounds( 10, 90, 660, 500);
-		inboxPanel.add(inboxList);
-		
+		inboxList = new JList(listContent);
+                inboxList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                inboxList.setLayoutOrientation(JList.VERTICAL);
+                ListSelectionModel mod = inboxList.getSelectionModel();
+                mod.addListSelectionListener(new SharedListSelectionHandler(){
+                    
+                    @Override
+                    public void valueChanged(ListSelectionEvent e) {
+                        if (e.getValueIsAdjusting() == false) {
 
+                        if (inboxList.getSelectedIndex() == -1) {
+                        
+                            read.setEnabled(false);
+
+                        } else {
+                        
+                            read.setEnabled(true);
+                                    }
+                        }
+                    }
+                    
+                });
+                
+                
+                
+                JScrollPane listScroller = new JScrollPane(inboxList);
+                listScroller.setBounds(10, 90, 660, 500);
+		inboxPanel.add(listScroller);
+               
+
+               
+               read.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+                                   int loc = inboxList.getSelectedIndex();
+
+                                   GuiMessage mes = new GuiMessage();
+                                   mainFrame.setVisible(false);
+                                  
+                                   mes.newMessage(m[loc]);
+                                   
+                        
+                        }
+               });
 	}
+       
 
 	public void createPage2()
 	{
@@ -169,3 +217,12 @@ class GuiMenu	extends	JFrame
 
 	}
 }
+
+class SharedListSelectionHandler implements ListSelectionListener {
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+
+            
+        }
+}
+
