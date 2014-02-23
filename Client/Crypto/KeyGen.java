@@ -155,18 +155,15 @@ public class KeyGen{
         int md160 = ripemd160.doFinal(firstRound,10);
        	byte[] secondRound = kg.bigIntToByteArray(md160);
                 
-                //add version number 
 		byte[] thirdRound = kg.concancateByteArrays(VERSION_NUMBER, secondRound);
                 
 		byte[] fourthRound = hu.hashSha256(thirdRound);
 
 		byte[] fifthRound = Arrays.copyOfRange(hu.hashSha256(fourthRound), 0, 4);
                                       
-                byte[] sixthRound = kg.concancateByteArrays(fourthRound, fifthRound);
-                
-                String userID = b58.encode(sixthRound);
-
-		//String userID = kg.hashKeyToString(rsaPub);
+        byte[] sixthRound = kg.concancateByteArrays(fourthRound, fifthRound);
+        
+        String userID = b58.encode(sixthRound);
 		
 		return userID;
 	}
@@ -181,24 +178,6 @@ public class KeyGen{
 	private byte[] bigIntToByteArray( int i ) {
 	    BigInteger bigInt = BigInteger.valueOf(i);      
 	    return bigInt.toByteArray();
-	}
-
-
-
-	
-	//
-	// Left in for testing purposes
-	//
-	public static void main (String[] args){
-		KeyGen kg = new KeyGen();
-		KeyPair kp = kg.generateRSAKeys();
-		char[] localPassword = "password".toCharArray();
-		//REMOTE PASSWORD
-		//kg.generateRemotePassword(localPassword);
-		//USER ID
-		//System.out.println(kg.generateUserID(localPassword));
-		//CERT GEN
-		//kg.generateCertificate(kp.getPublic(), kp.getPrivate());
 	}
 
 }

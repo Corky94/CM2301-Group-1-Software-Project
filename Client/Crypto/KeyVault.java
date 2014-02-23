@@ -25,10 +25,11 @@ public class KeyVault{
 	//PASSWORD IN REFERENCE IS TO OPEN THE KEYVAULT (LOCAL PASSWORD)
 	public boolean checkPassword(char[] localPassword){
 		try{
-			KeyVault ks = new KeyVault();
-			ks.loadKeyStore(localPassword);
+			KeyVault kv = new KeyVault();
+			kv.loadKeyStore(localPassword);
 			return true;
 		}catch(Exception ex){
+                        System.out.println(ex);
 			return false;
 		}
 	}
@@ -74,6 +75,9 @@ public class KeyVault{
                     return true;
                 }
             }
+            else{
+                System.out.println("wrong password");
+            }
             return false;
         }
         
@@ -91,7 +95,7 @@ public class KeyVault{
 	}
 
 	private boolean checkIfKsExists(String keyStoreName){
-		File f = new File(keyStoreName);
+		File f = new File(KEY_STORE_DIR + keyStoreName);
 		if(f.exists() && !f.isDirectory()){
 			return true;
 		}
@@ -190,7 +194,8 @@ public class KeyVault{
             throw new RuntimeException(ex);
 		}
 	}
-        /*
+    
+    /* 
 	//
 	// Unit testing
 	//
@@ -202,7 +207,9 @@ public class KeyVault{
 		char[] badPassword = "wrongpassword".toCharArray();
 		//Create the kv, the kv directory and name needs to be clear else it'll throw an error.
 		System.out.println("Testing KeyVault");
+                kv.destroyKeyStore(password);
 		kv.createKeyStore(password);
+
 		System.out.println("KeyVault created sucessfully");
 		//Test loading the keystore
 		if(kv.loadKeyStore(password) instanceof KeyStore){
@@ -236,5 +243,5 @@ public class KeyVault{
 		if(kv.getRSAKeys(password) instanceof KeyPair){
 			System.out.println("RSA Keys loaded sucessfully");
 		}
-	}*/
+    }*/
 }

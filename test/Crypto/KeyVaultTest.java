@@ -9,7 +9,9 @@ package Crypto;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyStore;
+import java.security.PrivateKey;
 import java.security.PublicKey;
+import javax.crypto.SecretKey;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -22,9 +24,6 @@ import static org.junit.Assert.*;
  * @author maxchandler
  */
 public class KeyVaultTest {
-    KeyVault kv = new KeyVault();
-    char[] password = "password".toCharArray();
-    char[] badPassword = "wrongpassword".toCharArray();
 
     public KeyVaultTest() {
     }
@@ -35,15 +34,40 @@ public class KeyVaultTest {
     
     @AfterClass
     public static void tearDownClass() {
+        KeyVault kv = new KeyVault();
+        char[] password = "password".toCharArray();
+        kv.destroyKeyStore(password);
     }
     
     @Before
-    public void setUp() {
+    public void setUp() {    
+        /*
+        //Reasources needed to perform the test
+        KeyVault kv = new KeyVault();
+        KeyGen kg = new KeyGen();
+        HashUtils hu = new HashUtils();
+        
+        KeyPair kp = kg.generateRSAKeys();
+        SecretKey aes = kg.generateAESKey();
+        PublicKey publicKey = kp.getPublic();
+        PrivateKey secretKey = kp.getPrivate();
+        byte[] encodedKey = publicKey.getEncoded();
+
+        char[] password = "password".toCharArray();
+        char[] badPassword = "wrongpassword".toCharArray();
+        
+        */
+        
+        KeyVault kv = new KeyVault();
+        char[] password = "password".toCharArray();
         kv.createKeyStore(password);
     }
     
     @After
     public void tearDown() {
+        System.out.println("Teardown");
+        KeyVault kv = new KeyVault();
+        char[] password = "password".toCharArray();
         kv.destroyKeyStore(password);
     }
 
@@ -53,12 +77,16 @@ public class KeyVaultTest {
     @Test
     public void testCheckPassword() {
         System.out.println("checkPassword");
-        KeyVault instance = new KeyVault();
+        
+        KeyVault kv = new KeyVault();
+        char[] password = "password".toCharArray();
+        
         boolean expResult = true;
-        boolean result = instance.checkPassword(password);
+        boolean result = kv.checkPassword(password);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
+        kv.destroyKeyStore(password);
+        return;
     }
 
     /**
@@ -83,8 +111,8 @@ public class KeyVaultTest {
     public void testCreateKeyStore() {
         System.out.println("createKeyStore");
         char[] localPassword = null;
-        KeyVault instance = new KeyVault();
-        instance.createKeyStore(localPassword);
+        //KeyVault instance = new KeyVault();
+        //instance.createKeyStore(localPassword);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -97,7 +125,7 @@ public class KeyVaultTest {
         System.out.println("destroyKeyStore");
         char[] localPassword = null;
         KeyVault instance = new KeyVault();
-        boolean expResult = false;
+        boolean expResult = true;
         boolean result = instance.destroyKeyStore(localPassword);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
