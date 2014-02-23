@@ -151,7 +151,6 @@ public class KeyGen{
 		RIPEMD160Digest ripemd160 = new RIPEMD160Digest();
 
 		byte[] firstRound = hu.hashKeyToByte(rsaPub);
-        System.out.println(firstRound);
                 
         int md160 = ripemd160.doFinal(firstRound,10);
        	byte[] secondRound = kg.bigIntToByteArray(md160);
@@ -197,7 +196,7 @@ public class KeyGen{
 		//REMOTE PASSWORD
 		//kg.generateRemotePassword(localPassword);
 		//USER ID
-		System.out.println(kg.generateUserID(localPassword));
+		//System.out.println(kg.generateUserID(localPassword));
 		//CERT GEN
 		//kg.generateCertificate(kp.getPublic(), kp.getPrivate());
 	}
