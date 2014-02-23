@@ -1,10 +1,11 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package Crypto;
 
-import java.security.Key;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -19,7 +20,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author Marc
+ * @author maxchandler
  */
 public class KeyGenTest {
     
@@ -116,32 +117,15 @@ public class KeyGenTest {
     }
 
     /**
-     * Test of hashKeyToString method, of class KeyGen.
+     * Test of main method, of class KeyGen.
      */
     @Test
-    public void testHashKeyToString() {
-        System.out.println("hashKeyToString");
-        Key inputKey = null;
-        KeyGen instance = new KeyGen();
-        String expResult = "";
-        String result = instance.hashKeyToString(inputKey);
-        assertEquals(expResult, result);
+    public void testMain() {
+        System.out.println("main");
+        String[] args = null;
+        KeyGen.main(args);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
-
-    /**
-     * Test of hashKeyToByte method, of class KeyGen.
-     */
-    @Test
-    public void testHashKeyToByte() {
-        System.out.println("hashKeyToByte");
-        Key inputKey = null;
-        KeyGen instance = new KeyGen();
-        byte[] expResult = null;
-        byte[] result = instance.hashKeyToByte(inputKey);
-        assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+    
 }

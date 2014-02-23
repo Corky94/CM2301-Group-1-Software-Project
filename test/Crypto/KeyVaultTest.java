@@ -1,11 +1,14 @@
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package Crypto;
 
 import java.security.Key;
 import java.security.KeyPair;
+import java.security.KeyStore;
 import java.security.PublicKey;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -16,10 +19,13 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author Marc
+ * @author maxchandler
  */
 public class KeyVaultTest {
-    
+    KeyVault kv = new KeyVault();
+    char[] password = "password".toCharArray();
+    char[] badPassword = "wrongpassword".toCharArray();
+
     public KeyVaultTest() {
     }
     
@@ -33,10 +39,12 @@ public class KeyVaultTest {
     
     @Before
     public void setUp() {
+        kv.createKeyStore(password);
     }
     
     @After
     public void tearDown() {
+        kv.destroyKeyStore(password);
     }
 
     /**
@@ -45,10 +53,9 @@ public class KeyVaultTest {
     @Test
     public void testCheckPassword() {
         System.out.println("checkPassword");
-        char[] localPassword = null;
         KeyVault instance = new KeyVault();
-        boolean expResult = false;
-        boolean result = instance.checkPassword(localPassword);
+        boolean expResult = true;
+        boolean result = instance.checkPassword(password);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -64,6 +71,49 @@ public class KeyVaultTest {
         KeyVault instance = new KeyVault();
         PublicKey expResult = null;
         PublicKey result = instance.bytesToKey(bytes);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of createKeyStore method, of class KeyVault.
+     */
+    @Test
+    public void testCreateKeyStore() {
+        System.out.println("createKeyStore");
+        char[] localPassword = null;
+        KeyVault instance = new KeyVault();
+        instance.createKeyStore(localPassword);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of destroyKeyStore method, of class KeyVault.
+     */
+    @Test
+    public void testDestroyKeyStore() {
+        System.out.println("destroyKeyStore");
+        char[] localPassword = null;
+        KeyVault instance = new KeyVault();
+        boolean expResult = false;
+        boolean result = instance.destroyKeyStore(localPassword);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of loadKeyStore method, of class KeyVault.
+     */
+    @Test
+    public void testLoadKeyStore() {
+        System.out.println("loadKeyStore");
+        char[] localPassword = null;
+        KeyVault instance = new KeyVault();
+        KeyStore expResult = null;
+        KeyStore result = instance.loadKeyStore(localPassword);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -126,4 +176,5 @@ public class KeyVaultTest {
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
+    
 }

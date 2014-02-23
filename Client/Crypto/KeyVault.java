@@ -43,15 +43,15 @@ public class KeyVault{
 	}
 
 	//Keystore methods	
-	private void createKeyStore(char[] localPassword) {
+	public void createKeyStore(char[] localPassword) {
 		try {
 		    KeyStore ks = KeyStore.getInstance(KEY_STORE_TYPE);  
 		    KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(localPassword);
 	    	ks.load(null, localPassword);
 
-	    	if (checkIfKsExists(KEY_STORE_NAME) != true){
+	    	if (checkIfKsExists(KEY_STORE_DIR + KEY_STORE_NAME) != true){
 		    	FileOutputStream fos = null;
-		        fos = new FileOutputStream(KEY_STORE_NAME);
+		        fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME);
 		        ks.store(fos, localPassword);
 
 		        if (fos != null)
@@ -65,14 +65,25 @@ public class KeyVault{
             throw new RuntimeException(ex);
 	    }
 	}
-	//WORKS
-	private KeyStore loadKeyStore(char[] localPassword){
-        if (this.checkIfKsExists(KEY_STORE_NAME)== false){
+        
+        public boolean destroyKeyStore(char[] localPassword){
+            KeyVault kv = new KeyVault();
+            if(kv.checkPassword(localPassword)){
+                File vault = new File(KEY_STORE_DIR + KEY_STORE_NAME);
+                if(vault.delete()){
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+	public KeyStore loadKeyStore(char[] localPassword){
+        if (this.checkIfKsExists(KEY_STORE_DIR + KEY_STORE_NAME)== false){
             createKeyStore(localPassword);
         }         
 		try{
 			KeyStore ks  = KeyStore.getInstance(KEY_STORE_TYPE);
-			ks.load(new FileInputStream(KEY_STORE_NAME), localPassword);
+			ks.load(new FileInputStream(KEY_STORE_DIR + KEY_STORE_NAME), localPassword);
 			return ks;
 		}catch(Exception ex){
 			throw new RuntimeException(ex);
@@ -105,7 +116,7 @@ public class KeyVault{
 			ks.setEntry("rsaKeys", rsaEntry, passwordProtection);
 
 			FileOutputStream fos = null;
-	        fos = new FileOutputStream(KEY_STORE_NAME);
+	        fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME);
 	        ks.store(fos, localPassword);
 
 	        if (fos != null) {
@@ -133,7 +144,7 @@ public class KeyVault{
 			ks.setEntry("aesKey", aesKeyEntry, passwordProtection);
 
 			FileOutputStream fos = null;
-	        fos = new FileOutputStream(KEY_STORE_NAME);
+	        fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME);
 	        ks.store(fos, localPassword);
 
 	         if (fos != null) {
@@ -146,7 +157,6 @@ public class KeyVault{
 	}
 	
 	//Getter methods
-	
 	public KeyPair getRSAKeys(char[] localPassword){
 		try{
 			KeyVault kv = new KeyVault();
