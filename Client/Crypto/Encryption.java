@@ -4,7 +4,6 @@ import Connection.ClientReceive;
 import Message.Message;
 import java.security.*;
 import javax.crypto.*;
-import java.io.*;
 import java.security.spec.X509EncodedKeySpec;
 
 public class Encryption{
@@ -81,13 +80,20 @@ public class Encryption{
         }catch(Exception ex){
         	throw new RuntimeException(ex);
         }        
-    } 
-//	public static void main (String[] args){
-//		Encryption exampleEncryption = new Encryption();
-//		KeyVault kv = new KeyVault();
-//		KeyPair kp = kv.getRSAKeys("".toCharArray());
-//		PublicKey pk = kp.getPublic();
-//		byte[] encrypted = exampleEncryption.encryptString(pk, "String to encrypt");
-//		System.out.println(exampleEncryption.bTS(exampleEncryption.decryptString(encrypted, "")));
-//	}
+    } /*
+	public static void main (String[] args){
+		Encryption e = new Encryption();
+		KeyVault kv = new KeyVault();
+		char[] password = "password".toCharArray();
+
+		KeyPair kp = kv.getRSAKeys(password);
+		Key sk = kv.getAESKey(password);
+
+		PublicKey pk = kp.getPublic();
+
+		String toEncrypt = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.";
+
+		byte[] encrypted = e.encryptString(pk, toEncrypt);
+		System.out.println(e.bTS(e.decryptString(encrypted, password)));
+	}*/
 }

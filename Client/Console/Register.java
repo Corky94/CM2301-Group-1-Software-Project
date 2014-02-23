@@ -39,6 +39,7 @@ public class Register {
             
             KeyGen kg = new KeyGen();
             KeyVault kv = new KeyVault();
+            HashUtils hu = new HashUtils();
             KeyPair k = kg.generateRSAKeys();
 
             kv.setRSAKeys(password);
@@ -46,7 +47,7 @@ public class Register {
             
             byte[] key = kv.getRSAKeys(password).getPublic().getEncoded();
 
-            String UserID = kg.hashKeyToString(kv.getRSAKeys(password).getPublic());
+            String UserID = hu.hashKeyToString(kv.getRSAKeys(password).getPublic());
 
             ClientSend.registerToServer(UserID, key);
 

@@ -40,6 +40,8 @@ import org.bouncycastle.x509.X509V1CertificateGenerator;
 import org.bouncycastle.x509.X509V2AttributeCertificate;
 import org.bouncycastle.x509.X509V2AttributeCertificateGenerator;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
+import org.bouncycastle.crypto.digests.RIPEMD160Digest;
+
 
 /*
 *KeyGen is responcible for RSA and AES keygen, it also generates a self signed certificate from RSA keys & userID, remotePassword. 
@@ -48,10 +50,13 @@ import org.bouncycastle.x509.X509V3CertificateGenerator;
 public class KeyGen{
 	final private int RSA_KEY_LENGTH = 2048;
 	final private int AES_KEY_LENGTH = 256;
+	final private byte[] VERSION_NUMBER;
 	final protected static char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 	static { Security.addProvider(new BouncyCastleProvider());}
+    private String userID;
 
 	public KeyGen(){
+        this.VERSION_NUMBER = this.bigIntToByteArray(000);
 	}
 
 	//Keygen methods
@@ -127,69 +132,74 @@ public class KeyGen{
 	public byte[] generateRemotePassword(char[] localPassword){
 		KeyVault kv = new KeyVault();
 		KeyGen kg = new KeyGen();
+                HashUtils hu = new HashUtils();
 		KeyPair rsaPair = kv.getRSAKeys(localPassword);
 		PrivateKey rsaPri = rsaPair.getPrivate();
-		byte[] remotePassword = kg.hashKeyToByte(rsaPri);
+		byte[] remotePassword = hu.hashKeyToByte(rsaPri);
 		return remotePassword;
 	}
 	
 	public String generateUserID(char[] localPassword){
+		//https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses
 		KeyVault kv = new KeyVault();
 		KeyGen kg = new KeyGen();
+                HashUtils hu = new HashUtils();
+                Base58 b58 = new Base58();
+                
 		KeyPair rsaPair = kv.getRSAKeys(localPassword);
 		Key rsaPub = rsaPair.getPublic();
-		String userID = kg.hashKeyToString(rsaPub);
+		RIPEMD160Digest ripemd160 = new RIPEMD160Digest();
+
+		byte[] firstRound = hu.hashKeyToByte(rsaPub);
+        System.out.println(firstRound);
+                
+        int md160 = ripemd160.doFinal(firstRound,10);
+       	byte[] secondRound = kg.bigIntToByteArray(md160);
+                
+                //add version number 
+		byte[] thirdRound = kg.concancateByteArrays(VERSION_NUMBER, secondRound);
+                
+		byte[] fourthRound = hu.hashSha256(thirdRound);
+
+		byte[] fifthRound = Arrays.copyOfRange(hu.hashSha256(fourthRound), 0, 4);
+                                      
+                byte[] sixthRound = kg.concancateByteArrays(fourthRound, fifthRound);
+                
+                String userID = b58.encode(sixthRound);
+
+		//String userID = kg.hashKeyToString(rsaPub);
+		
 		return userID;
 	}
 
-	public String hashKeyToString(Key inputKey){
-		byte[] key = inputKey.getEncoded();
-		try{
-			MessageDigest hash = MessageDigest.getInstance("SHA-256");
-			hash.update(key); 
-			byte[] bytes = hash.digest();
-			//convert to hex string
-			char[] hexChars = new char[bytes.length * 2];
-			    for ( int j = 0; j < bytes.length; j++ ) {
-			        int v = bytes[j] & 0xFF;
-			        hexChars[j * 2] = HEX_ARRAY[v >>> 4];
-			        hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
-			    }
-			return new String(hexChars);
-		}catch(NoSuchAlgorithmException ex){
-			//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}
+	private byte[] concancateByteArrays(byte[] a, byte[] b){
+		byte[] bytes = new byte[a.length + b.length];
+		System.arraycopy(a, 0, bytes, 0, a.length);
+		System.arraycopy(b, 0, bytes, a.length, b.length);
+		return bytes;
 	}
 
-	public byte[] hashKeyToByte(Key inputKey){
-			byte[] key = inputKey.getEncoded();
-			try{
-				MessageDigest hash = MessageDigest.getInstance("SHA-256");
-				hash.update(key); 
-				byte[] bytes = hash.digest();
-				return bytes;
-			}catch(NoSuchAlgorithmException ex){
-			//logger.error("Cannot close connection");
-            throw new RuntimeException(ex);
-		}
+	private byte[] bigIntToByteArray( int i ) {
+	    BigInteger bigInt = BigInteger.valueOf(i);      
+	    return bigInt.toByteArray();
 	}
 
-	/*
+
+
+	
 	//
 	// Left in for testing purposes
 	//
 	public static void main (String[] args){
-		//KeyGen kg = new KeyGen();
-		//KeyPair kp = kg.generateRSAKeys();
-		//char[] localPassword = "password".toCharArray();
+		KeyGen kg = new KeyGen();
+		KeyPair kp = kg.generateRSAKeys();
+		char[] localPassword = "password".toCharArray();
 		//REMOTE PASSWORD
 		//kg.generateRemotePassword(localPassword);
 		//USER ID
-		//kg.generateUserID(localPassword);
+		System.out.println(kg.generateUserID(localPassword));
 		//CERT GEN
 		//kg.generateCertificate(kp.getPublic(), kp.getPrivate());
 	}
-	*/
 
 }

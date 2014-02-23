@@ -67,10 +67,9 @@ public class KeyVault{
 	}
 	//WORKS
 	private KeyStore loadKeyStore(char[] localPassword){
-            if (this.checkIfKsExists(KEY_STORE_NAME)== false){
-                createKeyStore(localPassword);
-            }
-                     
+        if (this.checkIfKsExists(KEY_STORE_NAME)== false){
+            createKeyStore(localPassword);
+        }         
 		try{
 			KeyStore ks  = KeyStore.getInstance(KEY_STORE_TYPE);
 			ks.load(new FileInputStream(KEY_STORE_NAME), localPassword);
@@ -181,7 +180,7 @@ public class KeyVault{
             throw new RuntimeException(ex);
 		}
 	}
-	/*
+        /*
 	//
 	// Unit testing
 	//
@@ -196,7 +195,7 @@ public class KeyVault{
 		kv.createKeyStore(password);
 		System.out.println("KeyVault created sucessfully");
 		//Test loading the keystore
-		if(kv.loadKeyStore(password) == KeyStore){
+		if(kv.loadKeyStore(password) instanceof KeyStore){
 			System.out.println("KeyVault loaded sucessfully");
 		}
 		//Test if correct password is accepted
@@ -209,18 +208,23 @@ public class KeyVault{
 			System.out.println("KeyVault rejects badPassword correctly");
 		}
 		System.out.println("Checking key creation and loading");
+
+		System.out.println("Testing AES PrivateKey");
 		//Attempt to set AES Keys
 		kv.setAESKey(password);
 		System.out.println("AES Keys created sucessfully");
 		//Load AES keys
-		System.out.println(kv.getAESKey(password));
-		System.out.println("AES Keys loaded sucessfully");
+		if(kv.getAESKey(password) instanceof PrivateKey){
+			System.out.println("AES Keys loaded sucessfully");
+		}
+
+		System.out.println("Testing RSA KeyPair");
 		//Attempt to set RSA Keys
 		kv.setRSAKeys(password);
 		System.out.println("RSA Keys created sucessfully");
 		//Load RSA Keys
-		System.out.println(kv.getRSAKeys(password));
-		System.out.println("RSA Keys loaded sucessfully");
-	}
-	*/
+		if(kv.getRSAKeys(password) instanceof KeyPair){
+			System.out.println("RSA Keys loaded sucessfully");
+		}
+	}*/
 }
