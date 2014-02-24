@@ -50,11 +50,7 @@ public class KeyGenTest {
     public void testGenerateRSAKeys() {
         System.out.println("generateRSAKeys");
         KeyGen instance = new KeyGen();
-        KeyPair expResult = null;
-        KeyPair result = instance.generateRSAKeys();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        instance.generateRSAKeys();
     }
 
     /**
@@ -63,13 +59,15 @@ public class KeyGenTest {
     @Test
     public void testGenerateCertificate() {
         System.out.println("generateCertificate");
-        PublicKey pubKey = null;
-        PrivateKey priKey = null;
-        X509Certificate[] expResult = null;
+        char[] localPassword = "password".toCharArray();
+        KeyVault kv = new KeyVault();
+        kv.createKeyStore(localPassword);
+        kv.setRSAKeys(localPassword);
+        KeyPair kp = kv.getRSAKeys(localPassword);
+        PublicKey pubKey = kp.getPublic();
+        PrivateKey priKey = kp.getPrivate();
         X509Certificate[] result = KeyGen.generateCertificate(pubKey, priKey);
-        assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        kv.destroyKeyStore(localPassword);
     }
 
     /**
@@ -79,11 +77,7 @@ public class KeyGenTest {
     public void testGenerateAESKey() {
         System.out.println("generateAESKey");
         KeyGen instance = new KeyGen();
-        SecretKey expResult = null;
-        SecretKey result = instance.generateAESKey();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        instance.generateAESKey();
     }
 
     /**
@@ -92,13 +86,13 @@ public class KeyGenTest {
     @Test
     public void testGenerateRemotePassword() {
         System.out.println("generateRemotePassword");
-        char[] localPassword = null;
+        char[] localPassword = "password".toCharArray();
+        KeyVault kv = new KeyVault();
+        kv.createKeyStore(localPassword);
+        kv.setRSAKeys(localPassword);
         KeyGen instance = new KeyGen();
-        byte[] expResult = null;
-        byte[] result = instance.generateRemotePassword(localPassword);
-        assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        instance.generateRemotePassword(localPassword);
+        kv.destroyKeyStore(localPassword);
     }
 
     /**
@@ -107,25 +101,13 @@ public class KeyGenTest {
     @Test
     public void testGenerateUserID() {
         System.out.println("generateUserID");
-        char[] localPassword = null;
+        char[] localPassword = "password".toCharArray();
+        KeyVault kv = new KeyVault();
+        kv.createKeyStore(localPassword);
+        kv.setRSAKeys(localPassword);
         KeyGen instance = new KeyGen();
-        String expResult = "";
-        String result = instance.generateUserID(localPassword);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of main method, of class KeyGen.
-     */
-    @Test
-    public void testMain() {
-        System.out.println("main");
-        String[] args = null;
-        KeyGen.main(args);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        instance.generateUserID(localPassword);
+        kv.destroyKeyStore(localPassword);
     }
     
 }

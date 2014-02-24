@@ -44,12 +44,8 @@ public class Base58Test {
     @Test
     public void testEncode() {
         System.out.println("encode");
-        byte[] input = null;
-        String expResult = "";
-        String result = Base58.encode(input);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        byte[] input = "Test String 1?@*√".getBytes();
+        Base58.encode(input);
     }
 
     /**
@@ -58,12 +54,10 @@ public class Base58Test {
     @Test
     public void testDecode() {
         System.out.println("decode");
-        String input = "";
-        byte[] expResult = null;
+        String input = "Test String 1?@*√";
+        byte[] expResult = Base58.decode(input);
         byte[] result = Base58.decode(input);
         assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -72,12 +66,8 @@ public class Base58Test {
     @Test
     public void testDecodeChecked() {
         System.out.println("decodeChecked");
-        String input = "";
-        byte[] expResult = null;
+        String input = "Test String 1?@*√";
         byte[] result = Base58.decodeChecked(input);
-        assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
     
 }

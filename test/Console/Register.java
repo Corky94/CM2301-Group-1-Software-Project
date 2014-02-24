@@ -49,6 +49,7 @@ public class Register {
             KeyGen kg = new KeyGen();
             KeyVault kv = new KeyVault();
             Encryption e = new Encryption();
+            HashUtils hu = new HashUtils();
 //            
             KeyPair k = kg.generateRSAKeys();
             SecretKey sk =kg.generateAESKey();
@@ -64,7 +65,7 @@ public class Register {
 
 
 //            
-            String UserID = kg.hashKeyToString(kv.getRSAKeys(pass.toCharArray()).getPublic());
+            String UserID = hu.hashKeyToString(kv.getRSAKeys(pass.toCharArray()).getPublic());
 //            
 
 

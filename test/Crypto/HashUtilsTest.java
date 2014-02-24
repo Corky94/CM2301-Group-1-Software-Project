@@ -45,13 +45,10 @@ public class HashUtilsTest {
     @Test
     public void testHashKeyToString() {
         System.out.println("hashKeyToString");
-        Key inputKey = null;
+        KeyGen kg = new KeyGen();
+        Key inputKey = (kg.generateRSAKeys()).getPublic();
         HashUtils instance = new HashUtils();
-        String expResult = "";
-        String result = instance.hashKeyToString(inputKey);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        instance.hashKeyToString(inputKey);
     }
 
     /**
@@ -60,13 +57,10 @@ public class HashUtilsTest {
     @Test
     public void testHashKeyToByte() {
         System.out.println("hashKeyToByte");
-        Key inputKey = null;
+        KeyGen kg = new KeyGen();
+        Key inputKey = (kg.generateRSAKeys()).getPublic();
         HashUtils instance = new HashUtils();
-        byte[] expResult = null;
-        byte[] result = instance.hashKeyToByte(inputKey);
-        assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        instance.hashKeyToByte(inputKey);
     }
 
     /**
@@ -75,13 +69,10 @@ public class HashUtilsTest {
     @Test
     public void testHashSha256() {
         System.out.println("hashSha256");
-        byte[] input = null;
+        KeyGen kg = new KeyGen();
+        byte[] input = ((kg.generateRSAKeys()).getPublic()).getEncoded();
         HashUtils instance = new HashUtils();
-        byte[] expResult = null;
-        byte[] result = instance.hashSha256(input);
-        assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        instance.hashSha256(input);
     }
 
     /**
@@ -90,13 +81,10 @@ public class HashUtilsTest {
     @Test
     public void testDoubleSha256() {
         System.out.println("doubleSha256");
-        byte[] input = null;
+        KeyGen kg = new KeyGen();
+        byte[] input = ((kg.generateRSAKeys()).getPublic()).getEncoded();
         HashUtils instance = new HashUtils();
-        byte[] expResult = null;
-        byte[] result = instance.doubleSha256(input);
-        assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        instance.doubleSha256(input);
     }
     
 }

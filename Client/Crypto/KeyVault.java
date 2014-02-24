@@ -14,7 +14,7 @@ import java.security.spec.X509EncodedKeySpec;
 public class KeyVault{
 
 	private final String KEY_STORE_DIR = "";
-	private final String KEY_STORE_NAME = "keyStoreName";
+	private final String KEY_STORE_NAME = "keystore";
 	private final String KEY_STORE_TYPE = "JCEKS";
 
 	public KeyVault(){
@@ -27,7 +27,6 @@ public class KeyVault{
 			kv.loadKeyStore(localPassword);
 			return true;
 		}catch(Exception ex){
-                        System.out.println(ex);
 			return false;
 		}
 	}
@@ -72,9 +71,6 @@ public class KeyVault{
                 if(vault.delete()){
                     return true;
                 }
-            }
-            else{
-                System.out.println("wrong password");
             }
             return false;
         }

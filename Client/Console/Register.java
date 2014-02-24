@@ -32,11 +32,6 @@ public class Register {
                 }
             }
 
-            
-            
-            
-            
-            
             KeyGen kg = new KeyGen();
             KeyVault kv = new KeyVault();
             HashUtils hu = new HashUtils();

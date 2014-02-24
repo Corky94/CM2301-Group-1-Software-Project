@@ -66,7 +66,7 @@ public class Encryption{
             throw new RuntimeException(ex);
 	    }
 	}
-        
+    //This needs to be reworked   
     public PublicKey getKey(String id){
         Message m = new Message();
         m.receiver = id;
@@ -79,6 +79,6 @@ public class Encryption{
             return pk;
         }catch(Exception ex){
         	throw new RuntimeException(ex);
-        }        
-    } 
+        }   
+    }
 }
