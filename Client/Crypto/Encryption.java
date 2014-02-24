@@ -17,7 +17,7 @@ public class Encryption{
         	encrypt.init(Cipher.ENCRYPT_MODE, publicKey);
         	byte[] encryptedData = encrypt.doFinal(data.getBytes());
         	return encryptedData; 
-        }catch(Exception ex){
+        }catch(InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex){
             throw new RuntimeException(ex);
 	    }
 	}
@@ -31,7 +31,7 @@ public class Encryption{
 			decrypt.init(Cipher.DECRYPT_MODE, privateKey);
 			byte[] decryptedData = decrypt.doFinal(data);
 			return decryptedData;
-		}catch(Exception ex){
+		}catch(InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex){
             throw new RuntimeException(ex);
 	    }
 	}
@@ -49,7 +49,7 @@ public class Encryption{
         	encrypt.init(Cipher.ENCRYPT_MODE, aesKey);
         	byte[] encryptedData = encrypt.doFinal(remotePassword);
         	return encryptedData; 
-        }catch(Exception ex){
+        }catch( InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex){
             throw new RuntimeException(ex);
 	    }
 	}
@@ -62,7 +62,7 @@ public class Encryption{
 			decrypt.init(Cipher.DECRYPT_MODE, aesKey);
 			byte[] decryptedData = decrypt.doFinal(encryptedPassword);
 			return decryptedData;
-		}catch(Exception ex){
+		}catch(InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex){
             throw new RuntimeException(ex);
 	    }
 	}

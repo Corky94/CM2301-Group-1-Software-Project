@@ -3,42 +3,11 @@ package Crypto;
 import javax.crypto.*;
 import java.util.*;
 import java.math.*;
-import java.lang.*;
 import java.security.*;
-
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateParsingException;
-import java.security.cert.CertificateFactory;
-
-import javax.security.auth.x500.X500Principal;
-
-import java.security.spec.RSAPrivateCrtKeySpec;
-import java.security.spec.RSAPublicKeySpec;
-import java.security.spec.InvalidKeySpecException;
-
-import java.io.IOException;
-import java.io.ByteArrayInputStream;
-
-import java.text.MessageFormat;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.asn1.ASN1EncodableVector;
-import org.bouncycastle.asn1.DERSequence;
-import org.bouncycastle.asn1.misc.MiscObjectIdentifiers;
-import org.bouncycastle.asn1.misc.NetscapeCertType;
-import org.bouncycastle.asn1.x509.GeneralName;
-import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.X509Name;
-import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
-import org.bouncycastle.asn1.x509.X509Extensions;
-import org.bouncycastle.asn1.x509.BasicConstraints;
-import org.bouncycastle.x509.AttributeCertificateHolder;
-import org.bouncycastle.x509.AttributeCertificateIssuer;
-import org.bouncycastle.x509.X509Attribute;
-import org.bouncycastle.x509.X509V1CertificateGenerator;
-import org.bouncycastle.x509.X509V2AttributeCertificate;
-import org.bouncycastle.x509.X509V2AttributeCertificateGenerator;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 
@@ -111,7 +80,7 @@ public class KeyGen{
 		    X509Certificate[] chain = new X509Certificate[1];
 		    chain[0] = cert;
 		    return chain;
-		}catch(Exception ex){
+		}catch(IllegalArgumentException | IllegalStateException | InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException | SignatureException | CertificateException ex){
             throw new RuntimeException(ex);
 		}
 	}
@@ -140,32 +109,30 @@ public class KeyGen{
 	}
 	
 	public String generateUserID(char[] localPassword){
-		//https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses
-		KeyVault kv = new KeyVault();
-		KeyGen kg = new KeyGen();
-                HashUtils hu = new HashUtils();
-                Base58 b58 = new Base58();
-                
-		KeyPair rsaPair = kv.getRSAKeys(localPassword);
-		Key rsaPub = rsaPair.getPublic();
-		RIPEMD160Digest ripemd160 = new RIPEMD160Digest();
+            //https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses
+            KeyVault kv = new KeyVault();
+            KeyGen kg = new KeyGen();
+            HashUtils hu = new HashUtils();
 
-		byte[] firstRound = hu.hashKeyToByte(rsaPub);
-                
-        int md160 = ripemd160.doFinal(firstRound,10);
-       	byte[] secondRound = kg.bigIntToByteArray(md160);
-                
-		byte[] thirdRound = kg.concancateByteArrays(VERSION_NUMBER, secondRound);
-                
-		byte[] fourthRound = hu.hashSha256(thirdRound);
+            KeyPair rsaPair = kv.getRSAKeys(localPassword);
+            Key rsaPub = rsaPair.getPublic();
+            RIPEMD160Digest ripemd160 = new RIPEMD160Digest();
 
-		byte[] fifthRound = Arrays.copyOfRange(hu.hashSha256(fourthRound), 0, 4);
-                                      
-        byte[] sixthRound = kg.concancateByteArrays(fourthRound, fifthRound);
-        
-        String userID = b58.encode(sixthRound);
-		
-		return userID;
+            byte[] firstRound = hu.hashKeyToByte(rsaPub);
+
+            byte[] secondRound = kg.bigIntToByteArray(ripemd160.doFinal(firstRound,10));
+
+            byte[] thirdRound = kg.concancateByteArrays(VERSION_NUMBER, secondRound);
+
+            byte[] fourthRound = hu.hashSha256(thirdRound);
+
+            byte[] fifthRound = Arrays.copyOfRange(hu.hashSha256(fourthRound), 0, 4);
+
+            byte[] sixthRound = kg.concancateByteArrays(fourthRound, fifthRound);
+
+            String UserId = Base58.encode(sixthRound);
+
+            return UserId;
 	}
 
 	private byte[] concancateByteArrays(byte[] a, byte[] b){

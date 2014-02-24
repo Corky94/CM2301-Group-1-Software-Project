@@ -3,12 +3,10 @@ package Crypto;
 import java.security.*;
 import javax.crypto.*;
 import java.io.*;
+import java.security.cert.CertificateException;
+import java.security.spec.InvalidKeySpecException;
 
 import java.security.spec.X509EncodedKeySpec;
-import java.security.cert.X509Certificate;
-
-import org.bouncycastle.x509.X509V2AttributeCertificate;
-
 /*
 *KeyVault is responcible for storing and retreiving keys from the vault, it also provides a password check for user login. 
 */
@@ -38,7 +36,7 @@ public class KeyVault{
 		try{
 			PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(bytes));
     		return publicKey;
-    	}catch(Exception ex){
+    	}catch( NoSuchAlgorithmException | InvalidKeySpecException ex){
     		throw new RuntimeException(ex);
     	}
 	}
@@ -61,7 +59,7 @@ public class KeyVault{
 			else{
 				throw new RuntimeException("KEYSTORE ALREADY EXISTS");
 			}
-	    }catch(Exception ex){
+	    }catch(IOException | RuntimeException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
 	    	//logger.error("Cannot close connection");
             throw new RuntimeException(ex);
 	    }
@@ -89,7 +87,7 @@ public class KeyVault{
 			KeyStore ks  = KeyStore.getInstance(KEY_STORE_TYPE);
 			ks.load(new FileInputStream(KEY_STORE_DIR + KEY_STORE_NAME), localPassword);
 			return ks;
-		}catch(Exception ex){
+		}catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
 			throw new RuntimeException(ex);
 		}
 	}
@@ -116,7 +114,7 @@ public class KeyVault{
 
 			KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(localPassword);
 
-			KeyStore.PrivateKeyEntry rsaEntry = new KeyStore.PrivateKeyEntry(priKey, kg.generateCertificate(pubKey, priKey));
+			KeyStore.PrivateKeyEntry rsaEntry = new KeyStore.PrivateKeyEntry(priKey, KeyGen.generateCertificate(pubKey, priKey));
 			ks.setEntry("rsaKeys", rsaEntry, passwordProtection);
 
 			FileOutputStream fos = null;
@@ -128,7 +126,7 @@ public class KeyVault{
 	    	}
 
 	    	return true;
-	    }catch(Exception ex){
+	    }catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
 	    	//logger.error("Cannot close connection");
             throw new RuntimeException(ex);
 	    }
@@ -154,7 +152,7 @@ public class KeyVault{
 	         if (fos != null) {
 	            fos.close();
 	    	}
-	    }catch(Exception ex){
+	    }catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
 	    	//logger.error("Cannot close connection");
             throw new RuntimeException(ex);
 	    }
@@ -173,7 +171,7 @@ public class KeyVault{
 			PublicKey pubKey = rsaCert.getPublicKey();
 			KeyPair rsaKeys = new KeyPair(pubKey, priKey);
 			return rsaKeys;
-		}catch(Exception ex){
+		}catch(KeyStoreException | NoSuchAlgorithmException | UnrecoverableEntryException ex){
 			//logger.error("Cannot close connection");
             throw new RuntimeException(ex);
 		}
@@ -189,7 +187,7 @@ public class KeyVault{
 			KeyStore.SecretKeyEntry aesKeyEntry = (KeyStore.SecretKeyEntry) ks.getEntry("aesKey", passwordProtection);
 			Key aesKey = aesKeyEntry.getSecretKey();
 			return aesKey;
-		}catch(Exception ex){
+		}catch(KeyStoreException | NoSuchAlgorithmException | UnrecoverableEntryException ex){
 			//logger.error("Cannot close connection");
             throw new RuntimeException(ex);
 		}
