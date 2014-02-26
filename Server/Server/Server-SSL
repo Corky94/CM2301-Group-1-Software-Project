@@ -1,0 +1,49 @@
+package Crypto;
+
+import javax.net.ssl.*;
+import java.security.*;
+import java.security.spec.X509EncodedKeySpec;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+public class Server-SSL {
+
+/*Get keys from Max's Keyvault. */
+
+     public static void main(char[] keystorePassword) {
+       KeyVault kv = new KeyVault();
+       KeyStore ks = kv.loadKeyStore("keystorePassword".toCharArray());
+
+       KeyManagerFactory kmf = KeyManagerFactory.getInstance("X509");
+       kmf.init(ks, "keystorePassword".toCharArray());
+
+       TrustManagerFactory tmf = TrustManagerFactory.getInstance("X509"); 
+       tmf.init(ks);
+
+       SSLContext sc = SSLContext.getInstance("TLS"); 
+       TrustManager[] trustManagers = tmf.getTrustManagers(); 
+       sc.init(kmf.getKeyManagers(), trustManagers, null); 
+
+          /* setting up handshake with client */
+          
+        try {
+           SSLServerSocketFactory ssf = sc.getServerSocketFactory(); 
+           SSLServerSocket s = (SSLServerSocket) ssf.createServerSocket(12346);
+           System.out.println("Created Server Socket");
+           SSLSocket ssl = (SSLSocket) s.accept();
+
+            InputStream inputstream = ssl.getInputStream();
+            InputStreamReader inputstreamreader = new InputStreamReader(inputstream);
+            BufferedReader bufferedreader = new BufferedReader(inputstreamreader);
+
+                  String string = null;
+                  while ((string = bufferedreader.readLine()) != null) {
+                      System.out.println(string);
+                      System.out.flush();
+                  }
+              } catch (Exception exception) {
+                  exception.printStackTrace();
+              }
+      }
+}
