@@ -34,17 +34,18 @@ public class Register {
 
             KeyGen kg = new KeyGen();
             KeyVault kv = new KeyVault();
-            HashUtils hu = new HashUtils();
             KeyPair k = kg.generateRSAKeys();
+            HashUtils hu = new HashUtils();
 
             kv.setRSAKeys(password);
             kv.setAESKey(password);
+            System.out.println(kg.generateUserID(password));
             
             byte[] key = kv.getRSAKeys(password).getPublic().getEncoded();
 
             String UserID = hu.hashKeyToString(kv.getRSAKeys(password).getPublic());
 
-            ClientSend.registerToServer(UserID, key);
+            ClientSend.registerToServer(UserID, key, password);
 
             SecureDetails setup = new SecureDetails();
 

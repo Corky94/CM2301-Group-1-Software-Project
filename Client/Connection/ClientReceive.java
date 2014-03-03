@@ -13,6 +13,7 @@ import java.net.Socket;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.ssl.SSLSocket;
 
 public class ClientReceive {
 	private static boolean  debug = true;
@@ -21,7 +22,7 @@ public class ClientReceive {
 
         
         
-	public static Message[] receive(String Id) {
+	public static Message[] receive(String Id, char[] localPassword) {
 		try{
 			Message[] allMessages;
 			Message m = new Message();
@@ -32,7 +33,7 @@ public class ClientReceive {
 
 			while (true){
 					
-					Socket s = new Socket(host, 12346);
+					SSLSocket s = ClientSSL.main(localPassword);
 
 
 
@@ -67,12 +68,12 @@ public class ClientReceive {
 			
 	}  
         
-        public static byte[] getKey(Message m){  
+        public static byte[] getKey(Message m, char[] localPassword){  
             Message message = new Message();
             System.out.println(m.receiver);
             try {
                 
-                Socket s = new Socket(host, 12346);  
+                SSLSocket s = ClientSSL.main(localPassword);  
                 OutputStream os = s.getOutputStream(); 
                  
                 ObjectOutputStream oos = new ObjectOutputStream(os);

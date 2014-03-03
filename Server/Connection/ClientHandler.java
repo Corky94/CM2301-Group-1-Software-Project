@@ -1,4 +1,4 @@
-package Server;
+package Connection;
 
 import Message.*;
 import java.io.*;
@@ -31,35 +31,42 @@ public class ClientHandler implements Runnable {
     
 			Message m = (Message) ois.readObject();
                         
-  
-//                        String receiver = m.getReceiver();
-//                        byte[] sender = m.getSender();
-//                        byte[] subject = m.getSubject();
-//                        byte[] message = m.getMessage();
-			//store message
+
                         
                         if (m == null){
                             Sql sq = new Sql();
-                            sq.delete();
+                            
                         }
                         
                         else if (m.key != null){
 
-                            registerUser(m);
+                            registerUser(m,null);                              
+                            s.close(); 
+                            is.close();
+                            ois.close();
+                            registerUser(m,"all");
+                             
                         }else if (m.needingKey == true) {
 
                                 getKey(m,s);
+                                is.close();  
+                                s.close(); 
+                                ois.close();
                             
                         }else if(m.message != null && m.receiver != null) {
 				storeMessage(m);
+                                is.close();  
+                                s.close(); 
+                                ois.close();
                         
 			}else {  //send messages to client  
 
 				getMessages(s, m.receiver);
+                                is.close();  
+                                s.close(); 
+                                ois.close();
 			}
-			is.close();  
-			s.close(); 
-                        ois.close();
+			
                         
                   
 		} catch(Exception e){
@@ -94,17 +101,12 @@ public class ClientHandler implements Runnable {
 
 	}
   
-        public static void registerUser(Message m){
+        public static void registerUser(Message m, String all){
             
             Sql s = new Sql();
-            try {
-                s.register(m.receiver, m.key);
-                
-            } catch (SQLException ex) {
-                Logger.getLogger(ServerReceive.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(ServerReceive.class.getName()).log(Level.SEVERE, null, ex);
-            }
+ 
+            s.register(m.receiver, m.key,all);
+            
             
         }
         

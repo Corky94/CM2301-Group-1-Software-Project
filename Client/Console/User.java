@@ -18,7 +18,7 @@ public class User {
         private String realm;
         private ClientSend c;
         private byte[] publicKey;
-        public char[] pass;
+        public static char[] pass;
         
 	public User() {
 	
@@ -73,7 +73,7 @@ public class User {
         
         public Message[] receiveEmails() {
             s = new SecureDetails();
-            return ClientReceive.receive(s.getID());
+            return ClientReceive.receive(s.getID(), pass);
 
             //return m;
         }
@@ -94,7 +94,7 @@ public class User {
             m.setSubject(e.encryptString(pk, subject));
             m.setSender(e.encryptString(pk, sender));
             m.setMessage(e.encryptString(pk, contents));
-            ClientSend.sendMessage(m);
+            ClientSend.sendMessage(m, pass);
             
 
             

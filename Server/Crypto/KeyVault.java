@@ -47,7 +47,7 @@ public class KeyVault{
 		    KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(localPassword);
 	    	ks.load(null, localPassword);
 
-	    	if (checkIfKsExists() != true){
+	    	if (checkIfKsExists(KEY_STORE_DIR + KEY_STORE_NAME) != true){
 		    	FileOutputStream fos = null;
 		        fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME);
 		        ks.store(fos, localPassword);
@@ -76,8 +76,7 @@ public class KeyVault{
         }
         
 	public KeyStore loadKeyStore(char[] localPassword){
-            System.out.println(this.checkIfKsExists());
-        if (this.checkIfKsExists()== false){
+        if (this.checkIfKsExists(KEY_STORE_DIR + KEY_STORE_NAME)== false){
             createKeyStore(localPassword);
         }         
 		try{
@@ -89,8 +88,8 @@ public class KeyVault{
 		}
 	}
 
-	public boolean checkIfKsExists(){
-		File f = new File(KEY_STORE_DIR + KEY_STORE_NAME);
+	private boolean checkIfKsExists(String keyStoreName){
+		File f = new File(KEY_STORE_DIR + keyStoreName);
 		if(f.exists() && !f.isDirectory()){
 			return true;
 		}

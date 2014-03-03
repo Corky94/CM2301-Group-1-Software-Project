@@ -8,17 +8,18 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.ssl.SSLSocket;
 
 public class ClientSend {
 	private static boolean  debug = true;
         private static final String host = "192.168.0.2";
 
-	public static void sendMessage(Message m) {
+	public static void sendMessage(Message m , char[] localPassword) {
 
 //		
 		try{  
                     
-			Socket s = new Socket(host, 12346);
+			SSLSocket s = ClientSSL.main(localPassword);
 			OutputStream os = s.getOutputStream();  
                         
 			ObjectOutputStream oos = new ObjectOutputStream(os);  
@@ -34,13 +35,13 @@ public class ClientSend {
 		
 	}
         
-        public static boolean registerToServer(String id, byte[] key ){
+        public static boolean registerToServer(String id, byte[] key, char[] localPassword ){
             Message m = new Message();
             m.key = key;
             m.receiver = id;
             try {
 
-                Socket s = new Socket(host, 12346);
+               SSLSocket s = ClientSSL.main(localPassword);
                 System.out.println("Created Socket");
                 OutputStream os = s.getOutputStream();
                 ObjectOutputStream oos = new ObjectOutputStream(os);

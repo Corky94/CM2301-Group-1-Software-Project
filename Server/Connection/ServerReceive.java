@@ -1,4 +1,4 @@
-package Server;
+package Connection;
 
 import Message.*;
 import java.io.IOException;
@@ -10,17 +10,20 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.ssl.SSLServerSocket;
 
 
 public class ServerReceive {
 	private static boolean debug = true;
         
 	public static void main(String args[]) { 
-                System.out.print(getLocalIpAddress());
-		int port = 12346;  
+                System.out.println(getLocalIpAddress());
+		
 		Message m = new Message();
 		try {  
-                    ServerSocket ss = new ServerSocket(port);
+                   
+                  SSLServerSocket ss = ServerSSL.main();
+                    
                   while (true){
                       ClientHandler h;
                       h = new ClientHandler(ss.accept());
@@ -28,7 +31,8 @@ public class ServerReceive {
                       Thread t = new Thread(h);
                       t.start();
                       System.out.println(t.getId());
-                      t.interrupt();
+                      
+
 
                       
                   }

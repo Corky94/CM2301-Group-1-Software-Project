@@ -1,6 +1,5 @@
 package Crypto;
 
-import Connection.ClientReceive;
 import Message.Message;
 import java.security.*;
 import javax.crypto.*;
@@ -66,19 +65,6 @@ public class Encryption{
             throw new RuntimeException(ex);
 	    }
 	}
-    //This needs to be reworked   
-    public PublicKey getKey(String id){
-        Message m = new Message();
-        m.receiver = id;
-        m.needingKey = true; 
-        byte [] key = ClientReceive.getKey(m, Console.User.pass);
-        try {
-            X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(key);
-            KeyFactory kf = KeyFactory.getInstance("RSA");
-            PublicKey pk = kf.generatePublic(pubKeySpec);                
-            return pk;
-        }catch(Exception ex){
-        	throw new RuntimeException(ex);
-        }   
-    }
+   
+   
 }
