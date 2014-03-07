@@ -1,4 +1,7 @@
 /Client/Client/nbproject/private/
 .metadata/.lock
 .metadata/
+
 Server/Server/Crypto.java
+Server/Server/Base58.java
+Server/Server/HashUtils.java
