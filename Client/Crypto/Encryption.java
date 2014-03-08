@@ -1,3 +1,10 @@
+/*
+*The Encryption class is designed to manipulate data,
+*using encryption keys to stop unwanted recipients 
+*from viewing sensitive data. It takes in data and
+*returns it in either an encrypted or decrypted format.
+*/
+
 package Crypto;
 
 import Connection.ClientReceive;

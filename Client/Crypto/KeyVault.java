@@ -1,3 +1,8 @@
+/*
+*The KeyVault is needed to store cryptographic 
+*keys securely on the local system.
+*/
+
 package Crypto;
 
 import java.security.*;

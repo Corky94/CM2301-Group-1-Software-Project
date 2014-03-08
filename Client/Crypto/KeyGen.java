@@ -1,3 +1,12 @@
+/*
+*KeyGen is responsible for the creation of symmetric, 
+*asymmetric keys and self signed certificates. 
+*This class allows for user’s to send and store data 
+*securely, allowing for sensitive data to be transferred 
+*over insecure networks without the risk of others 
+*viewing the raw data.
+*/
+
 package Crypto;
 
 import javax.crypto.*;

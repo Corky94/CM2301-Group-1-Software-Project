@@ -1,3 +1,8 @@
+/*
+*This class has been designed to help with
+*the creation of User ID’s and remote passwords.
+*/
+
 package Crypto;
 
 import static Crypto.KeyGen.HEX_ARRAY;
