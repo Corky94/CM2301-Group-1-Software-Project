@@ -34,7 +34,7 @@ public class KeyGen{
     private String userID;
 
     public KeyGen(){
-        this.VERSION_NUMBER = this.bigIntToByteArray(000);
+        this.VERSION_NUMBER = this.bigIntToByteArray(001);
     }
 
     //Keygen methods
