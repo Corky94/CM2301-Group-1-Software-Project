@@ -122,11 +122,17 @@ public class KeyGen{
             KeyVault kv = new KeyVault();
             KeyGen kg = new KeyGen();
             HashUtils hu = new HashUtils();
+            Encryption e = new Encryption();
             KeyPair rsaPair = kv.getRSAKeys(localPassword);
             Key rsaPub = rsaPair.getPublic();
             RIPEMD160Digest ripemd160 = new RIPEMD160Digest();
             byte[] firstRound = hu.hashKeyToByte(rsaPub);
-            byte[] secondRound = kg.bigIntToByteArray(ripemd160.doFinal(firstRound,10));
+            
+            RIPEMD160Digest d = new RIPEMD160Digest();
+            d.update (firstRound, 0, firstRound.length);
+            byte[] secondRound = new byte[d.getDigestSize()];
+            d.doFinal (secondRound, 0);
+        
             byte[] thirdRound = kg.concancateByteArrays(VERSION_NUMBER, secondRound);
             byte[] fourthRound = hu.hashSha256(thirdRound);
             byte[] fifthRound = Arrays.copyOfRange(hu.hashSha256(fourthRound), 0, 4);

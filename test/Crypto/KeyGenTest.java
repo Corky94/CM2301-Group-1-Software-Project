@@ -104,8 +104,20 @@ public class KeyGenTest {
         kv.createKeyStore(localPassword);
         kv.setRSAKeys(localPassword);
         KeyGen instance = new KeyGen();
-        instance.generateUserID(localPassword);
+        String userID = instance.generateUserID(localPassword);
         kv.destroyKeyStore(localPassword);
+        
+        char[] localPassword2 = "password".toCharArray();
+        KeyVault kv2 = new KeyVault();
+        kv2.createKeyStore(localPassword2);
+        kv2.setRSAKeys(localPassword2);
+        KeyGen instance2 = new KeyGen();
+        String userID2 = instance2.generateUserID(localPassword2);
+        kv2.destroyKeyStore(localPassword2);
+        
+        if(userID.equals(userID2)){
+            throw new RuntimeException("Bitcoin addresses are not uniqie");
+        }
     }
     
 }
