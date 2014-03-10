@@ -5,6 +5,7 @@
 package Connection;
 
 import java.util.LinkedList;
+import java.util.Stack;
 
 /**
  *
@@ -16,7 +17,7 @@ public class IDServer implements java.io.Serializable {
     private String user;
     private String password;
     private ServerStorage ss = new ServerStorage();
-    private LinkedList<IDServer> details;
+    private Stack details;
     private boolean status = true;
 
     /**
@@ -67,7 +68,7 @@ public class IDServer implements java.io.Serializable {
     /**
      * @return the details
      */
-    public LinkedList getDetails() {
+    public Stack getDetails() {
         return ss.getIdServerList();
     }
 
@@ -76,7 +77,7 @@ public class IDServer implements java.io.Serializable {
      */
     public void updateDetails(IDServer server) {
         details = ss.getIdServerList();
-        details.add(server);
+        details.add(details);
         ss.updateIDSeverDetails(details);
         
         

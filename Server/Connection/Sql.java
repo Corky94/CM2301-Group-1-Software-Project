@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,12 +36,9 @@ public class Sql {
         Statement st = null;
         ResultSet rs = null;
 
-        String url = "jdbc:mysql://ephesus.cs.cf.ac.uk:3306/g1y2013a"+
-				"?verifyServerCertificate=false"+
-				"&useSSL=true"+
-				"&requireSSL=true";
-        String user = "g1y2013";
-        String password = "dratCi";
+        String url = "jdbc:mysql://ephesus.cs.cf.ac.uk:3306/c1217468";
+        String user = "c1217468";
+        String password = "qwerty";
 
         try {
             con = DriverManager.getConnection(url, user, password);
@@ -52,8 +50,8 @@ public class Sql {
         } 
         return con;
     }  
-     
-    public Connection connectionMessages(){
+    
+     public Connection connectionMessages(){
         
         Connection con = null;
         Statement st = null;
@@ -71,18 +69,64 @@ public class Sql {
         } 
         return con;
     }
+    
+    
+    
+   
+    
+    public Connection connection(IDServer id){
+        
+        Connection con = null;
+        Statement st = null;
+        ResultSet rs = null;
+
+        String url = id.getUrl();
+        String user = id.getUser();
+        String password = id.getPassword();
+
+        try {
+            con = DriverManager.getConnection(url, user, password);
+            
+           
+        } catch (SQLException ex) {
+
+            return null;
+        } 
+        return con;
+    }  
+    public Connection connection(MessageServer id){
+        
+        Connection con = null;
+        Statement st = null;
+        ResultSet rs = null;
+
+        String url = id.getUrl();
+        String user = id.getUser();
+        String password = id.getPassword();
+
+        try {
+            con = DriverManager.getConnection(url, user, password);
+            
+           
+        } catch (SQLException ex) {
+
+            return null;
+        } 
+        return con;
+    }  
+    
     public void register(String id, byte[] key, String all) {
         
         System.out.println("reg");
-        LinkedList servers = this.getIDServers();
+        Stack servers = this.getIDServers();
         Connection con = null;
         IDServer idServerObj;
         
         if (all != null){
-           for (int i = 0; i< servers.size(); i++){
+           while(con ==null){
                try {
-                   idServerObj = (IDServer) servers.peekFirst();        
-                   con = this.connectionIDTest(idServerObj);
+                   idServerObj = (IDServer) servers.pop();        
+                   con = this.connection(idServerObj);
                    
                    
                    if (this.tableExist(con) == false){
@@ -108,9 +152,9 @@ public class Sql {
         else{
             try {
                 outerLoop:
-                for (int i = 0; i< servers.size(); i++){
-                    idServerObj = (IDServer) servers.peekFirst();        
-                    con = this.connectionIDTest(idServerObj);
+                while(true){
+                    idServerObj = (IDServer) servers.pop();        
+                    con = this.connection(idServerObj);
                     if (con != null) {
                         if (this.tableExist(con) == false){
                         this.setUpIDTable(con);
@@ -296,7 +340,7 @@ public class Sql {
         
 //    }
      
-     public LinkedList getIDServers(){
+     public Stack getIDServers(){
          
          return new IDServer().getDetails();
          
@@ -322,7 +366,22 @@ public class Sql {
          
          id.updateDetails(id);
          
-         Connection con = connectionIDTest(id);
+         Connection con = connection(id);
+         setUpIDTable(con);
+         deleteTest(con);
+         
+     }
+     
+     public void addMessageServer(String url, String user, String password){
+         MessageServer id = new MessageServer();
+         
+         id.setUrl(url);
+         id.setUser(user);
+         id.setPassword(password);
+         
+         id.updateDetails(id);
+         
+         Connection con = connection(id);
          setUpIDTable(con);
          deleteTest(con);
          
@@ -344,24 +403,5 @@ public class Sql {
      }
      
      
-     public Connection connectionIDTest(IDServer id){
-        
-        Connection con = null;
-        Statement st = null;
-        ResultSet rs = null;
-
-        String url = id.getUrl();
-        String user = id.getUser();
-        String password = id.getPassword();
-
-        try {
-            con = DriverManager.getConnection(url, user, password);
-            
-           
-        } catch (SQLException ex) {
-
-            return null;
-        } 
-        return con;
-    }  
+     
 }

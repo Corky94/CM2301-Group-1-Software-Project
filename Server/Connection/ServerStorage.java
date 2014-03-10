@@ -12,6 +12,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +25,8 @@ public class ServerStorage implements java.io.Serializable  {
     private String dir = "";
     private final String idServerDetailsFileName = "Id Servers.ser";
     private final String messageServerDetailsFileName = "Message Servers.ser";
-    private LinkedList<IDServer> idServerList;
+    private Stack idServerList;
+    private Stack messageServerList;
     
     
     public ServerStorage(){
@@ -32,13 +34,13 @@ public class ServerStorage implements java.io.Serializable  {
             
             FileInputStream fis = new FileInputStream(dir + idServerDetailsFileName);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            idServerList = (LinkedList<IDServer>) ois.readObject();
+            idServerList = (Stack) ois.readObject();
             ois.close();
 
         }
         catch(FileNotFoundException e){
             try{
-                idServerList = new LinkedList<IDServer>();               
+                idServerList = new Stack();           
                 FileOutputStream fos = new FileOutputStream(dir + idServerDetailsFileName);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(idServerList);
@@ -54,35 +56,36 @@ public class ServerStorage implements java.io.Serializable  {
             Logger.getLogger(ServerStorage.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-//        try{
-//            
-//            FileInputStream fis = new FileInputStream(dir + messageServerDetailsFileName);
-//            ObjectInputStream ois = new ObjectInputStream(fis);
-//            LinkedList<IDServer> idServerList = (LinkedList<IDServer>) ois.readObject();
-//            ois.close();
-//
-//        }
-//        catch(FileNotFoundException e){
-//            try{
-//                LinkedList<IDServer> idServerList = new LinkedList<IDServer>();               
-//                FileOutputStream fos = new FileOutputStream(dir + idServerDetailsFileName);
-//                ObjectOutputStream oos = new ObjectOutputStream(fos);
-//                oos.writeObject(idServerList);
-//                oos.close();
-//            }
-//            catch(FileNotFoundException ex){
-//            } 
-//            catch (IOException ex) {
-//            }
-//        }
-//        catch(IOException e){
-//        }
-//        catch(ClassNotFoundException e){
-//        }
+        
+        try{
+            
+            FileInputStream fis = new FileInputStream(dir + messageServerDetailsFileName);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            messageServerList = (Stack) ois.readObject();
+            ois.close();
+
+        }
+        catch(FileNotFoundException e){
+            try{
+                messageServerList = new Stack();           
+                FileOutputStream fos = new FileOutputStream(dir + messageServerDetailsFileName);
+                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                oos.writeObject(messageServerList);
+                oos.close();
+            }
+            catch(FileNotFoundException ex){
+            } 
+            catch (IOException ex) {
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ServerStorage.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ServerStorage.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
 
     }
-    public void updateIDSeverDetails(LinkedList<IDServer> details){
+    public void updateIDSeverDetails(Stack details){
         try{
 
                 FileOutputStream fos = new FileOutputStream(dir + idServerDetailsFileName);
@@ -98,15 +101,32 @@ public class ServerStorage implements java.io.Serializable  {
             }
     }
 
-    /**
-     * @return the idServerList
-     */
     
-    
-    public LinkedList<IDServer> getIdServerList() {
+    public Stack getIdServerList() {
         return idServerList;
     }
     
+    public void updateMessageServerList(Stack details){
+        
+        try{
 
+                    FileOutputStream fos = new FileOutputStream(dir + messageServerDetailsFileName);
+                    ObjectOutputStream oos = new ObjectOutputStream(fos);
+                    oos.writeObject(details);
+                    oos.close();
+
+                }
+                catch(FileNotFoundException ex){
+
+                } 
+                catch (IOException ex) {
+                }
+        }
+    
+    public Stack getMessageServerList(){
+        
+        return messageServerList;
+        
+    }
     
 }

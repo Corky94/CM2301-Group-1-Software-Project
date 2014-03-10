@@ -13,7 +13,7 @@ public class ServerSSL {
 
 /*Get keys from Max's Keyvault. */
 
-     public static SSLServerSocket main() {
+     public static SSLServerSocket main(int port) {
 
           
         try {
@@ -34,7 +34,7 @@ public class ServerSSL {
               
             try {
                SSLServerSocketFactory ssf = sc.getServerSocketFactory(); 
-               SSLServerSocket s = (SSLServerSocket) ssf.createServerSocket(12346);
+               SSLServerSocket s = (SSLServerSocket) ssf.createServerSocket(port);
                System.out.println("Created Server Socket");
                String[] suites = s.getSupportedCipherSuites();
                s.setEnabledCipherSuites(suites);

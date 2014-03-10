@@ -4,6 +4,9 @@
  */
 package Connection;
 
+import java.util.LinkedList;
+import java.util.Stack;
+
 /**
  *
  * @author Marc
@@ -13,6 +16,9 @@ public class MessageServer implements java.io.Serializable {
     private String url;
     private String user;
     private String password;
+    private ServerStorage ss = new ServerStorage();
+    private Stack details;
+    private boolean status = true;
 
     /**
      * @return the url
@@ -58,5 +64,39 @@ public class MessageServer implements java.io.Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    /**
+     * @return the details
+     */
+    public Stack getDetails() {
+        return ss.getIdServerList();
+    }
+
+    /**
+     * @param details the details to set
+     */
+    public void updateDetails(MessageServer server) {
+        details = ss.getIdServerList();
+        details.add(details);
+        ss.updateIDSeverDetails(details);
+        
+        
+    }
+
+    /**
+     * @return the status
+     */
+    public boolean isStatus() {
+        return status;
+    }
+
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+    
+    
     
 }

@@ -19,18 +19,28 @@ public class ServerReceive {
 	public static void main(String args[]) { 
                 System.out.println(getLocalIpAddress());
 		
-		Message m = new Message();
 		try {  
                    
-                  SSLServerSocket ss = ServerSSL.main();
+                  SSLServerSocket querySocket = ServerSSL.main(12346);
+                  SSLServerSocket updateSocket = ServerSSL.main(12121);
+                  SSLServerSocket nodeSocket = ServerSSL.main(23232);
                     
                   while (true){
                       ClientHandler h;
-                      h = new ClientHandler(ss.accept());
+                      AdminInput ai = new AdminInput();
+                      Thread admin = new Thread(ai); 
+                      admin.start();
+                      h = new ClientHandler(querySocket.accept());
                       
-                      Thread t = new Thread(h);
-                      t.start();
-                      System.out.println(t.getId());
+                      
+                      Thread a = new Thread(h);
+                      
+                      a.start();
+                      admin.start();
+                      System.out.println(a.getId());
+                      
+                      System.out.println(admin.getId());
+                      a.interrupt();
                       
 
 
