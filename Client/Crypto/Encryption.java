@@ -76,8 +76,8 @@ public class Encryption{
     //This needs to be reworked   
     public PublicKey getKey(String id){
         Message m = new Message();
-        m.receiver = id;
-        m.needingKey = true; 
+        m.setReceiver(id);
+        m.setNeedingKey(true); 
         byte [] key = ClientReceive.getKey(m);
         try {
             X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(key);

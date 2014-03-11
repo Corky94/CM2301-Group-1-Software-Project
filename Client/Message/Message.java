@@ -31,6 +31,11 @@ public class Message implements java.io.Serializable {
         message = Contents;
         
     }
+    public void setNeedingKey(boolean answer){
+
+        needingKey = answer;
+        N
+    }
     public byte[] getSender(){
         
         return sender;

@@ -80,7 +80,7 @@ public class KeyVault{
 
     public KeyStore loadKeyStore(char[] localPassword){
         if (this.checkIfKsExists(KEY_STORE_DIR + KEY_STORE_NAME)== false)
-        createKeyStore(localPassword);         
+        	createKeyStore(localPassword);         
         try{
             KeyStore ks  = KeyStore.getInstance(KEY_STORE_TYPE);
             ks.load(new FileInputStream(KEY_STORE_DIR + KEY_STORE_NAME), localPassword);
