@@ -152,14 +152,14 @@ public class Sql {
             int arrayLocation = 0;
             while (rs.next()){
                 newMessage = new Message();
-                newMessage.receiver = id;
-                newMessage.sender = rs.getBytes(1);
-                newMessage.subject = rs.getBytes(2);
+                newMessage.setReceiver(id);
+                newMessage.setSender(rs.getBytes(1));
+                newMessage.setSubject(rs.getBytes(2));
                 Blob blob = rs.getBlob(3);
                 int blobLength = (int) blob.length();  
                 byte[] blobAsBytes = blob.getBytes(1, blobLength);
                 blob.free();
-                newMessage.message = blobAsBytes;
+                newMessage.setMessage(blobAsBytes);
                 messages[arrayLocation] = newMessage;
                 
                 System.out.println(messages[arrayLocation]);

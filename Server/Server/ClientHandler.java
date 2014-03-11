@@ -43,19 +43,19 @@ public class ClientHandler implements Runnable {
                             sq.delete();
                         }
                         
-                        else if (m.key != null){
+                        else if (m.getKey() != null){
 
                             registerUser(m);
-                        }else if (m.needingKey == true) {
+                        }else if (m.isNeedingKey() == true) {
 
                                 getKey(m,s);
                             
-                        }else if(m.message != null && m.receiver != null) {
+                        }else if(m.getMessage() != null && m.getReceiver() != null) {
 				storeMessage(m);
                         
 			}else {  //send messages to client  
 
-				getMessages(s, m.receiver);
+				getMessages(s, m.getReceiver());
 			}
 			is.close();  
 			s.close(); 
@@ -70,7 +70,7 @@ public class ClientHandler implements Runnable {
 	private static boolean storeMessage(Message m) {
 		Sql s = new Sql();
                 System.out.println("Storing");
-                s.sendMessage(m.sender, m.subject,  m.message, m.receiver);
+                s.sendMessage(m.getSender(), m.getSubject(), m.getMessage(), m.getReceiver());
                 System.out.println("Stored");
 		return true;
 	} 
@@ -98,7 +98,7 @@ public class ClientHandler implements Runnable {
             
             Sql s = new Sql();
             try {
-                s.register(m.receiver, m.key);
+                s.register(m.getReceiver(), m.getKey());
                 
             } catch (SQLException ex) {
                 Logger.getLogger(ServerReceive.class.getName()).log(Level.SEVERE, null, ex);
@@ -115,7 +115,7 @@ public class ClientHandler implements Runnable {
             
             
             try {
-                message.key = s.getKey(m.receiver);
+                message.setKey(s.getKey(m.getReceiver()));
                 System.out.println("Got key \n sending key");
                 sendKeyToClient(message, soc);
                 System.out.println("Sent Key");
