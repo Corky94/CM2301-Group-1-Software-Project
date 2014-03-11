@@ -82,11 +82,11 @@ public class User {
             Message m = ClientReceive.receive(s.getID());
             Encryption e = new Encryption();
 
-            m.sender = e.decryptString(m.sender,password.toCharArray());
-            m.message = e.decryptString(m.message, password.toCharArray());
+            m.setSender(e.decryptString(m.getSender(), password.toCharArray()));
+            m.setMessage(e.decryptString(m.getMessage(), password.toCharArray()));
     
-            System.out.println(e.bTS(m.sender));
-            System.out.println(e.bTS(m.message));
+            System.out.println(e.bTS(m.getSender()));
+            System.out.println(e.bTS(m.getMessage()));
 
             return m;
         }
@@ -102,14 +102,14 @@ public class User {
             System.out.println("Please enter recpitent Id:");
             recipitent = in.nextLine();
             
-            m.receiver = recipitent;
-            PublicKey pk =  e.getKey(m.receiver);
+            m.setReceiver(recipitent);
+            PublicKey pk =  e.getKey(m.getReceiver());
 
             System.out.println("Please enter the message contents: ");
             contents = in.nextLine();          
     
-            m.sender = e.encryptString(pk, s.getID());
-            m.message = e.encryptString(pk, contents);
+            m.setSender(e.encryptString(pk, s.getID()));
+            m.setMessage(e.encryptString(pk, contents));
             ClientSend.sendMessage(m);
 
             

@@ -87,7 +87,7 @@ public class User {
             
             m.setReceiver(recipitent);
           
-            PublicKey pk =  e.getKey(m.receiver);
+            PublicKey pk =  e.getKey(m.getReceiver());
 
             String sender = s.getID();
 

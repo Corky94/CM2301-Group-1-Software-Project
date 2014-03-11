@@ -12,7 +12,7 @@ public class GuiMessage {
 
 	public static void newMessage(Message m) {
                 Encryption e = new Encryption();
-                String subject = e.bTS(e.decryptString(m.subject, "pass".toCharArray()));
+                String subject = e.bTS(e.decryptString(m.getSubject(), "pass".toCharArray()));
 		JFrame frame = new JFrame(subject);
 		frame.setSize(700, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -23,9 +23,9 @@ public class GuiMessage {
 	private static void placeComponents(final JFrame frame, Message m) {
             
                 Encryption e = new Encryption();
-                String message = e.bTS(e.decryptString(m.message, "pass".toCharArray()));
-                String sender = e.bTS(e.decryptString(m.sender, "pass".toCharArray()));
-                String subject = e.bTS(e.decryptString(m.subject, "pass".toCharArray()));
+                String message = e.bTS(e.decryptString(m.getMessage(), "pass".toCharArray()));
+                String sender = e.bTS(e.decryptString(m.getSender(), "pass".toCharArray()));
+                String subject = e.bTS(e.decryptString(m.getSubject(), "pass".toCharArray()));
             
             
 		frame.setLayout(null);

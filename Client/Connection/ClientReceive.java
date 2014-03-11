@@ -25,9 +25,9 @@ public class ClientReceive {
 		try{
 			Message[] allMessages;
 			Message m = new Message();
-			m.sender = null;
-			m.receiver = Id;
-			m.message = null;
+			m.setSender(null);
+			m.setReceiver(Id);
+			m.setMessage(null);
 
 
 			while (true){
@@ -69,7 +69,7 @@ public class ClientReceive {
         
         public static byte[] getKey(Message m){  
             Message message = new Message();
-            System.out.println(m.receiver);
+            System.out.println(m.getReceiver());
             try {
                 
                 Socket s = new Socket(host, 12346);  
@@ -89,7 +89,7 @@ public class ClientReceive {
                 ois.close();
                 
                 
-                return message.key;
+                return message.getKey();
                 
  
             } catch (IOException ex) {

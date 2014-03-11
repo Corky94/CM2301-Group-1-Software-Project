@@ -36,8 +36,8 @@ public class ClientSend {
         
         public static boolean registerToServer(String id, byte[] key ){
             Message m = new Message();
-            m.key = key;
-            m.receiver = id;
+            m.setKey(key);
+            m.setReceiver(id);
             try {
 
                 Socket s = new Socket(host, 12346);
