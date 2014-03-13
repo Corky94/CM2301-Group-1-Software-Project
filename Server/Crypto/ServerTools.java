@@ -7,8 +7,6 @@
 package Crypto;
 
 import java.math.BigInteger;
-import java.security.Key;
-import java.security.KeyPair;
 import java.security.Security;
 import java.util.Arrays;
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
@@ -19,9 +17,9 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
  * @author maxchandler
  */
 public class ServerTools {
-	final private int RSA_KEY_LENGTH = 2048;
-	final private int AES_KEY_LENGTH = 256;
-	final private char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+	final static private int RSA_KEY_LENGTH = 2048;
+	final static private int AES_KEY_LENGTH = 256;
+	final static private char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 	static { Security.addProvider(new BouncyCastleProvider());}
     
     public static String generateUserId(byte[] publicKey){

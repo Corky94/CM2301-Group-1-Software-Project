@@ -20,4 +20,22 @@ public class ServerCrypto {
         return ServerTools.generateNodeId(publicKey).equals(nodeId);
     }
     
+    public static byte[] generateChallenge(String userId){
+        /*
+        encrypt server public key in byte array using user public key taken from ID server
+        ?add onetime password?
+        */
+        return null;
+    }
+    
+    public static boolean verifyChallenge(byte[] input){
+        /*
+        decrypt byte array using server private key
+        ?check if otp is the same as one sent?
+        read user id
+        else
+        */
+        return false;
+    }
+    
 }
