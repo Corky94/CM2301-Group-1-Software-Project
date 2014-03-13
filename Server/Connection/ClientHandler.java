@@ -13,19 +13,18 @@ import javax.net.ssl.SSLServerSocket;
 
 public class ClientHandler implements Runnable {
 	private static boolean debug = true;
-        private SSLServerSocket socket;
+        private Socket socket;
         private Message message;
         
-        ClientHandler(SSLServerSocket s){
+        ClientHandler(Socket s){
             this.socket = s;
-        
+            
         }
         
 	public void run() {  
-                    while(true){
-
+  
                         try{
-                            Socket s = socket.accept();
+                            Socket s = socket;
                             InputStream is = s.getInputStream();  
                             ObjectInputStream ois = new ObjectInputStream(is);
 
@@ -36,7 +35,7 @@ public class ClientHandler implements Runnable {
 
 
                             if (m == null){
-                                Sql sq = new Sql();
+                                
 
                             }
 
@@ -74,7 +73,7 @@ public class ClientHandler implements Runnable {
                     } catch(Exception e){
 
                     }  
-                    }
+                    
         }
 	private static boolean storeMessage(Message m) {
 		Sql s = new Sql();

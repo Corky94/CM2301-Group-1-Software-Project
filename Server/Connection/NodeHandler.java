@@ -18,10 +18,10 @@ public class NodeHandler implements Runnable {
     
 
 	private static boolean debug = true;
-        private SSLServerSocket socket;
+        private Socket socket;
         private Message message;
         
-        NodeHandler(SSLServerSocket s){
+        NodeHandler(Socket s){
             this.socket = s;
         
         }
@@ -31,11 +31,11 @@ public class NodeHandler implements Runnable {
               
             
             // to be completed 
-            while (true){
+            
                 try{
                     
-                Socket s = socket.accept();
-                Thread t = new Thread();
+                Socket s = socket;
+                
                 
                 InputStream is = s.getInputStream();  
                 ObjectInputStream ois = new ObjectInputStream(is);
@@ -45,6 +45,6 @@ public class NodeHandler implements Runnable {
 		} catch(Exception e){
 
 		}  
-            }
+            
         }
 }

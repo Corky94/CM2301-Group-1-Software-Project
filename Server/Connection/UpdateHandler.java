@@ -19,10 +19,10 @@ public class UpdateHandler implements Runnable {
     
 
 	private static boolean debug = true;
-        private SSLServerSocket socket;
+        private Socket socket;
         private Message message;
         
-        UpdateHandler(SSLServerSocket s){
+        UpdateHandler(Socket s){
             this.socket = s;
         
         }
@@ -30,12 +30,12 @@ public class UpdateHandler implements Runnable {
 
 	public void run() {  
               
-            
+            Socket s = socket;
             // to be completed 
             while (true){
                 try{
                     
-                Socket s = socket.accept();
+                
                 InputStream is = s.getInputStream();  
                 ObjectInputStream ois = new ObjectInputStream(is);
 	

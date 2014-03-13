@@ -19,15 +19,15 @@ public class Server  {
                   Thread admin = new Thread(ai); 
                   admin.start();
                   
-                  ClientHandler c = new ClientHandler(querySocket);
+                  ClientAcceptor c = new ClientAcceptor(querySocket);
                   Thread query = new Thread(c);
                   query.start();
                   
-                  UpdateHandler u = new UpdateHandler(updateSocket);
+                  UpdateAcceptor u = new UpdateAcceptor(updateSocket);
                   Thread update = new Thread(u);
                   update.start();
                   
-                  NodeHandler n = new NodeHandler(nodeSocket);
+                  NodeAcceptor n = new NodeAcceptor(nodeSocket);
                   Thread node = new Thread(n);
                   node.start();
 
@@ -36,6 +36,95 @@ public class Server  {
                 
         }
         
+}
+class ClientAcceptor implements Runnable {
+        private static boolean debug = true;
+        private SSLServerSocket socket;
+        private Message message;
+        
+    ClientAcceptor(SSLServerSocket s){
+        this.socket = s;
+    }
+    
+    public void run(){
+        
+        while (true){
+            try {
+                ClientHandler c =  new ClientHandler(socket.accept());
+                Thread t = new Thread(c);
+                t.start();
+                System.out.println(t.getId());
+
+            }
+            catch (IOException ex) {
+                Logger.getLogger(ClientAcceptor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+
+        }
+    }
+}
+
+
+
+class UpdateAcceptor implements Runnable {
+        private static boolean debug = true;
+        private SSLServerSocket socket;
+        private Message message;
+        
+    UpdateAcceptor(SSLServerSocket s){
+        this.socket = s;
+    }
+    
+    public void run(){
+        
+        while (true){
+            try {
+                UpdateHandler u =  new UpdateHandler(socket.accept());
+                Thread t = new Thread(u);
+                t.start();
+                System.out.println(t.getId());
+
+            }
+            catch (IOException ex) {
+                Logger.getLogger(ClientAcceptor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+
+        }
+    }
+}
+
+
+
+
+
+class NodeAcceptor implements Runnable {
+        private static boolean debug = true;
+        private SSLServerSocket socket;
+        private Message message;
+        
+    NodeAcceptor(SSLServerSocket s){
+        this.socket = s;
+    }
+    
+    public void run(){
+        
+        while (true){
+            try {
+                NodeHandler n =  new NodeHandler(socket.accept());
+                Thread t = new Thread(n);
+                t.start();
+                System.out.println(t.getId());
+
+            }
+            catch (IOException ex) {
+                Logger.getLogger(ClientAcceptor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+
+        }
+    }
 }
 
                
