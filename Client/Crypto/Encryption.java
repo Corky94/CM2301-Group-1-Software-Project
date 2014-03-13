@@ -3,6 +3,7 @@
 *using encryption keys to stop unwanted recipients 
 *from viewing sensitive data. It takes in data and
 *returns it in either an encrypted or decrypted format.
+*Max Chandler
 */
 
 package Crypto;
@@ -12,20 +13,17 @@ import Message.Message;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import javax.crypto.*;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Encryption{
 
 	public Encryption(){
 	}
 
-	public byte[] encryptString(Key publicKey, String data){
+	public static byte[] encryptString(Key publicKey, String data){
             try{
                 Cipher encrypt = Cipher.getInstance("RSA");
                 encrypt.init(Cipher.ENCRYPT_MODE, publicKey);
@@ -36,9 +34,8 @@ public class Encryption{
             }
 	}
 
-	public byte[] decryptString(byte[] data, char[] localPassword){
-            KeyVault kv = new KeyVault();
-            KeyPair rsaKeys = kv.getRSAKeys(localPassword);
+	public static byte[] decryptString(byte[] data, char[] localPassword){
+            KeyPair rsaKeys = KeyVault.getRSAKeys(localPassword);
             PrivateKey privateKey = rsaKeys.getPrivate();
             try{
                 Cipher decrypt = Cipher.getInstance("RSA");
@@ -50,15 +47,14 @@ public class Encryption{
             }
 	}
 
-	public String bTS(byte[] input){
+	public static String bTS(byte[] input){
             String s = new String(input);
             return s;
 	}
 
-	public byte[] encryptRemotePassword(byte[] remotePassword, char[] localPassword){
+	public static byte[] encryptRemotePassword(byte[] remotePassword, char[] localPassword){
             try{
-                KeyVault kv = new KeyVault();
-                Key aesKey = kv.getAESKey(localPassword);
+                Key aesKey = KeyVault.getAESKey(localPassword);
                 Cipher encrypt = Cipher.getInstance("AES");
         	encrypt.init(Cipher.ENCRYPT_MODE, aesKey);
         	byte[] encryptedData = encrypt.doFinal(remotePassword);
@@ -68,9 +64,8 @@ public class Encryption{
 	    }
 	}
 
-	public byte[] decryptRemotePassword(byte[] encryptedPassword, char[] localPassword){
-            KeyVault kv = new KeyVault();
-            Key aesKey = kv.getAESKey(localPassword);
+	public static byte[] decryptRemotePassword(byte[] encryptedPassword, char[] localPassword){
+            Key aesKey = KeyVault.getAESKey(localPassword);
             try{
                 Cipher decrypt = Cipher.getInstance("AES");
                 decrypt.init(Cipher.DECRYPT_MODE, aesKey);
@@ -81,9 +76,8 @@ public class Encryption{
 	    }
 	}
         
-        public void encryptFile(char[] localPassword, FileOutputStream data){
-            KeyVault kv = new KeyVault();
-            Key aesKey = kv.getAESKey(localPassword);
+        public static void encryptFile(char[] localPassword, FileOutputStream data){
+            Key aesKey = KeyVault.getAESKey(localPassword);
             try{
                 Cipher encrypt = Cipher.getInstance("AES");
                 encrypt.init(Cipher.ENCRYPT_MODE, aesKey);
@@ -93,9 +87,8 @@ public class Encryption{
             }
 	}
         
-        public void decryptFile(char[] localPassword, String dir){
-            KeyVault kv = new KeyVault();
-            Key aesKey = kv.getAESKey(localPassword);
+        public static void decryptFile(char[] localPassword, String dir){
+            Key aesKey = KeyVault.getAESKey(localPassword);
             try{
                 Cipher decrypt = Cipher.getInstance("AES");
                 decrypt.init(Cipher.DECRYPT_MODE, aesKey);
@@ -106,7 +99,7 @@ public class Encryption{
             }
         }
         
-    public PublicKey getKey(String id){
+    public static PublicKey getKey(String id){
         Message m = new Message();
         m.setReceiver(id);
         m.setNeedingKey(true); 

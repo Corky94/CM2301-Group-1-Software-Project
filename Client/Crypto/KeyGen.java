@@ -5,6 +5,7 @@
 *securely, allowing for sensitive data to be transferred 
 *over insecure networks without the risk of others 
 *viewing the raw data.
+*Max Chandler
 */
 
 package Crypto;
@@ -20,7 +21,6 @@ import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 
-
 /*
 *KeyGen is responcible for RSA and AES keygen, it also generates a self signed certificate from RSA keys & userID, remotePassword. 
 */
@@ -28,15 +28,9 @@ import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 public class KeyGen{
     final private int RSA_KEY_LENGTH = 2048;
     final private int AES_KEY_LENGTH = 128;
-    final private byte[] VERSION_NUMBER;
     final protected static char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
     static { Security.addProvider(new BouncyCastleProvider());}
     private String userID;
-
-    public KeyGen(){
-        //000 for users, 010 for nodes
-        this.VERSION_NUMBER = this.bigIntToByteArray(010);
-    }
 
     //Keygen methods
     public KeyPair generateRSAKeys(){
@@ -108,45 +102,38 @@ public class KeyGen{
         }
     }
 
-    public byte[] generateRemotePassword(char[] localPassword){
-        KeyVault kv = new KeyVault();
-        KeyGen kg = new KeyGen();
-        HashUtils hu = new HashUtils();
-        KeyPair rsaPair = kv.getRSAKeys(localPassword);
+    public static byte[] generateRemotePassword(char[] localPassword){
+        KeyPair rsaPair = KeyVault.getRSAKeys(localPassword);
         PrivateKey rsaPri = rsaPair.getPrivate();
-        byte[] remotePassword = hu.hashKeyToByte(rsaPri);
-        return remotePassword;
+        return HashUtils.hashKeyToByte(rsaPri);
     }
 
-    public String generateUserID(char[] localPassword){
+    public static String generateUserID(char[] localPassword){
         //https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses
-        KeyVault kv = new KeyVault();
-        KeyGen kg = new KeyGen();
-        HashUtils hu = new HashUtils();
-        Encryption e = new Encryption();
-        KeyPair rsaPair = kv.getRSAKeys(localPassword);
+        KeyPair rsaPair = KeyVault.getRSAKeys(localPassword);
         Key rsaPub = rsaPair.getPublic();
         RIPEMD160Digest d = new RIPEMD160Digest();
+        byte[] VERSION_NUMBER = bigIntToByteArray(000);
 
-        byte[] firstRound = hu.hashKeyToByte(rsaPub);
+        byte[] firstRound = HashUtils.hashKeyToByte(rsaPub);
         d.update (firstRound, 0, firstRound.length);
         byte[] secondRound = new byte[d.getDigestSize()];
         d.doFinal (secondRound, 0);
-        byte[] thirdRound = kg.concancateByteArrays(VERSION_NUMBER, secondRound);
-        byte[] fourthRound = hu.hashSha256(thirdRound);
-        byte[] fifthRound = Arrays.copyOfRange(hu.hashSha256(fourthRound), 0, 4);
-        byte[] sixthRound = kg.concancateByteArrays(fourthRound, fifthRound);
+        byte[] thirdRound = concancateByteArrays(VERSION_NUMBER, secondRound);
+        byte[] fourthRound = HashUtils.hashSha256(thirdRound);
+        byte[] fifthRound = Arrays.copyOfRange(HashUtils.hashSha256(fourthRound), 0, 4);
+        byte[] sixthRound = concancateByteArrays(fourthRound, fifthRound);
         return Base58.encode(sixthRound);
     }
 
-    private byte[] concancateByteArrays(byte[] a, byte[] b){
+    private static byte[] concancateByteArrays(byte[] a, byte[] b){
         byte[] bytes = new byte[a.length + b.length];
         System.arraycopy(a, 0, bytes, 0, a.length);
         System.arraycopy(b, 0, bytes, a.length, b.length);
         return bytes;
     }
 
-    private byte[] bigIntToByteArray(int i) {
+    private static byte[] bigIntToByteArray(int i) {
         BigInteger bigInt = BigInteger.valueOf(i);      
         return bigInt.toByteArray();
     }

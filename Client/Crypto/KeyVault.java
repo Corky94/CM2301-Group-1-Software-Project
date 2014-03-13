@@ -1,6 +1,7 @@
 /*
 *The KeyVault is needed to store cryptographic 
 *keys securely on the local system.
+*Max Chandler
 */
 
 package Crypto;
@@ -16,9 +17,9 @@ import java.security.spec.X509EncodedKeySpec;
 */
 
 public class KeyVault{
-    private final String KEY_STORE_DIR = "";
-    private final String KEY_STORE_NAME = "keystore";
-    private final String KEY_STORE_TYPE = "JCEKS";
+    private static final String KEY_STORE_DIR = "";
+    private static final String KEY_STORE_NAME = "keystore";
+    private static final String KEY_STORE_TYPE = "JCEKS";
 
     public KeyVault(){
     }
@@ -26,15 +27,14 @@ public class KeyVault{
     //PASSWORD IN REFERENCE IS TO OPEN THE KEYVAULT (LOCAL PASSWORD)
     public boolean checkPassword(char[] localPassword){
         try{
-            KeyVault kv = new KeyVault();
-            kv.loadKeyStore(localPassword);
+            loadKeyStore(localPassword);
             return true;
         }catch(Exception ex){
             return false;
         }
     }
 
-    public PublicKey bytesToKey(byte[] bytes){
+    public static PublicKey bytesToKey(byte[] bytes){
         try{
             PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(bytes));
         return publicKey;
@@ -66,19 +66,18 @@ public class KeyVault{
         }
     }
 
-    public boolean destroyKeyStore(char[] localPassword){
+    public static boolean destroyKeyStore(char[] localPassword){
         KeyVault kv = new KeyVault();
         if(kv.checkPassword(localPassword)){
             File vault = new File(KEY_STORE_DIR + KEY_STORE_NAME);
-            if(vault.delete()){
+            if(vault.delete())
                 return true;
-            }
         }
         return false;
     }
 
     public KeyStore loadKeyStore(char[] localPassword){
-        if (this.checkIfKsExists(KEY_STORE_DIR + KEY_STORE_NAME)== false)
+        if (this.checkIfKsExists(KEY_STORE_DIR + KEY_STORE_NAME) == false)
             createKeyStore(localPassword);         
         try{
             KeyStore ks  = KeyStore.getInstance(KEY_STORE_TYPE);
@@ -153,7 +152,7 @@ public class KeyVault{
     }
 
     //Getter methods
-    public KeyPair getRSAKeys(char[] localPassword){
+    public static KeyPair getRSAKeys(char[] localPassword){
         try{
             KeyVault kv = new KeyVault();
             KeyStore ks = kv.loadKeyStore(localPassword);
@@ -171,7 +170,7 @@ public class KeyVault{
     }
 
 
-    public Key getAESKey(char[] localPassword){
+    public static Key getAESKey(char[] localPassword){
         try{
             KeyVault kv = new KeyVault();
             KeyStore ks = kv.loadKeyStore(localPassword);

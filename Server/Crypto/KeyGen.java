@@ -22,7 +22,6 @@ public class KeyGen{
 	final private byte[] VERSION_NUMBER;
 	final protected static char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 	static { Security.addProvider(new BouncyCastleProvider());}
-    private String userID;
 
 	public KeyGen(){
             //000 for users, 010 for nodes
@@ -130,7 +129,7 @@ public class KeyGen{
             return Base58.encode(sixthRound);
 	}
 
-	private byte[] concancateByteArrays(byte[] a, byte[] b){
+	public byte[] concancateByteArrays(byte[] a, byte[] b){
 		byte[] bytes = new byte[a.length + b.length];
 		System.arraycopy(a, 0, bytes, 0, a.length);
 		System.arraycopy(b, 0, bytes, a.length, b.length);
