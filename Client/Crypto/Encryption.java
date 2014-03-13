@@ -81,7 +81,6 @@ public class Encryption{
 	    }
 	}
         
-        /*
         public void encryptFile(char[] localPassword, FileOutputStream data){
             KeyVault kv = new KeyVault();
             Key aesKey = kv.getAESKey(localPassword);
@@ -103,12 +102,10 @@ public class Encryption{
                 FileInputStream fis = new FileInputStream(dir);
                 CipherInputStream cis = new CipherInputStream(fis, decrypt );
             }catch(FileNotFoundException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException ex) {
-                Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);
+                throw new RuntimeException(ex);
             }
-        }*/
+        }
         
-        
-    //This needs to be reworked   
     public PublicKey getKey(String id){
         Message m = new Message();
         m.setReceiver(id);
