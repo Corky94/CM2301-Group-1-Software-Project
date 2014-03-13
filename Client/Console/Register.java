@@ -39,19 +39,21 @@ public class Register {
 
             kv.setRSAKeys(password);
             kv.setAESKey(password);
-            System.out.println(kg.generateUserID(password));
+            
+            System.out.println(kv.getAESKey(password).getEncoded());
             
             byte[] key = kv.getRSAKeys(password).getPublic().getEncoded();
 
-            String UserID = hu.hashKeyToString(kv.getRSAKeys(password).getPublic());
+            String UserID = kg.generateUserID(password);
 
             ClientSend.registerToServer(UserID, key, password);
 
-            SecureDetails setup = new SecureDetails();
+            SecureDetails setup = new SecureDetails(confirm);
 
             setup.setId(UserID);         
             setup.setRegistered();
-            setup.saveDetails();
+            System.out.println(setup.getID());
+            setup.saveDetails(confirm);
             
         
     }

@@ -1,6 +1,3 @@
-package Crypto;
-
-import Console.SecureDetails;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,9 +20,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Steganography implements ActionListener{
-
-        private SecureDetails s = new SecureDetails();
-    
+	boolean debug = true;
+	
 	JPanel encodePanel, decodePanel;
 	JLabel lblEncode, lblDecode, lblMessageOut;
 	JButton btnEncode, btnDecode, btnAddContact, btnBrowseIn, btnBrowseOut;
@@ -190,13 +186,14 @@ public class Steganography implements ActionListener{
 	 */
 	public boolean encode(String path, String original, String stegan, String message) {
 		String file_name = image_path();
+		if(debug) System.out.println(file_name);
 		BufferedImage image_orig = getImage(file_name);
 
 		// user space is not necessary for Encrypting
 		BufferedImage image = user_space(image_orig);
-		image = add_text(image, s.getID());
+		image = add_text(image, message);
 
-		return (setImage(image, new File(fileInPath +"(1)"),
+		return (setImage(image, new File(fileInPath),
 				"png"));
 	}
 
@@ -444,38 +441,38 @@ public class Steganography implements ActionListener{
 		return result;
 	}
 
-//	private static void initializeGUI() {
-//		JFrame frame = new JFrame();
-//		
-//		try {
-//		    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//		}
-//		catch (ClassNotFoundException e) {
-//		}
-//		catch (InstantiationException e) {
-//		}
-//		catch (IllegalAccessException e) {
-//		}
-//		catch (UnsupportedLookAndFeelException e) {
-//		}
-//		
-//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		frame.setTitle("Steganography");
-//		frame.setSize(600, 300);
-//		frame.setLocationRelativeTo(null);
-//		frame.setResizable(false);
-//		Steganography window = new Steganography();
-//		frame.setContentPane(window.Steganography());
-//		frame.setVisible(true);	
-//	}
-//	
-//	public static void main(String[] args) {
-//		//Schedule a job for the event-dispatching thread:
-//        //creating and showing this application's GUI.
-//        SwingUtilities.invokeLater(new Runnable() {
-//            public void run() {
-//            	initializeGUI();
-//            }
-//        });
-//	}
+	private static void initializeGUI() {
+		JFrame frame = new JFrame();
+		
+		try {
+		    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (ClassNotFoundException e) {
+		}
+		catch (InstantiationException e) {
+		}
+		catch (IllegalAccessException e) {
+		}
+		catch (UnsupportedLookAndFeelException e) {
+		}
+		
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setTitle("Steganography");
+		frame.setSize(600, 300);
+		frame.setLocationRelativeTo(null);
+		frame.setResizable(false);
+		Steganography window = new Steganography();
+		frame.setContentPane(window.Steganography());
+		frame.setVisible(true);	
+	}
+	
+	public static void main(String[] args) {
+		//Schedule a job for the event-dispatching thread:
+        //creating and showing this application's GUI.
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+            	initializeGUI();
+            }
+        });
+	}
 }

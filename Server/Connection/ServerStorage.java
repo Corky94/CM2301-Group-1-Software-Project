@@ -4,14 +4,7 @@
  */
 package Connection;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.io.*;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -106,7 +99,7 @@ public class ServerStorage implements java.io.Serializable  {
         return idServerList;
     }
     
-    public void updateMessageServerList(Stack details){
+    public void updateMessageServerDetails(Stack details){
         
         try{
 

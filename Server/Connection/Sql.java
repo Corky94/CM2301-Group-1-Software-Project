@@ -8,22 +8,11 @@ package Connection;
 
 
 import Message.Message;
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.LinkedList;
+import java.sql.*;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 public class Sql {
     
@@ -157,8 +146,8 @@ public class Sql {
                     con = this.connection(idServerObj);
                     if (con != null) {
                         if (this.tableExist(con) == false){
-                        this.setUpIDTable(con);
-                        System.out.println(tableExist(con));
+                            this.setUpIDTable(con);
+                            System.out.println(tableExist(con));
                     }
 
                     PreparedStatement pst = null;
@@ -256,14 +245,14 @@ public class Sql {
             int arrayLocation = 0;
             while (rs.next()){
                 newMessage = new Message();
-                newMessage.receiver = id;
-                newMessage.sender = rs.getBytes(1);
-                newMessage.subject = rs.getBytes(2);
+                newMessage.setReceiver(id);
+                newMessage.setSender(rs.getBytes(1));
+                newMessage.setSubject(rs.getBytes(2));
                 Blob blob = rs.getBlob(3);
                 int blobLength = (int) blob.length();  
                 byte[] blobAsBytes = blob.getBytes(1, blobLength);
                 blob.free();
-                newMessage.message = blobAsBytes;
+                newMessage.setMessage(blobAsBytes);
                 messages[arrayLocation] = newMessage;
                 
                 System.out.println(messages[arrayLocation]);
@@ -314,11 +303,24 @@ public class Sql {
         } catch (SQLException ex) {
             Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-    
-        
-    
-        
+
+    }
+    public void setUpMessageTable(Connection con) {
+        try {
+            PreparedStatement pst = null;    
+            pst = con.prepareStatement("CREATE TABLE Messages " +
+                    "(keyId INT AUTO_INCREMENT, " + 
+                    "UserID VARCHAR(255), "+ 
+                    "Sender VARBINARY(4096)," +
+                    " Subject VARBINARY(4096)," +
+                    " Message LONGBLOB,"
+                    + "PRIMARY KEY ( keyId)) ");
+            pst.executeUpdate();
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     
@@ -368,32 +370,48 @@ public class Sql {
          
          Connection con = connection(id);
          setUpIDTable(con);
-         deleteTest(con);
+         deleteIDTest(con);
+         
          
      }
      
      public void addMessageServer(String url, String user, String password){
-         MessageServer id = new MessageServer();
+         MessageServer mes = new MessageServer();
          
-         id.setUrl(url);
-         id.setUser(user);
-         id.setPassword(password);
+         mes.setUrl(url);
+         mes.setUser(user);
+         mes.setPassword(password);
          
-         id.updateDetails(id);
+         mes.updateDetails(mes);
          
-         Connection con = connection(id);
-         setUpIDTable(con);
-         deleteTest(con);
+         Connection con = connection(mes);
+
+         setUpMessageTable(con);
+         deleteMessageTest(con);
          
      }
      
-     public void deleteTest(Connection con ){
+     public void deleteIDTest(Connection con ){
         try {
          
             PreparedStatement pst = null;
             System.out.println(con);
             
             pst = con.prepareStatement("DROP TABLE id");
+            pst.executeUpdate();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+     }
+     public void deleteMessageTest(Connection con ){
+        try {
+         
+            PreparedStatement pst = null;
+            System.out.println(con);
+            
+            pst = con.prepareStatement("DROP TABLE Messages");
             pst.executeUpdate();
 
         } catch (SQLException ex) {

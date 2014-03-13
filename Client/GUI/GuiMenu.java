@@ -96,9 +96,9 @@ class GuiMenu	extends	JFrame
                     
                 
                 for (int i =0; i< m.length ; i++){
-                    String message = e.bTS(e.decryptString(m[i].message, "pass".toCharArray()));
-                    String sender = e.bTS(e.decryptString(m[i].sender, "pass".toCharArray()));
-                    String subject = e.bTS(e.decryptString(m[i].subject, "pass".toCharArray()));
+                    String message = e.bTS(e.decryptString(m[i].getMessage(), "pass".toCharArray()));
+                    String sender = e.bTS(e.decryptString(m[i].getSender(), "pass".toCharArray()));
+                    String subject = e.bTS(e.decryptString(m[i].getSubject(), "pass".toCharArray()));
                     
                     listContent[i] ="From: " +sender +"\n " + subject + "\n " +message +"\n   \n";
                     

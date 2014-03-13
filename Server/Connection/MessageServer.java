@@ -18,7 +18,6 @@ public class MessageServer implements java.io.Serializable {
     private String password;
     private ServerStorage ss = new ServerStorage();
     private Stack details;
-    private boolean status = true;
 
     /**
      * @return the url
@@ -76,9 +75,10 @@ public class MessageServer implements java.io.Serializable {
      * @param details the details to set
      */
     public void updateDetails(MessageServer server) {
-        details = ss.getIdServerList();
+        
+        details = ss.getMessageServerList();
         details.add(details);
-        ss.updateIDSeverDetails(details);
+        ss.updateMessageServerDetails(details);
         
         
     }
@@ -86,16 +86,7 @@ public class MessageServer implements java.io.Serializable {
     /**
      * @return the status
      */
-    public boolean isStatus() {
-        return status;
-    }
-
-    /**
-     * @param status the status to set
-     */
-    public void setStatus(boolean status) {
-        this.status = status;
-    }
+   
     
     
     

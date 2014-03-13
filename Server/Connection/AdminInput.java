@@ -14,9 +14,15 @@ import java.util.*;
 public class AdminInput implements Runnable{
     
     public void run(){
-        Scanner scan = new Scanner(System.in);
-        System.out.println("This is a test of multithreading");
-        String input = scan.nextLine();
+        while(true){
+
+
+            Scanner scan = new Scanner(System.in);
+            String input = scan.nextLine();
+        }
+        
+        
+        
     }
     
 }

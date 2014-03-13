@@ -5,6 +5,7 @@ package Console;
 import Message.Message;
 import Connection.*;
 import Crypto.*;
+import java.io.File;
 import java.security.*;
 import java.util.Scanner;
 
@@ -18,7 +19,7 @@ public class User {
         private String realm;
         private ClientSend c;
         private byte[] publicKey;
-        public static char[] pass;
+        private char[] pass;
         
 	public User() {
 	
@@ -29,7 +30,7 @@ public class User {
         public void login(char[] password){
             
             realm = null;
-            s = new SecureDetails();
+            s = new SecureDetails(password);
             Scanner in = new Scanner(System.in);
             KeyVault kv = new KeyVault();
             
@@ -72,7 +73,7 @@ public class User {
         
         
         public Message[] receiveEmails() {
-            s = new SecureDetails();
+            s = new SecureDetails(pass);
             return ClientReceive.receive(s.getID(), pass);
 
             //return m;
@@ -80,14 +81,14 @@ public class User {
         
         public void createMessage(String contents, String recipitent, String subject) {
             c = new ClientSend();
-            s = new SecureDetails();
+            s = new SecureDetails(pass);
             Message m = new Message();
             Encryption e = new Encryption();
         
             
             m.setReceiver(recipitent);
           
-            PublicKey pk =  e.getKey(m.receiver);
+            PublicKey pk =  e.getKey(m.getReceiver());
 
             String sender = s.getID();
 
@@ -108,13 +109,13 @@ public class User {
         }
         public static void main(String[] args) {      
             User u = new User();
-            SecureDetails s = new SecureDetails();
+            File f = new File("user2.ser");
 
-            if (s.getRegistered() == true && u.loggedIn != true){
+            if (f.exists()){
                 new GUI.GuiLogin();
-                System.out.println(s.getID());
+                
             }
-            else if(s.getRegistered() == false){
+            else {
 
                 GUI.GuiRegister.NewRegister();
                 

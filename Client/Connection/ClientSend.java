@@ -37,8 +37,8 @@ public class ClientSend {
         
         public static boolean registerToServer(String id, byte[] key, char[] localPassword ){
             Message m = new Message();
-            m.key = key;
-            m.receiver = id;
+            m.setKey(key);
+            m.setReceiver(id);
             try {
 
                SSLSocket s = ClientSSL.main(localPassword);

@@ -6,9 +6,12 @@ package Console;
 
 import Message.Message;
 import Connection.*;
+import Crypto.*;
 import java.io.*;
 import java.security.*;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,43 +20,55 @@ import java.util.HashMap;
 public class SecureDetails {
     
     private HashMap details;
-    private final String dir = "user2.ser";
+    private final String dir = "user2";
+    private Encryption en = new Encryption();
     
-    public SecureDetails(){
+    public SecureDetails(char[] pass){
         
         
     
-        try{
-            
-            FileInputStream fis = new FileInputStream(dir);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            details = (HashMap) ois.readObject();
-            ois.close();
 
-        }
-        catch(FileNotFoundException e){
-            try{
-                details = new HashMap();
-                details.put("Registered", false);
+                try {
+                    FileInputStream test = new FileInputStream(dir);
+                    en.decryptFile(pass, dir);
+                    FileInputStream fis = new FileInputStream(dir);
+                    ObjectInputStream oos = new ObjectInputStream(fis);
+                    
+                    details = (HashMap) oos.readObject();
+                    
+                } catch (FileNotFoundException ex) {
+                    try{
+                        details = new HashMap();
+                        details.put("Registered", false);
+                        FileOutputStream fos = new FileOutputStream(dir);
+                        ObjectOutputStream oos = new ObjectOutputStream(fos);
+                        oos.writeObject(details);
+                        oos.close();
+
+                    }
+                    catch(FileNotFoundException e){
+                    } 
+                    catch (IOException e) {
+                    }
                 
-                FileOutputStream fos = new FileOutputStream(dir);
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
-                oos.writeObject(details);
-                oos.close();
-            }
-            catch(FileNotFoundException ex){
-            } 
-            catch (IOException ex) {
-            }
     
-        }
-        catch(IOException e){
-        }
-        catch(ClassNotFoundException e){
-        }
+            
+                } catch (IOException ex) {
+                    Logger.getLogger(SecureDetails.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(SecureDetails.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+            }
+            
+   
+                
 
+            
 
-    }
+        
+
+    
     
     
     public void setRegistered(){
@@ -66,25 +81,25 @@ public class SecureDetails {
         details.put("ID", key);
     }
     
-    public void addMessage(Message m){
-        
-        Message[] savedMessages = getMessages();
-        int i = savedMessages.length + 1;
-        savedMessages[i] = m;
-        details.put("Messages",savedMessages);
-        this.saveDetails();
-    }
-    
-    public void deleteMessage(Message m){
-        Message[] savedMessages = getMessages();
-        for(int i =0; i<= savedMessages.length; i++){
-            if(m == savedMessages[i]){
-                savedMessages[i] = null;
-            }
-        }
-        details.put("Messages",savedMessages);
-        this.saveDetails();
-    }
+//    public void addMessage(Message m){
+//        
+//        Message[] savedMessages = getMessages();
+//        int i = savedMessages.length + 1;
+//        savedMessages[i] = m;
+//        details.put("Messages",savedMessages);
+//        this.saveDetails();
+//    }
+//    
+//    public void deleteMessage(Message m){
+//        Message[] savedMessages = getMessages();
+//        for(int i =0; i<= savedMessages.length; i++){
+//            if(m == savedMessages[i]){
+//                savedMessages[i] = null;
+//            }
+//        }
+//        details.put("Messages",savedMessages);
+//        this.saveDetails();
+//    }
     
     
     public Message[] getMessages(){
@@ -110,14 +125,17 @@ public class SecureDetails {
         
     }
     
-    public void saveDetails(){
+    public void saveDetails(char[] pass){
         
          try{
 
                 FileOutputStream fos = new FileOutputStream(dir);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(details);
+                
+                en.encryptFile(pass, fos);
                 oos.close();
+                
                 
             }
             catch(FileNotFoundException ex){
