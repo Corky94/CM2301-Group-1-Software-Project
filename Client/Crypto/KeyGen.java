@@ -34,7 +34,8 @@ public class KeyGen{
     private String userID;
 
     public KeyGen(){
-        this.VERSION_NUMBER = this.bigIntToByteArray(001);
+        //000 for users, 010 for nodes
+        this.VERSION_NUMBER = this.bigIntToByteArray(010);
     }
 
     //Keygen methods
@@ -51,47 +52,45 @@ public class KeyGen{
 
     public static X509Certificate[] generateCertificate(PublicKey pubKey, PrivateKey priKey){
         try{
-                X509V3CertificateGenerator  v3CertGen = new X509V3CertificateGenerator();
+            X509V3CertificateGenerator  v3CertGen = new X509V3CertificateGenerator();
+            Hashtable                   
+            attrs = new Hashtable();
+            attrs.put(X509Name.C, "AU");
+            attrs.put(X509Name.O, "Anon");
+            attrs.put(X509Name.L, "Anon");
+            attrs.put(X509Name.CN, "Anon");
+            attrs.put(X509Name.EmailAddress, "anon@anon.com");
 
-        Hashtable                   
-        attrs = new Hashtable();
-        attrs.put(X509Name.C, "AU");
-        attrs.put(X509Name.O, "Anon");
-        attrs.put(X509Name.L, "Anon");
-        attrs.put(X509Name.CN, "Anon");
-        attrs.put(X509Name.EmailAddress, "anon@anon.com");
+            Vector                      
+            order = new Vector();
+            order.addElement(X509Name.C);
+            order.addElement(X509Name.O);
+            order.addElement(X509Name.L);
+            order.addElement(X509Name.CN);
+            order.addElement(X509Name.EmailAddress);
 
-        Vector                      
-        order = new Vector();
-        order.addElement(X509Name.C);
-        order.addElement(X509Name.O);
-        order.addElement(X509Name.L);
-        order.addElement(X509Name.CN);
-        order.addElement(X509Name.EmailAddress);
+            String  issuer = "C=AU, O=The Legion of the Bouncy Castle, OU=Bouncy Primary Certificate";
 
-        String  issuer = "C=AU, O=The Legion of the Bouncy Castle, OU=Bouncy Primary Certificate";
+            v3CertGen.reset();
 
-        v3CertGen.reset();
+            v3CertGen.setSerialNumber(BigInteger.valueOf(20));
+            v3CertGen.setIssuerDN(new X509Name(issuer));
+            v3CertGen.setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30));
 
-        v3CertGen.setSerialNumber(BigInteger.valueOf(20));
-        v3CertGen.setIssuerDN(new X509Name(issuer));
-        v3CertGen.setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30));
+            //sign certs for two years
+            v3CertGen.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365)));
+            v3CertGen.setSubjectDN(new X509Name(order, attrs));
+            v3CertGen.setPublicKey(pubKey);
+            v3CertGen.setSignatureAlgorithm("SHA256WithRSA");
 
-        //sign certs for two years
-        v3CertGen.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365)));
-        v3CertGen.setSubjectDN(new X509Name(order, attrs));
-        v3CertGen.setPublicKey(pubKey);
-        v3CertGen.setSignatureAlgorithm("SHA256WithRSA");
+            X509Certificate cert = v3CertGen.generate(priKey);
 
-        X509Certificate cert = v3CertGen.generate(priKey);
+            cert.checkValidity(new Date());
+            cert.verify(pubKey);
 
-        cert.checkValidity(new Date());
-        cert.verify(pubKey);
-
-        X509Certificate[] chain = new X509Certificate[1];
-        chain[0] = cert;
-        return chain;
-
+            X509Certificate[] chain = new X509Certificate[1];
+            chain[0] = cert;
+            return chain;
         }catch(IllegalArgumentException | IllegalStateException | InvalidKeyException | NoSuchAlgorithmException | NoSuchProviderException | SignatureException | CertificateException ex){
             throw new RuntimeException(ex);
         }
@@ -129,7 +128,6 @@ public class KeyGen{
         Key rsaPub = rsaPair.getPublic();
         RIPEMD160Digest d = new RIPEMD160Digest();
 
-
         byte[] firstRound = hu.hashKeyToByte(rsaPub);
         d.update (firstRound, 0, firstRound.length);
         byte[] secondRound = new byte[d.getDigestSize()];
@@ -152,5 +150,5 @@ public class KeyGen{
         BigInteger bigInt = BigInteger.valueOf(i);      
         return bigInt.toByteArray();
     }
-
+    
 }

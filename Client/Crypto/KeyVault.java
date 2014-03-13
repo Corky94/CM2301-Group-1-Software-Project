@@ -10,7 +10,6 @@ import javax.crypto.*;
 import java.io.*;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
-
 import java.security.spec.X509EncodedKeySpec;
 /*
 *KeyVault is responcible for storing and retreiving keys from the vault, it also provides a password check for user login. 
@@ -57,7 +56,7 @@ public class KeyVault{
                 ks.store(fos, localPassword);
 
                 if (fos != null)
-                        fos.close();
+                    fos.close();
             }
             else
                 throw new RuntimeException("KEYSTORE ALREADY EXISTS");
@@ -80,7 +79,7 @@ public class KeyVault{
 
     public KeyStore loadKeyStore(char[] localPassword){
         if (this.checkIfKsExists(KEY_STORE_DIR + KEY_STORE_NAME)== false)
-        createKeyStore(localPassword);         
+            createKeyStore(localPassword);         
         try{
             KeyStore ks  = KeyStore.getInstance(KEY_STORE_TYPE);
             ks.load(new FileInputStream(KEY_STORE_DIR + KEY_STORE_NAME), localPassword);
@@ -149,8 +148,7 @@ public class KeyVault{
                 fos.close();
             }
         }catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
-            //logger.error("Cannot close connection");
-        throw new RuntimeException(ex);
+            throw new RuntimeException(ex);
         }
     }
 
@@ -186,54 +184,5 @@ public class KeyVault{
             throw new RuntimeException(ex);
         }
     }
-
-/* 
-    //
-    // Unit testing
-    //
-    public static void main (String[] args){
-            //First initiate the keyvault kv
-            KeyVault kv = new KeyVault();
-            //Password and fake password created
-            char[] password = "password".toCharArray();
-            char[] badPassword = "wrongpassword".toCharArray();
-            //Create the kv, the kv directory and name needs to be clear else it'll throw an error.
-            System.out.println("Testing KeyVault");
-            kv.destroyKeyStore(password);
-            kv.createKeyStore(password);
-
-            System.out.println("KeyVault created sucessfully");
-            //Test loading the keystore
-            if(kv.loadKeyStore(password) instanceof KeyStore){
-                    System.out.println("KeyVault loaded sucessfully");
-            }
-            //Test if correct password is accepted
-            System.out.println("Testing KeyVault security (with local password)");
-            if(kv.checkPassword(password) == true){
-                    System.out.println("KeyVault accepts password correctly");
-            }
-            //Test if bad password is rejected
-            if(kv.checkPassword(badPassword) == false){
-                    System.out.println("KeyVault rejects badPassword correctly");
-            }
-            System.out.println("Checking key creation and loading");
-
-            System.out.println("Testing AES PrivateKey");
-            //Attempt to set AES Keys
-            kv.setAESKey(password);
-            System.out.println("AES Keys created sucessfully");
-            //Load AES keys
-            if(kv.getAESKey(password) instanceof PrivateKey){
-                    System.out.println("AES Keys loaded sucessfully");
-            }
-
-            System.out.println("Testing RSA KeyPair");
-            //Attempt to set RSA Keys
-            kv.setRSAKeys(password);
-            System.out.println("RSA Keys created sucessfully");
-            //Load RSA Keys
-            if(kv.getRSAKeys(password) instanceof KeyPair){
-                    System.out.println("RSA Keys loaded sucessfully");
-            }
-}*/
+    
 }
