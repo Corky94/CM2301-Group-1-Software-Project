@@ -1,3 +1,9 @@
+/*
+*This class has been designed to help with
+*the creation of User ID’s and remote passwords.
+*Max Chandler
+*/
+
 package Crypto;
 
 import static Crypto.KeyGen.HEX_ARRAY;
@@ -7,7 +13,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class HashUtils {
     
-    	public String hashKeyToString(Key inputKey){
+    	public static String hashKeyToString(Key inputKey){
 		byte[] key = inputKey.getEncoded();
 		try{
 			MessageDigest hash = MessageDigest.getInstance("SHA-256");
@@ -22,12 +28,11 @@ public class HashUtils {
 			    }
 			return new String(hexChars);
 		}catch(NoSuchAlgorithmException ex){
-			//logger.error("Cannot close connection");
             throw new RuntimeException(ex);
 		}
 	}
 
-	public byte[] hashKeyToByte(Key inputKey){
+	public static byte[] hashKeyToByte(Key inputKey){
             //remove method
             byte[] key = inputKey.getEncoded();
             try{
@@ -36,25 +41,23 @@ public class HashUtils {
                     byte[] bytes = hash.digest();
                     return bytes;
             }catch(NoSuchAlgorithmException ex){
-                //logger.error("Cannot close connection");
                 throw new RuntimeException(ex);
             }
 	}
         
-        public byte[] hashSha256(byte[] input){
+        public static byte[] hashSha256(byte[] input){
             try{
                     MessageDigest hash = MessageDigest.getInstance("SHA-256");
                     hash.update(input); 
                     byte[] bytes = hash.digest();
                     return bytes;
             }catch(NoSuchAlgorithmException ex){
-                //logger.error("Cannot close connection");
                 throw new RuntimeException(ex);
             }
         }
         
-        public byte[] doubleSha256(byte[] input){
-            return this.hashSha256(this.hashSha256(input));
+        public static byte[] doubleSha256(byte[] input){
+            return hashSha256(hashSha256(input));
         }
     
 }

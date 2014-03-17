@@ -6,6 +6,8 @@
 
 package Crypto;
 
+import Message.Message;
+import java.awt.Point;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.PublicKey;
@@ -50,8 +52,7 @@ public class EncryptionTest {
         KeyGen kg = new KeyGen();
         Key publicKey = kg.generateRSAKeys().getPublic();
         String data = "Test String 1 √ ) &" ;
-        Encryption instance = new Encryption();
-        instance.encryptString(publicKey, data);
+        Encryption.encryptString(publicKey, data);
     }
 
     /**
@@ -62,17 +63,16 @@ public class EncryptionTest {
         System.out.println("decryptString");
         KeyGen kg = new KeyGen();
         KeyVault kv = new KeyVault();
-        Encryption e = new Encryption();
         char[] localPassword = "oassword".toCharArray();
         kv.createKeyStore(localPassword);
         kv.setRSAKeys(localPassword);
         String data = "Test String 1 √ ) &";
-        PublicKey pk = kv.getRSAKeys(localPassword).getPublic();
-        String decrypted = e.bTS(e.decryptString(e.encryptString(pk, data), localPassword));
+        PublicKey pk = KeyVault.getRSAKeys(localPassword).getPublic();
+        String decrypted = Encryption.bTS(Encryption.decryptString(Encryption.encryptString(pk, data), localPassword));
         if(! decrypted.equals(data)){
             fail("Did not decrypt secussfully");
         }
-        kv.destroyKeyStore(localPassword);
+        KeyVault.destroyKeyStore(localPassword);
     }
 
     /**
@@ -83,9 +83,8 @@ public class EncryptionTest {
         System.out.println("bTS");
         String input = "Test String";
         byte[] bytes = input.getBytes();
-        Encryption instance = new Encryption();
         String expResult = "Test String";
-        String result = instance.bTS(bytes);
+        String result = Encryption.bTS(bytes);
         assertEquals(expResult, result);
     }
 
@@ -96,16 +95,14 @@ public class EncryptionTest {
     public void testEncryptRemotePassword() {
         System.out.println("encryptRemotePassword");
         KeyVault kv = new KeyVault();
-        HashUtils hu = new HashUtils();
         char[] localPassword = "password".toCharArray();
         kv.createKeyStore(localPassword);
         kv.setRSAKeys(localPassword);
         kv.setAESKey(localPassword);
-        KeyPair kp = kv.getRSAKeys(localPassword);
-        byte[] remotePassword = hu.hashKeyToByte(kp.getPrivate());
-        Encryption instance = new Encryption();
-        byte[] result = instance.encryptRemotePassword(remotePassword, localPassword);
-        kv.destroyKeyStore(localPassword);
+        KeyPair kp = KeyVault.getRSAKeys(localPassword);
+        byte[] remotePassword = HashUtils.hashKeyToByte(kp.getPrivate());
+        byte[] result = Encryption.encryptRemotePassword(remotePassword, localPassword);
+        KeyVault.destroyKeyStore(localPassword);
     }
 
     /**
@@ -120,10 +117,38 @@ public class EncryptionTest {
         kv.createKeyStore(localPassword);
         kv.setRSAKeys(localPassword);
         kv.setAESKey(localPassword);
-        KeyPair kp = kv.getRSAKeys(localPassword);
-        byte[] remotePassword = hu.hashKeyToByte(kp.getPrivate());
-        Encryption instance = new Encryption();
-        instance.decryptRemotePassword(instance.encryptRemotePassword(remotePassword, localPassword), localPassword) ;
-        kv.destroyKeyStore(localPassword);
+        KeyPair kp = KeyVault.getRSAKeys(localPassword);
+        byte[] remotePassword = HashUtils.hashKeyToByte(kp.getPrivate());
+        Encryption.decryptRemotePassword(Encryption.encryptRemotePassword(remotePassword, localPassword), localPassword) ;
+        KeyVault.destroyKeyStore(localPassword);
+    }
+    @Test
+    public void testEncryptObject(){
+        System.out.println("encryptObject");
+        KeyVault kv = new KeyVault();
+        HashUtils hu = new HashUtils();
+        char[] localPassword = "password".toCharArray();
+        kv.createKeyStore(localPassword);
+        kv.setRSAKeys(localPassword);
+        kv.setAESKey(localPassword);
+        Message exampleObject = new Message();
+        byte[] encrypted = Encryption.encryptObject(localPassword, KeyVault.getRSAKeys(localPassword).getPublic(), exampleObject);
+        Encryption.bTS(encrypted);
+        KeyVault.destroyKeyStore(localPassword);
+    }
+    
+    @Test
+    public void testDecryptObject(){
+        System.out.println("decryptObject");
+        KeyVault kv = new KeyVault();
+        HashUtils hu = new HashUtils();
+        char[] localPassword = "password".toCharArray();
+        kv.createKeyStore(localPassword);
+        kv.setRSAKeys(localPassword);
+        kv.setAESKey(localPassword);
+        String exampleObject = new String("HASDHASHDHS");
+        byte[] encryptedObject = Encryption.encryptObject(localPassword, KeyVault.getRSAKeys(localPassword).getPublic(), exampleObject);
+        System.out.println("decrypted object: " + Encryption.decryptObject(localPassword, KeyVault.getRSAKeys(localPassword).getPrivate(), encryptedObject));
+        KeyVault.destroyKeyStore(localPassword);
     }
 }

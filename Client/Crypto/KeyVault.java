@@ -88,7 +88,7 @@ public class KeyVault{
         }
     }
 
-    private boolean checkIfKsExists(String keyStoreName){
+    public static boolean checkIfKsExists(String keyStoreName){
         File f = new File(KEY_STORE_DIR + keyStoreName);
         if(f.exists() && !f.isDirectory())
             return true;

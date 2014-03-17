@@ -10,13 +10,20 @@ package Crypto;
 
 import Connection.ClientReceive;
 import Message.Message;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import javax.crypto.*;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Encryption{
 
@@ -75,6 +82,42 @@ public class Encryption{
                 throw new RuntimeException(ex);
 	    }
 	}
+        
+        /*
+        
+        //Maybe at a laterdate, but this method requires an object type to be passed to it..
+        
+        public static byte[] encryptObject(char[] localPassword, Key publicRsa, Object obj){
+            try{
+                Cipher encrypt = Cipher.getInstance("RSA");
+                encrypt.init(Cipher.ENCRYPT_MODE, publicRsa);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                CipherOutputStream cos = new CipherOutputStream(baos, encrypt);
+                ObjectOutputStream oos = new ObjectOutputStream(cos);
+                oos.writeObject(obj);
+                oos.close();
+                cos.close();
+                return baos.toByteArray();
+            }catch(IOException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException ex){
+                throw new RuntimeException(ex);
+            }
+        }
+        
+        public static Object decryptObject(char[] localPassword, PrivateKey privateRsa, byte[] obj){
+            try {
+                Cipher decrypt = Cipher.getInstance("RSA");
+                decrypt.init(Cipher.DECRYPT_MODE, privateRsa);
+                
+                ByteArrayInputStream bais = new ByteArrayInputStream(obj);
+                CipherInputStream sis = new CipherInputStream(bais, decrypt);
+                ObjectInputStream ois = new ObjectInputStream(sis);
+                return ois.readObject();
+            } catch (    NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IOException | ClassNotFoundException ex) {
+                Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return 0;
+        }
+        */
         
         public static void encryptFile(char[] localPassword, FileOutputStream data){
             Key aesKey = KeyVault.getAESKey(localPassword);

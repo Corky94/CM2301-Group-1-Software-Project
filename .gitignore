@@ -9,3 +9,4 @@
 *.mf
 
 *.properties
+/Client working path/build/

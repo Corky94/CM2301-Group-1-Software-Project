@@ -6,10 +6,7 @@ package Console;
 
 import Connection.ClientSend;
 import Crypto.*;
-import java.security.*;
 import java.util.Arrays;
-import java.util.Scanner;
-import javax.crypto.SecretKey;
 
 /**
  *
@@ -34,17 +31,15 @@ public class Register {
 
             KeyGen kg = new KeyGen();
             KeyVault kv = new KeyVault();
-            KeyPair k = kg.generateRSAKeys();
-            HashUtils hu = new HashUtils();
 
             kv.setRSAKeys(password);
             kv.setAESKey(password);
             
-            System.out.println(kv.getAESKey(password).getEncoded());
+            System.out.println(KeyVault.getAESKey(password).getEncoded());
             
-            byte[] key = kv.getRSAKeys(password).getPublic().getEncoded();
+            byte[] key = KeyVault.getRSAKeys(password).getPublic().getEncoded();
 
-            String UserID = kg.generateUserID(password);
+            String UserID = KeyGen.generateUserID(password);
 
             ClientSend.registerToServer(UserID, key, password);
 

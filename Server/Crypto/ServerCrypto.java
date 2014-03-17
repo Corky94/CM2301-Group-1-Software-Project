@@ -6,6 +6,8 @@
 
 package Crypto;
 
+import java.security.Key;
+
 /**
  *
  * @author maxchandler
@@ -20,15 +22,18 @@ public class ServerCrypto {
         return ServerTools.generateNodeId(publicKey).equals(nodeId);
     }
     
-    public static byte[] generateChallenge(String userId){
+    public static byte[] generateChallenge(char[] localPassword, byte[] publicKey){
+        Key serverPubKey = KeyVault.getRSAKeys(localPassword).getPublic();
+        return Encryption.encryptString(KeyVault.bytesToKey(publicKey), HashUtils.hashKeyToString(serverPubKey));
         /*
         encrypt server public key in byte array using user public key taken from ID server
         ?add onetime password?
         */
-        return null;
     }
     
-    public static boolean verifyChallenge(byte[] input){
+    public static boolean verifyChallenge(char[] localPassword, byte[] input){
+        if(Encryption.decryptString(input, localPassword) != null);
+            NEEDS TO TEST AGAINST REMOTE SERVER, IF ID IS VALID THEN USER IS GOOD TO GO.
         /*
         decrypt byte array using server private key
         ?check if otp is the same as one sent?

@@ -32,6 +32,8 @@ public class KeyVaultTest {
     
     @AfterClass
     public static void tearDownClass() {
+        if(KeyVault.checkIfKsExists("keystore") == true)
+            KeyVault.destroyKeyStore("password".toCharArray());
     }
     
     @Before

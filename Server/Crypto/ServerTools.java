@@ -24,35 +24,31 @@ public class ServerTools {
     
     public static String generateUserId(byte[] publicKey){
         //https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses
-        KeyGen kg = new KeyGen();
-        HashUtils hu = new HashUtils();
         RIPEMD160Digest d = new RIPEMD160Digest();
         byte [] USER_VERSION_NUMBER = bigIntToByteArray(000);
         byte[] firstRound = publicKey;
         d.update (firstRound, 0, firstRound.length);
         byte[] secondRound = new byte[d.getDigestSize()];
         d.doFinal (secondRound, 0);
-        byte[] thirdRound = kg.concancateByteArrays(USER_VERSION_NUMBER, secondRound);
-        byte[] fourthRound = hu.hashSha256(thirdRound);
-        byte[] fifthRound = Arrays.copyOfRange(hu.hashSha256(fourthRound), 0, 4);
-        byte[] sixthRound = kg.concancateByteArrays(fourthRound, fifthRound);
+        byte[] thirdRound = KeyGen.concancateByteArrays(USER_VERSION_NUMBER, secondRound);
+        byte[] fourthRound = HashUtils.hashSha256(thirdRound);
+        byte[] fifthRound = Arrays.copyOfRange(HashUtils.hashSha256(fourthRound), 0, 4);
+        byte[] sixthRound = KeyGen.concancateByteArrays(fourthRound, fifthRound);
         return Base58.encode(sixthRound);
     }
     
     public static String generateNodeId(byte[] publicKey){
         //https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses
-        KeyGen kg = new KeyGen();
-        HashUtils hu = new HashUtils();
         RIPEMD160Digest d = new RIPEMD160Digest();
         byte [] NODE_VERSION_NUMBER = bigIntToByteArray(000);
         byte[] firstRound = publicKey;
         d.update (firstRound, 0, firstRound.length);
         byte[] secondRound = new byte[d.getDigestSize()];
         d.doFinal (secondRound, 0);
-        byte[] thirdRound = kg.concancateByteArrays(NODE_VERSION_NUMBER, secondRound);
-        byte[] fourthRound = hu.hashSha256(thirdRound);
-        byte[] fifthRound = Arrays.copyOfRange(hu.hashSha256(fourthRound), 0, 4);
-        byte[] sixthRound = kg.concancateByteArrays(fourthRound, fifthRound);
+        byte[] thirdRound = KeyGen.concancateByteArrays(NODE_VERSION_NUMBER, secondRound);
+        byte[] fourthRound = HashUtils.hashSha256(thirdRound);
+        byte[] fifthRound = Arrays.copyOfRange(HashUtils.hashSha256(fourthRound), 0, 4);
+        byte[] sixthRound = KeyGen.concancateByteArrays(fourthRound, fifthRound);
         return Base58.encode(sixthRound);
     }
     
