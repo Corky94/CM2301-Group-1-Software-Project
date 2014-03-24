@@ -3,23 +3,24 @@
 *using encryption keys to stop unwanted recipients 
 *from viewing sensitive data. It takes in data and
 *returns it in either an encrypted or decrypted format.
-*Max Chandler
 */
 
 package Crypto;
 
 import Connection.ClientReceive;
 import Message.Message;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.security.*;
-import java.security.spec.InvalidKeySpecException;
 import javax.crypto.*;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.logging.Level;
@@ -30,7 +31,7 @@ public class Encryption{
 	public Encryption(){
 	}
 
-	public static byte[] encryptString(Key publicKey, String data){
+	public byte[] encryptString(Key publicKey, String data){
             try{
                 Cipher encrypt = Cipher.getInstance("RSA");
                 encrypt.init(Cipher.ENCRYPT_MODE, publicKey);
@@ -41,8 +42,9 @@ public class Encryption{
             }
 	}
 
-	public static byte[] decryptString(byte[] data, char[] localPassword){
-            KeyPair rsaKeys = KeyVault.getRSAKeys(localPassword);
+	public byte[] decryptString(byte[] data, char[] localPassword){
+            KeyVault kv = new KeyVault();
+            KeyPair rsaKeys = kv.getRSAKeys(localPassword);
             PrivateKey privateKey = rsaKeys.getPrivate();
             try{
                 Cipher decrypt = Cipher.getInstance("RSA");
@@ -54,14 +56,15 @@ public class Encryption{
             }
 	}
 
-	public static String bTS(byte[] input){
+	public String bTS(byte[] input){
             String s = new String(input);
             return s;
 	}
 
-	public static byte[] encryptRemotePassword(byte[] remotePassword, char[] localPassword){
+	public byte[] encryptRemotePassword(byte[] remotePassword, char[] localPassword){
             try{
-                Key aesKey = KeyVault.getAESKey(localPassword);
+                KeyVault kv = new KeyVault();
+                Key aesKey = kv.getAESKey(localPassword);
                 Cipher encrypt = Cipher.getInstance("AES");
         	encrypt.init(Cipher.ENCRYPT_MODE, aesKey);
         	byte[] encryptedData = encrypt.doFinal(remotePassword);
@@ -71,8 +74,9 @@ public class Encryption{
 	    }
 	}
 
-	public static byte[] decryptRemotePassword(byte[] encryptedPassword, char[] localPassword){
-            Key aesKey = KeyVault.getAESKey(localPassword);
+	public byte[] decryptRemotePassword(byte[] encryptedPassword, char[] localPassword){
+            KeyVault kv = new KeyVault();
+            Key aesKey = kv.getAESKey(localPassword);
             try{
                 Cipher decrypt = Cipher.getInstance("AES");
                 decrypt.init(Cipher.DECRYPT_MODE, aesKey);
@@ -83,66 +87,58 @@ public class Encryption{
 	    }
 	}
         
-        /*
         
-        //Maybe at a laterdate, but this method requires an object type to be passed to it..
-        
-        public static byte[] encryptObject(char[] localPassword, Key publicRsa, Object obj){
-            try{
-                Cipher encrypt = Cipher.getInstance("RSA");
-                encrypt.init(Cipher.ENCRYPT_MODE, publicRsa);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                CipherOutputStream cos = new CipherOutputStream(baos, encrypt);
-                ObjectOutputStream oos = new ObjectOutputStream(cos);
-                oos.writeObject(obj);
-                oos.close();
-                cos.close();
-                return baos.toByteArray();
-            }catch(IOException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException ex){
-                throw new RuntimeException(ex);
-            }
-        }
-        
-        public static Object decryptObject(char[] localPassword, PrivateKey privateRsa, byte[] obj){
-            try {
-                Cipher decrypt = Cipher.getInstance("RSA");
-                decrypt.init(Cipher.DECRYPT_MODE, privateRsa);
-                
-                ByteArrayInputStream bais = new ByteArrayInputStream(obj);
-                CipherInputStream sis = new CipherInputStream(bais, decrypt);
-                ObjectInputStream ois = new ObjectInputStream(sis);
-                return ois.readObject();
-            } catch (    NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IOException | ClassNotFoundException ex) {
-                Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            return 0;
-        }
-        */
-        
-        public static void encryptFile(char[] localPassword, FileOutputStream data){
-            Key aesKey = KeyVault.getAESKey(localPassword);
+        public void encryptFile(char[] localPassword, FileOutputStream data){
+            KeyVault kv = new KeyVault();
+            Key aesKey = kv.getAESKey(localPassword);
+            
             try{
                 Cipher encrypt = Cipher.getInstance("AES");
                 encrypt.init(Cipher.ENCRYPT_MODE, aesKey);
-                CipherOutputStream cos = new CipherOutputStream(data, encrypt); 
+                
+                CipherOutputStream cos = new CipherOutputStream(data, encrypt);
+                
+                
             }catch(InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException ex){
                 throw new RuntimeException(ex);
+            
             }
 	}
         
-        public static void decryptFile(char[] localPassword, String dir){
-            Key aesKey = KeyVault.getAESKey(localPassword);
+        public void decryptFile(char[] localPassword, String dir) throws FileNotFoundException {
+            KeyVault kv = new KeyVault();
+            Key aesKey = kv.getAESKey(localPassword);
+            
             try{
                 Cipher decrypt = Cipher.getInstance("AES");
                 decrypt.init(Cipher.DECRYPT_MODE, aesKey);
                 FileInputStream fis = new FileInputStream(dir);
                 CipherInputStream cis = new CipherInputStream(fis, decrypt );
-            }catch(FileNotFoundException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException ex) {
-                throw new RuntimeException(ex);
+                
+                
+                
+                
+                
+                
+                
+                
+           
+	}   catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NoSuchPaddingException ex) {
+                Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InvalidKeyException ex) {
+                Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);
+            
             }
+        
         }
         
-    public static PublicKey getKey(String id){
+        
+    //This needs to be reworked   
+    public PublicKey getKey(String id){
         Message m = new Message();
         m.setReceiver(id);
         m.setNeedingKey(true); 
@@ -152,7 +148,7 @@ public class Encryption{
             KeyFactory kf = KeyFactory.getInstance("RSA");
             PublicKey pk = kf.generatePublic(pubKeySpec);                
             return pk;
-        }catch(NoSuchAlgorithmException | InvalidKeySpecException ex){
+        }catch(Exception ex){
         	throw new RuntimeException(ex);
         }   
     }

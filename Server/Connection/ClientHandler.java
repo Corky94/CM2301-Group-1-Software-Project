@@ -16,8 +16,16 @@ public class ClientHandler implements Runnable {
         private Socket socket;
         private Message message;
         
-        ClientHandler(Socket s){
-            this.socket = s;
+        ClientHandler(SSLServerSocket s){
+            try {
+                this.socket = s.accept();
+            }
+            catch (IOException ex) {
+                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            finally{
+                s = null;
+        }
             
         }
         
@@ -35,7 +43,7 @@ public class ClientHandler implements Runnable {
 
 
                             if (m == null){
-                                
+                                System.out.println("Message is null");
 
                             }
 
@@ -68,8 +76,15 @@ public class ClientHandler implements Runnable {
                                     ois.close();
                             }
 
-
-
+                            is.close(); 
+                            
+                            s.close(); 
+                            ois.close();
+                            s = null;
+                            is = null;
+                            ois = null;
+                           
+                            Thread.sleep(10);
                     } catch(Exception e){
 
                     }  

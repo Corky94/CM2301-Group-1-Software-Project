@@ -13,11 +13,13 @@ public class Server  {
 	public static void main(String args[]) { 
                 
                   SSLServerSocket querySocket = ServerSSL.main(12346);
-                  SSLServerSocket updateSocket = ServerSSL.main(12121);
-                  SSLServerSocket nodeSocket = ServerSSL.main(23232);
+                  SSLServerSocket updateSocket = ServerSSL.main(12347);
+                  SSLServerSocket nodeSocket = ServerSSL.main(12348);
+                  Thread maintain = new Thread(new Maintainence());
                   AdminInput ai = new AdminInput();
                   Thread admin = new Thread(ai); 
                   admin.start();
+ //                 maintain.start();
                   
                   ClientAcceptor c = new ClientAcceptor(querySocket);
                   Thread query = new Thread(c);
@@ -37,6 +39,23 @@ public class Server  {
         }
         
 }
+class Maintainence implements Runnable {
+    
+    public void run(){
+    
+    while(true){
+        try {
+            Thread.sleep(5000);
+            System.gc();
+        }
+        catch (InterruptedException ex) {
+            Logger.getLogger(Maintainence.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+}
+    
+}
 class ClientAcceptor implements Runnable {
         private static boolean debug = true;
         private SSLServerSocket socket;
@@ -47,16 +66,21 @@ class ClientAcceptor implements Runnable {
     }
     
     public void run(){
-        
+        SSLServerSocket ss = socket;
         while (true){
             try {
-                ClientHandler c =  new ClientHandler(socket.accept());
+                socket = ss;
+                ClientHandler c =  new ClientHandler(socket);
                 Thread t = new Thread(c);
                 t.start();
-                System.out.println(t.getId());
-
+                socket = null;
+                t = null;
+                
+                Thread.sleep(10);
+            
+            
             }
-            catch (IOException ex) {
+            catch (InterruptedException ex) {
                 Logger.getLogger(ClientAcceptor.class.getName()).log(Level.SEVERE, null, ex);
             }
             

@@ -28,16 +28,26 @@ public class User {
         
         
         public void login(char[] password){
+            
             realm = null;
             s = new SecureDetails(password);
             Scanner in = new Scanner(System.in);
             KeyVault kv = new KeyVault();
+            
+            
             while (kv.checkPassword(password) != true){
-                if (kv.checkPassword(password) == false)
+                
+               
+                if (kv.checkPassword(password) == false){
                     System.out.println("Password Incorrect \n Press enter to try again");                
+ 
+                }
+
             }
+            
             loggedIn = true;   
-            pass = password;       
+            pass = password;
+         
         }
 
         public void logout(){            
@@ -73,16 +83,18 @@ public class User {
             c = new ClientSend();
             s = new SecureDetails(pass);
             Message m = new Message();
-                    
+            Encryption e = new Encryption();
+        
+            
             m.setReceiver(recipitent);
           
-            PublicKey pk =  Encryption.getKey(m.getReceiver());
+            PublicKey pk =  e.getKey(m.getReceiver());
 
             String sender = s.getID();
 
-            m.setSubject(Encryption.encryptString(pk, subject));
-            m.setSender(Encryption.encryptString(pk, sender));
-            m.setMessage(Encryption.encryptString(pk, contents));
+            m.setSubject(e.encryptString(pk, subject));
+            m.setSender(e.encryptString(pk, sender));
+            m.setMessage(e.encryptString(pk, contents));
             ClientSend.sendMessage(m, pass);
             
 

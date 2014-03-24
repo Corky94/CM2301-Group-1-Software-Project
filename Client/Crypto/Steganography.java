@@ -1,5 +1,3 @@
-package Crypto;
-
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

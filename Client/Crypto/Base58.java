@@ -110,7 +110,8 @@ public class Base58 {
       byte[] bytes = new byte[tmp.length - 4];
       System.arraycopy(tmp, 0, bytes, 0, tmp.length - 4);
       
-      tmp = HashUtils.doubleSha256(bytes);
+      HashUtils HU = new HashUtils();
+      tmp = HU.doubleSha256(bytes);
       
       byte[] hash = new byte[4];
       System.arraycopy(tmp, 0, hash, 0, 4);

@@ -132,9 +132,12 @@ public class SecureDetails {
                 FileOutputStream fos = new FileOutputStream(dir);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(details);
+                fos.close();
+                oos.close();
+                FileInputStream fid = new FileInputStream(dir);
                 
                 en.encryptFile(pass, fos);
-                oos.close();
+                
                 
                 
             }

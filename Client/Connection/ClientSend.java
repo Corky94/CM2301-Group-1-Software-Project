@@ -11,8 +11,7 @@ import java.util.logging.Logger;
 import javax.net.ssl.SSLSocket;
 
 public class ClientSend {
-	private static boolean  debug = true;
-        private static final String host = "192.168.0.2";
+	
 
 	public static void sendMessage(Message m , char[] localPassword) {
 
@@ -58,8 +57,37 @@ public class ClientSend {
             
             return false;
         }
-
         
+
+        public static void main(String[] args){
+            while (true){
+                OutputStream os = null;
+                Message m = null;
+                try {
+                    SSLSocket s = ClientSSL.main("pass".toCharArray());
+                    System.out.println("Created Socket");
+                    os = s.getOutputStream();
+                    ObjectOutputStream oos = new ObjectOutputStream(os);
+                    oos.writeObject(m);
+                    oos.close();
+                    os.close();
+                    s.close();
+                    oos = null;
+                    os = null;
+                 
+                    
+                    
+                    s = null;
+//                    Thread.sleep(1000);
+                    
+                } catch (IOException ex) {
+                    Logger.getLogger(ClientSend.class.getName()).log(Level.SEVERE, null, ex);
+//                } catch (InterruptedException ex) {
+//                    Logger.getLogger(ClientSend.class.getName()).log(Level.SEVERE, null, ex);
+//                } 
+                }
+            }
+        }
   
           
 }
