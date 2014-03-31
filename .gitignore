@@ -10,3 +10,14 @@
 
 *.properties
 /Client working path/build/
+Tor Chat - Node/keystore
+
+Tor Chat - Node/build/classes/Message/Message.class
+
+*.class
+
+Tor Chat - Node/build/classes/.netbeans_update_resources
+
+Tor Chat - Node/build/classes/.netbeans_automatic_build
+
+client meeting notes.txt
