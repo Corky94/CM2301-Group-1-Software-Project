@@ -82,7 +82,7 @@ public class GuiReply {
                             }
                             composePanel.setVisible(false);
                             GuiMenu menu = new GuiMenu();
-                            menu.createMenu();
+                            //menu.createMenu();
 
 
 			}

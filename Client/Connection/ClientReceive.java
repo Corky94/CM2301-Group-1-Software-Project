@@ -32,8 +32,8 @@ public class ClientReceive {
 
 
 			while (true){
-					
-					SSLSocket s = ClientSSL.main(localPassword);
+					ClientSSL c = new ClientSSL(localPassword);
+					SSLSocket s = c.main(12346);
 
 
 
@@ -73,7 +73,8 @@ public class ClientReceive {
             System.out.println(m.getReceiver());
             try {
                 
-                SSLSocket s = ClientSSL.main(localPassword);  
+                ClientSSL c = new ClientSSL(localPassword);
+		SSLSocket s = c.main(12346); 
                 OutputStream os = s.getOutputStream(); 
                  
                 ObjectOutputStream oos = new ObjectOutputStream(os);

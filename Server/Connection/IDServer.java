@@ -16,8 +16,8 @@ public class IDServer implements java.io.Serializable {
     private String url;
     private String user;
     private String password;
-    private ServerStorage ss = new ServerStorage();
-    private Stack details;
+    private transient ServerStorage ss = new ServerStorage();
+    private transient Stack details;
 
     /**
      * @return the url
@@ -76,7 +76,7 @@ public class IDServer implements java.io.Serializable {
      */
     public void updateDetails(IDServer server) {
         details = ss.getIdServerList();
-        details.add(details);
+        details.add(server);
         ss.updateIDSeverDetails(details);
         
         

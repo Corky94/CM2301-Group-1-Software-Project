@@ -72,8 +72,8 @@ public class User {
         }
         
         
-        public Message[] receiveEmails() {
-            s = new SecureDetails(pass);
+        public Message[] receiveEmails(SecureDetails s) {
+           
             return ClientReceive.receive(s.getID(), pass);
 
             //return m;
@@ -109,7 +109,7 @@ public class User {
         }
         public static void main(String[] args) {      
             User u = new User();
-            File f = new File("user2.ser");
+            File f = new File("user2");
 
             if (f.exists()){
                 new GUI.GuiLogin();

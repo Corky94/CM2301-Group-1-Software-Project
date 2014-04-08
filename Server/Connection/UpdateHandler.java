@@ -4,11 +4,12 @@
  */
 package Connection;
 
-import static Connection.ClientHandler.getKey;
-import static Connection.ClientHandler.registerUser;
+
 import Message.*;
 import java.io.*;
 import java.net.*;
+import java.util.Stack;
+import java.util.logging.*;
 import javax.net.ssl.*;
 
 /**
@@ -17,33 +18,42 @@ import javax.net.ssl.*;
  */
 public class UpdateHandler implements Runnable {
     
-
-	private static boolean debug = true;
-        private Socket socket;
-        private Message message;
+        private NodeList n;
+        private Stack st;
+	private SSLSocket socket;
         
-        UpdateHandler(Socket s){
-            this.socket = s;
-        
+        UpdateHandler(SSLServerSocket s){
+            try {
+                this.socket = (SSLSocket) s.accept();
+            }
+            catch (IOException ex) {
+                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            finally{
+                s = null;
         }
         
-
+        }
 	public void run() {  
               
-            Socket s = socket;
+            SSLSocket s = socket;
+            n = new NodeList();
+            st = n.getList();
             // to be completed 
-            while (true){
-                try{
-                    
+            try {
+                OutputStream os = s.getOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(os);
+                oos.writeObject(st);
                 
-                InputStream is = s.getInputStream();  
-                ObjectInputStream ois = new ObjectInputStream(is);
-	
-                        
-                  
-		} catch(Exception e){
-
-		}  
+                os.close();
+                oos.close();
+                s.close();
             }
+            
+            catch (IOException ex) {
+                Logger.getLogger(UpdateHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            n = null;
+            st = null;
         }
 }

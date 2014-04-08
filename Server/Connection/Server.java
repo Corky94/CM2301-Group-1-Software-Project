@@ -10,8 +10,22 @@ import javax.net.ssl.SSLServerSocket;
 public class Server  {
 	private static boolean debug = true;
         
-	public static void main(String args[]) { 
+	public static void main(String args[]) {
                 
+<<<<<<< HEAD
+                
+  
+                ServerSSL s = new ServerSSL();
+                
+                
+                  SSLServerSocket querySocket = s.main(12346);
+                  SSLServerSocket updateSocket = s.main(12347);
+                  SSLServerSocket nodeSocket = s.main(12348);
+                  AdminInput ai = new AdminInput();
+                  Thread admin = new Thread(ai); 
+                  admin.start();
+
+=======
                   SSLServerSocket querySocket = ServerSSL.main(12346);
                   SSLServerSocket updateSocket = ServerSSL.main(12347);
                   SSLServerSocket nodeSocket = ServerSSL.main(12348);
@@ -20,24 +34,31 @@ public class Server  {
                   Thread admin = new Thread(ai); 
                   admin.start();
  //                 maintain.start();
+>>>>>>> 64c80b29aa6e0dd2129a4ea399a7c98e48306225
                   
                   ClientAcceptor c = new ClientAcceptor(querySocket);
                   Thread query = new Thread(c);
                   query.start();
+
                   
                   UpdateAcceptor u = new UpdateAcceptor(updateSocket);
                   Thread update = new Thread(u);
                   update.start();
-                  
+//                  
                   NodeAcceptor n = new NodeAcceptor(nodeSocket);
                   Thread node = new Thread(n);
                   node.start();
 
-                  
-
+                  NodeList list = new NodeList();
+                  list.addNode();
+                  //System.out.println(list.getList());
                 
         }
+     
+            
         
+
+    
 }
 class Maintainence implements Runnable {
     
@@ -68,14 +89,28 @@ class ClientAcceptor implements Runnable {
     public void run(){
         SSLServerSocket ss = socket;
         while (true){
+<<<<<<< HEAD
+                socket = ss;
+                ClientHandler c =  new ClientHandler(socket);
+                
+                Thread t = new Thread(c);
+                System.out.println(t.getId());
+=======
             try {
                 socket = ss;
                 ClientHandler c =  new ClientHandler(socket);
                 Thread t = new Thread(c);
+>>>>>>> 64c80b29aa6e0dd2129a4ea399a7c98e48306225
                 t.start();
                 socket = null;
                 t = null;
                 
+<<<<<<< HEAD
+            
+            
+        
+            
+=======
                 Thread.sleep(10);
             
             
@@ -83,10 +118,12 @@ class ClientAcceptor implements Runnable {
             catch (InterruptedException ex) {
                 Logger.getLogger(ClientAcceptor.class.getName()).log(Level.SEVERE, null, ex);
             }
+>>>>>>> 64c80b29aa6e0dd2129a4ea399a7c98e48306225
             
 
         }
     }
+
 }
 
 
@@ -101,18 +138,16 @@ class UpdateAcceptor implements Runnable {
     }
     
     public void run(){
-        
+        SSLServerSocket ss = socket;
         while (true){
-            try {
-                UpdateHandler u =  new UpdateHandler(socket.accept());
+           
+                socket = ss;
+                UpdateHandler u =  new UpdateHandler(socket);
                 Thread t = new Thread(u);
                 t.start();
                 System.out.println(t.getId());
 
-            }
-            catch (IOException ex) {
-                Logger.getLogger(ClientAcceptor.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            
             
 
         }
@@ -133,18 +168,15 @@ class NodeAcceptor implements Runnable {
     }
     
     public void run(){
-        
+        SSLServerSocket ss = socket;
         while (true){
-            try {
-                NodeHandler n =  new NodeHandler(socket.accept());
+    
+                socket = ss;
+                NodeHandler n =  new NodeHandler(socket);
                 Thread t = new Thread(n);
                 t.start();
                 System.out.println(t.getId());
 
-            }
-            catch (IOException ex) {
-                Logger.getLogger(ClientAcceptor.class.getName()).log(Level.SEVERE, null, ex);
-            }
             
 
         }

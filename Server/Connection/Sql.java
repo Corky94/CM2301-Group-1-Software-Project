@@ -359,36 +359,48 @@ public class Sql {
      
      
      
-     public void addIdServer(String url, String user, String password){
+     public boolean addIdServer(String url, String user, String password){
          IDServer id = new IDServer();
          
          id.setUrl(url);
          id.setUser(user);
          id.setPassword(password);
          
-         id.updateDetails(id);
+
          
          Connection con = connection(id);
-         setUpIDTable(con);
-         deleteIDTest(con);
+         if (con==null){
+             return false;
+         }
          
+         id.updateDetails(id);
+         setUpIDTable(con);
+         ServerStorage ss = new ServerStorage();
+
+         this.deleteIDTest(con);
+         return true;
          
      }
      
-     public void addMessageServer(String url, String user, String password){
+     public boolean addMessageServer(String url, String user, String password){
          MessageServer mes = new MessageServer();
          
          mes.setUrl(url);
          mes.setUser(user);
          mes.setPassword(password);
          
-         mes.updateDetails(mes);
+         
          
          Connection con = connection(mes);
-
+          if (con==null){
+             return false;
+             
+         }
+         mes.updateDetails(mes); 
          setUpMessageTable(con);
-         deleteMessageTest(con);
          
+         this.deleteMessageTest(con);
+         return true;
      }
      
      public void deleteIDTest(Connection con ){

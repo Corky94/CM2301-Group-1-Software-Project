@@ -8,17 +8,21 @@ import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.*;
 
 
 public class ClientHandler implements Runnable {
 	private static boolean debug = true;
-        private Socket socket;
+        private SSLSocket socket;
         private Message message;
         
         ClientHandler(SSLServerSocket s){
             try {
+<<<<<<< HEAD
+                this.socket = (SSLSocket) s.accept();
+=======
                 this.socket = s.accept();
+>>>>>>> 64c80b29aa6e0dd2129a4ea399a7c98e48306225
             }
             catch (IOException ex) {
                 Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -43,8 +47,14 @@ public class ClientHandler implements Runnable {
 
 
                             if (m == null){
+<<<<<<< HEAD
+                                
+                                
+                                
+=======
                                 System.out.println("Message is null");
 
+>>>>>>> 64c80b29aa6e0dd2129a4ea399a7c98e48306225
                             }
 
                             else if (m.getKey() != null){
@@ -69,12 +79,29 @@ public class ClientHandler implements Runnable {
                                     ois.close();
 
                             }else {  //send messages to client  
+                                System.out.println("Wrong");
 
                                     getMessages(s, m.getReceiver());
                                     is.close();  
                                     s.close(); 
                                     ois.close();
                             }
+<<<<<<< HEAD
+                            System.out.println(s.isClosed());
+                            ois.reset();
+                            
+                            ois.close();
+                            is.close(); 
+                            s.close(); 
+                            System.out.println(s.isClosed());
+                            
+                            s = null;
+                            is = null;
+                            ois = null;
+                            m = null;
+                            System.out.println(s);
+
+=======
 
                             is.close(); 
                             
@@ -84,6 +111,7 @@ public class ClientHandler implements Runnable {
                             is = null;
                             ois = null;
                            
+>>>>>>> 64c80b29aa6e0dd2129a4ea399a7c98e48306225
                             Thread.sleep(10);
                     } catch(Exception e){
 

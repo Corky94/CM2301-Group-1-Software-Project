@@ -15,9 +15,9 @@ import java.util.logging.Logger;
  */
 public class ServerStorage implements java.io.Serializable  {
     
-    private String dir = "";
-    private final String idServerDetailsFileName = "Id Servers.ser";
-    private final String messageServerDetailsFileName = "Message Servers.ser";
+    private transient String dir = "";
+    private transient final String idServerDetailsFileName = "Id Servers.ser";
+    private transient final String messageServerDetailsFileName = "Message Servers.ser";
     private Stack idServerList;
     private Stack messageServerList;
     
@@ -78,6 +78,7 @@ public class ServerStorage implements java.io.Serializable  {
 
 
     }
+    
     public void updateIDSeverDetails(Stack details){
         try{
 
@@ -85,6 +86,8 @@ public class ServerStorage implements java.io.Serializable  {
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 oos.writeObject(details);
                 oos.close();
+                fos.close();
+                new Send(details);
                 
             }
             catch(FileNotFoundException ex){
@@ -98,6 +101,7 @@ public class ServerStorage implements java.io.Serializable  {
     public Stack getIdServerList() {
         return idServerList;
     }
+
     
     public void updateMessageServerDetails(Stack details){
         
@@ -107,6 +111,8 @@ public class ServerStorage implements java.io.Serializable  {
                     ObjectOutputStream oos = new ObjectOutputStream(fos);
                     oos.writeObject(details);
                     oos.close();
+                    fos.close();
+                    new Send(details);
 
                 }
                 catch(FileNotFoundException ex){

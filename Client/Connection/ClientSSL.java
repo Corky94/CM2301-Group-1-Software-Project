@@ -1,63 +1,46 @@
 package Connection;
-
-import java.security.spec.X509EncodedKeySpec;
+ 
 import javax.net.ssl.*;
 import java.security.*;
-import java.io.*; 
-import Console.*;
+import java.io.*;
 import Crypto.*;
+import Message.NodeList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+ 
 public class ClientSSL {
-
-/* Get keys from Max's Keyvault. */
-
-    public static SSLSocket main(char[] localPassword) {
-
-        
+ 
+    private SSLContext sc;
+    private SSLSocketFactory sf;
+ 
+    public ClientSSL(char[] localPassword) {
+ 
         try {
-
-          KeyVault kv = new KeyVault();
-          KeyStore ks = kv.loadKeyStore(localPassword);
-
-           KeyManagerFactory kmf = KeyManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-           kmf.init(ks, localPassword);
-
-           TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm()); 
-           tmf.init(ks);
-
-           SSLContext sc = SSLContext.getInstance("TLS"); 
-           TrustManager[] trustManagers = tmf.getTrustManagers(); 
-           sc.init(kmf.getKeyManagers(), trustManagers, null); 
-
-            /* starting handshake with server */
-            
-            try {
-                SSLSocketFactory ssf = sc.getSocketFactory(); 
-                SSLSocket s = (SSLSocket) ssf.createSocket("localhost", 12346);
-                String[] suites = s.getSupportedCipherSuites();
-                s.setEnabledCipherSuites(suites);
-                System.out.println("Created Socket");
-                s.startHandshake(); 
-               return s;
-            } catch (Exception exception) {
-                exception.printStackTrace();
-                return null;
-            }
-        } catch (NoSuchAlgorithmException ex) {
+            KeyVault kv = new KeyVault();
+            KeyStore ks = kv.loadKeyStore(localPassword);
+ 
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            kmf.init(ks, localPassword);
+            tmf.init(ks);
+ 
+            sc = SSLContext.getInstance("TLS");
+            sc.getClientSessionContext().setSessionCacheSize(1);
+            sc.getClientSessionContext().setSessionTimeout(10000);
+            sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+            sf = sc.getSocketFactory();
+        } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException | KeyManagementException ex) {
             Logger.getLogger(ClientSSL.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        } catch (KeyManagementException ex) {
-            Logger.getLogger(ClientSSL.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        } catch (KeyStoreException ex) {
-            Logger.getLogger(ClientSSL.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        } catch (UnrecoverableKeyException ex) {
-            Logger.getLogger(ClientSSL.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
         }
     }
+ 
+    public SSLSocket main(int portNumber) throws IOException {
+        NodeList n = new NodeList();
+        SSLSocket s = (SSLSocket) sf.createSocket(n.getNode(), portNumber);
+        s.setUseClientMode(true);
+        s.setEnabledCipherSuites(s.getSupportedCipherSuites());
+        s.startHandshake();
+        System.out.println(s.getHandshakeSession());
+        return s;
+    }
 }
-

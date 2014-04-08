@@ -15,29 +15,67 @@ class GuiMenu	extends	JFrame
 	private		JTabbedPane tabbedPane;
 	private		JPanel		inboxPanel;
 	private		JPanel		composePanel;
-        private         SecureDetails   s = new SecureDetails(); 
+        private         SecureDetails   s;
         private         Message[]       m;
         private         JFrame          mainFrame;
         private         JList           inboxList;
 
-	public GuiMenu()
+	public GuiMenu(char[] password)
 	{   
-                
+           s = new SecureDetails(password);
+           mainFrame = new JFrame("Menu");
+		mainFrame.setSize(800, 755);
+                Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+                int x = (int) ((dimension.getWidth() - mainFrame.getWidth()) / 2);
+                int y = (int) ((dimension.getHeight() - mainFrame.getHeight()) / 2);
+                mainFrame.setLocation(x, y);
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		JPanel panel = new JPanel();
+                mainFrame.add(panel);
+		createMenu(panel);
+                mainFrame.getContentPane().setBackground(Color.WHITE);
+		mainFrame.setVisible(true);     
 	}
-        public void createMenu(){
+        public GuiMenu()
+	{   
+           
+		mainFrame.setSize(800, 755);
+                Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+                int x = (int) ((dimension.getWidth() - mainFrame.getWidth()) / 2);
+                int y = (int) ((dimension.getHeight() - mainFrame.getHeight()) / 2);
+                mainFrame.setLocation(x, y);
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		JPanel panel = new JPanel();
+                mainFrame.add(panel);
+		createMenu(panel);
+                mainFrame.getContentPane().setBackground(Color.WHITE);
+		mainFrame.setVisible(true);     
+	}
+        public void createMenu(final JPanel panel){
                 
                 
-		JPanel topPanel = new JPanel();
-              
-		
-		topPanel.setPreferredSize(new Dimension(140, 480));
-		JLabel userID = new JLabel("UserId: " + s.getID()  );
-		userID.setBounds(150, 0, 550, 25);
-		topPanel.add(userID);
-		
-		topPanel.setLayout( new BorderLayout() );
-		
+                panel.setLayout( null );
+                panel.setBackground(Color.WHITE);
 
+		JLabel userID = new JLabel("UserId: " + s.getID()  );
+		userID.setBounds(5, 0, 550, 25);
+		panel.add(userID);
+		
+                //adding our logo 
+		JLabel imgLabel = new JLabel();
+                imgLabel.setIcon(new ImageIcon("C:\\Users\\Melvin\\Documents\\group project2013\\mainScreenLogo.jpg"));// your image here 
+                imgLabel.setBounds(635, 0, 140, 30);
+                panel.add (imgLabel);
+                
+		//adding a dropdown menu
+                String[] dropDownList = { "","Inbox", "Settings", "Contacts", "Sign Out"};
+                JComboBox drpDwnList = new JComboBox(dropDownList);
+                drpDwnList.setSelectedIndex(0);
+                drpDwnList.setBounds(635, 30, 140, 20);
+                drpDwnList.setBackground(Color.white);
+                //drpDwnList.setForeground(Color.red);
+                panel.add(drpDwnList);
+                
 		// Create the tab pages
 		createPage1();
 		createPage2();
@@ -46,14 +84,10 @@ class GuiMenu	extends	JFrame
 		tabbedPane = new JTabbedPane();
 		tabbedPane.addTab( "Inbox", inboxPanel );
 		tabbedPane.addTab( "Compose", composePanel );
-		topPanel.add( tabbedPane, BorderLayout.CENTER );
-                mainFrame = new JFrame();
-		mainFrame.setVisible( true );
-                mainFrame.setTitle( "Menu" );
-		mainFrame.setSize( 700, 700 );
-		mainFrame.setResizable(false);
-		mainFrame.setBackground( Color.blue );
-                mainFrame.getContentPane().add(topPanel);
+                tabbedPane.setBounds(0, 40, 785, 680);
+		panel.add( tabbedPane);
+		//mainFrame.setBackground( Color.white );
+                //mainFrame.getContentPane().add(topPanel);
         }
 
 
@@ -66,18 +100,31 @@ class GuiMenu	extends	JFrame
 		JLabel label1 = new JLabel("Search");
         JTextField search = new JTextField();
         label1.setBounds(10, 10, 50, 25);
-        search.setBounds( 60, 10, 610, 28 );
+        search.setBounds( 60, 10, 715, 28 );
         inboxPanel.add(label1);
         inboxPanel.add(search);
         
         //adding buttons
         final JButton read = new JButton("Read");
         read.setEnabled(false);
-        JButton delete = new JButton("Delete");
+        final JButton delete = new JButton("Delete");
+        delete.setEnabled(false);
+        JButton selectAll = new JButton("Select All");
+        final JButton forward = new JButton("Forward");
+        forward.setEnabled(false);
+        final JButton reply = new JButton("Reply");
+        reply.setEnabled(false);
 		read.setBounds(10, 50, 100, 25);
-		delete.setBounds(120, 50, 100, 25);
+		delete.setBounds(180, 50, 100, 25);
+                reply.setBounds(350, 50, 100, 25);
+                forward.setBounds(520, 50, 100, 25);
+                selectAll.setBounds(675, 50, 100, 25);
 		inboxPanel.add(read);
 		inboxPanel.add(delete);
+                inboxPanel.add(selectAll);
+                inboxPanel.add(forward);
+                inboxPanel.add(reply);
+                
                 
 
                 
@@ -85,7 +132,7 @@ class GuiMenu	extends	JFrame
 		
                 User u = new User();
                 
-                m = u.receiveEmails();
+                m = u.receiveEmails(s);
                 int length = m.length;
 		String[] listContent = new String[length];
                 Encryption e = new Encryption();
@@ -121,6 +168,9 @@ class GuiMenu	extends	JFrame
                         } else {
                         
                             read.setEnabled(true);
+                            delete.setEnabled(true);
+                            forward.setEnabled(true);
+                            reply.setEnabled(true);
                                     }
                         }
                     }
@@ -130,7 +180,7 @@ class GuiMenu	extends	JFrame
                 
                 
                 JScrollPane listScroller = new JScrollPane(inboxList);
-                listScroller.setBounds(10, 90, 660, 500);
+                listScroller.setBounds(10, 90, 765, 550);
 		inboxPanel.add(listScroller);
                
 
@@ -160,14 +210,18 @@ class GuiMenu	extends	JFrame
 		toLabel.setBounds(10, 10, 50, 25);
         composePanel.add(toLabel);
         final JTextField toText = new JTextField();
-        toText.setBounds( 60, 10, 600, 28 );
+        toText.setBounds( 60, 10, 645, 28 );
         composePanel.add(toText);
+        
+        JButton contactButton = new JButton("+");
+        contactButton.setBounds( 720, 10, 45, 28 );
+        composePanel.add(contactButton);
         
         JLabel subjectLabel = new JLabel("Subject");
         subjectLabel.setBounds(10, 50, 50, 25);
         composePanel.add(subjectLabel);
         final JTextField subjectText = new JTextField();
-        subjectText.setBounds( 60, 50, 600, 28 );
+        subjectText.setBounds( 60, 50, 705, 28 );
         composePanel.add(subjectText);
  
         JLabel contentLabel = new JLabel("Content");
@@ -180,12 +234,12 @@ class GuiMenu	extends	JFrame
         //spane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         //composePanel.add(content);
         //content.setWrapStyleWord(true);
-        content.setBounds(60, 90, 600, 500);
+        content.setBounds(60, 90, 705, 520);
         //composePanel.add(spane);
         composePanel.add(content);
         
         JButton send = new JButton("Send");
-        send.setBounds(560, 610, 100, 25);
+        send.setBounds(665, 620, 100, 25);
         composePanel.add(send);
 	
         send.addActionListener(new ActionListener(){
@@ -208,7 +262,7 @@ class GuiMenu	extends	JFrame
     // Main method to get things started
 	public static void main( String args[] )
 	{
-		            GuiMenu mainFrame	= new GuiMenu();
+                GuiMenu mainFrame = new GuiMenu();
 		mainFrame.setTitle( "Menu" );
 		mainFrame.setSize( 700, 700 );
 		mainFrame.setResizable(false);

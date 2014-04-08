@@ -8,6 +8,9 @@ package Connection;
 import Message.*;
 import java.io.*;
 import java.net.*;
+import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.net.ssl.*;
 
 /**
@@ -18,11 +21,17 @@ public class NodeHandler implements Runnable {
     
 
 	private static boolean debug = true;
-        private Socket socket;
-        private Message message;
+        private SSLSocket socket;
+        private NodeList n;
+        private ServerStorage s;
+
         
-        NodeHandler(Socket s){
-            this.socket = s;
+        NodeHandler(SSLServerSocket s){
+            try {
+                this.socket = (SSLSocket)s.accept();
+            } catch (IOException ex) {
+                Logger.getLogger(NodeHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
         
         }
         
@@ -34,17 +43,55 @@ public class NodeHandler implements Runnable {
             
                 try{
                     
-                Socket s = socket;
+                System.out.println("running handler");
                 
                 
-                InputStream is = s.getInputStream();  
+                InputStream is = socket.getInputStream();  
                 ObjectInputStream ois = new ObjectInputStream(is);
+                Stack in =(Stack) ois.readObject();
+                Stack t = in;
+                System.out.println(in);
+                Object o = t.peek();
+                
+                is.close();
+                ois.close();
+                
+                if(o instanceof MessageServer){
+                    s = new ServerStorage();
+                    MessageServer m = (MessageServer)o;
+                    
+                    System.out.println(m.getUrl());
+                    s.updateMessageServerDetails(in);
+                }
+                else if(o instanceof IDServer){
+                    s = new ServerStorage();
+                    s.updateIDSeverDetails(in);
+                }
+                    
+                else{
+                    System.out.println("Test"); 
+                    n = new NodeList();                    
+                    n.updateList(in);
+                }
+                    
+               n = null;
+               s=null;
+               
+                    
+               
+                
 	
                         
                   
-		} catch(Exception e){
-
+		} catch(EOFException e){
+                    
 		}  
+            catch (IOException ex) {
+                Logger.getLogger(NodeHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            catch (ClassNotFoundException ex) {
+                Logger.getLogger(NodeHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }  
             
         }
 }

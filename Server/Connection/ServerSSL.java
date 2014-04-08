@@ -1,11 +1,11 @@
 package Connection;
 
 import Crypto.*;
+import Message.*;
+import java.io.*;
+import java.net.*;
 import javax.net.ssl.*;
 import java.security.*;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,12 +13,13 @@ public class ServerSSL {
 
 /*Get keys from Max's Keyvault. */
 
-     public static SSLServerSocket main(int port) {
+     public  SSLServerSocket main(int port) {
 
           
         try {
            KeyVault kv = new KeyVault();
            KeyStore ks = kv.loadKeyStore("pass".toCharArray());
+           kv = null;
 
            KeyManagerFactory kmf = KeyManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
            kmf.init(ks, "pass".toCharArray());
@@ -27,11 +28,25 @@ public class ServerSSL {
            tmf.init(ks); 
 
            SSLContext sc = SSLContext.getInstance("TLS"); 
+           sc.getServerSessionContext().setSessionCacheSize(1000);
+           sc.getServerSessionContext().setSessionTimeout(10000);
            TrustManager[] trustManagers = tmf.getTrustManagers(); 
            sc.init(kmf.getKeyManagers(), trustManagers, null);
 
               /* setting up handshake with client */
               
+<<<<<<< HEAD
+            
+           SSLServerSocketFactory ssf = sc.getServerSocketFactory(); 
+           SSLServerSocket s = (SSLServerSocket) ssf.createServerSocket(port);
+           System.out.println("Created Server Socket");
+           String[] suites = s.getSupportedCipherSuites();
+           s.setEnabledCipherSuites(suites);
+           sc =null; 
+
+           return s;
+
+=======
             try {
                SSLServerSocketFactory ssf = sc.getServerSocketFactory(); 
                SSLServerSocket s = (SSLServerSocket) ssf.createServerSocket(port);
@@ -41,11 +56,9 @@ public class ServerSSL {
                
                return s;
                
+>>>>>>> 64c80b29aa6e0dd2129a4ea399a7c98e48306225
         
-          } catch (Exception exception) {
-              exception.printStackTrace();
-              return null;
-          }
+          
           } catch (NoSuchAlgorithmException ex) {
                   Logger.getLogger(ServerSSL.class.getName()).log(Level.SEVERE, null, ex);
                   return null;
@@ -59,5 +72,41 @@ public class ServerSSL {
              Logger.getLogger(ServerSSL.class.getName()).log(Level.SEVERE, null, ex);
              return null;
          }
+         catch (IOException ex) {
+             Logger.getLogger(ServerSSL.class.getName()).log(Level.SEVERE, null, ex);
+             return null;
+         }
+        
       }
+     public SSLSocket send(String address, int portNumber)  {
+         try {
+            char[] localPassword = "pass".toCharArray();
+            KeyVault kv = new KeyVault();
+            KeyStore ks = kv.loadKeyStore(localPassword);
+ 
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            kmf.init(ks, localPassword);
+            tmf.init(ks);
+ 
+            SSLContext sc = SSLContext.getInstance("TLS");
+            sc.getClientSessionContext().setSessionCacheSize(1);
+            sc.getClientSessionContext().setSessionTimeout(10000);
+            sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+            SSLSocketFactory sf = sc.getSocketFactory();
+       
+            SSLSocket s = (SSLSocket) sf.createSocket(address, portNumber);
+            s.setUseClientMode(true);
+            s.setEnabledCipherSuites(s.getSupportedCipherSuites());
+            s.startHandshake();
+            
+            return s;
+            
+        } catch (KeyStoreException | NoSuchAlgorithmException | KeyManagementException | UnrecoverableKeyException | IOException ex ) {
+            Logger.getLogger(ServerSSL.class.getName()).log(Level.SEVERE, null, ex);
+        
+         }
+         
+        return null;
+    }
 }
