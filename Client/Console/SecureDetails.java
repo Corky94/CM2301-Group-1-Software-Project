@@ -5,10 +5,8 @@
 package Console;
 
 import Message.Message;
-import Connection.*;
 import Crypto.*;
 import java.io.*;
-import java.security.*;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,7 +19,6 @@ public class SecureDetails {
     
     private HashMap details;
     private final String dir = "user2";
-    private Encryption en = new Encryption();
     
     public SecureDetails(char[] pass){
         
@@ -30,7 +27,7 @@ public class SecureDetails {
 
                 try {
                     FileInputStream test = new FileInputStream(dir);
-                    en.decryptFile(pass, dir);
+                    Encryption.decryptFile(dir);
                     FileInputStream fis = new FileInputStream(dir);
                     ObjectInputStream oos = new ObjectInputStream(fis);
                     
@@ -135,11 +132,8 @@ public class SecureDetails {
                 fos.close();
                 oos.close();
                 FileInputStream fid = new FileInputStream(dir);
-                
-                en.encryptFile(pass, fos);
-                
-                
-                
+                Encryption.encryptFile(fos);
+                oos.close();          
             }
             catch(FileNotFoundException ex){
                 

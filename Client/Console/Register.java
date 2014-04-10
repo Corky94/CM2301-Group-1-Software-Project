@@ -8,8 +8,6 @@ import Connection.ClientSend;
 import Crypto.*;
 import java.security.*;
 import java.util.Arrays;
-import java.util.Scanner;
-import javax.crypto.SecretKey;
 
 /**
  *
@@ -20,8 +18,8 @@ public class Register {
             
     
         public Register(char[] password, char[] confirm) {
-            System.out.println(password);
-            System.out.println(confirm);
+            System.out.println(Arrays.toString(password));
+            System.out.println(Arrays.toString(confirm));
       
             while (Arrays.equals(password, confirm) == false){
                 
@@ -37,14 +35,14 @@ public class Register {
             KeyPair k = kg.generateRSAKeys();
             HashUtils hu = new HashUtils();
 
-            kv.setRSAKeys(password);
-            kv.setAESKey(password);
+            KeyVault.setRSAKeys();
+            KeyVault.setAESKey();
             
-            System.out.println(kv.getAESKey(password).getEncoded());
+            System.out.println(Arrays.toString(KeyVault.getAESKey().getEncoded()));
             
-            byte[] key = kv.getRSAKeys(password).getPublic().getEncoded();
+            byte[] key = KeyVault.getRSAKeys().getPublic().getEncoded();
 
-            String UserID = kg.generateUserID(password);
+            String UserID = KeyGen.generateUserID();
 
             ClientSend.registerToServer(UserID, key, password);
 

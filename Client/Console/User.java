@@ -19,12 +19,19 @@ public class User {
         private String realm;
         private ClientSend c;
         private byte[] publicKey;
-        private char[] pass;
+        private static char[] pass;
         
 	public User() {
 	
 	}
-            
+        
+        public static void setPassword(char[] p){
+            pass = p;
+        }
+         
+        public static char[] getPassword(){
+            return pass;
+        }
         
         
         public void login(char[] password){
@@ -35,10 +42,10 @@ public class User {
             KeyVault kv = new KeyVault();
             
             
-            while (kv.checkPassword(password) != true){
+            while (KeyVault.checkPassword(password) != true){
                 
                
-                if (kv.checkPassword(password) == false){
+                if (KeyVault.checkPassword(password) == false){
                     System.out.println("Password Incorrect \n Press enter to try again");                
  
                 }
@@ -92,9 +99,9 @@ public class User {
 
             String sender = s.getID();
 
-            m.setSubject(e.encryptString(pk, subject));
-            m.setSender(e.encryptString(pk, sender));
-            m.setMessage(e.encryptString(pk, contents));
+            m.setSubject(Encryption.encryptString(pk, subject));
+            m.setSender(Encryption.encryptString(pk, sender));
+            m.setMessage(Encryption.encryptString(pk, contents));
             ClientSend.sendMessage(m, pass);
             
 

@@ -5,34 +5,36 @@
 
 package Crypto;
 
-import java.security.*;
-import javax.crypto.*;
+import Console.User;
 import java.io.*;
+import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 
 import java.security.spec.X509EncodedKeySpec;
+import javax.crypto.*;
 /*
 *KeyVault is responcible for storing and retreiving keys from the vault, it also provides a password check for user login. 
 */
 
 public class KeyVault{
-    private final String KEY_STORE_DIR = "";
-    private final String KEY_STORE_NAME = "keystore";
-    private final String KEY_STORE_TYPE = "JCEKS";
+    //incase we decide on different system setup
+    private static final String KEY_STORE_DIR = "";
+    private static final String KEY_STORE_NAME = "keystore";
+    private static final String KEY_STORE_TYPE = "JCEKS";
 
     public KeyVault(){
     }
 
     //PASSWORD IN REFERENCE IS TO OPEN THE KEYVAULT (LOCAL PASSWORD)
-    public boolean checkPassword(char[] localPassword){
+    public static boolean checkPassword(char[] localPassword){
         try{
-            KeyVault kv = new KeyVault();
-            kv.loadKeyStore(localPassword);
+            KeyStore ks  = KeyStore.getInstance(KEY_STORE_TYPE);
+            ks.load(new FileInputStream(KEY_STORE_DIR + KEY_STORE_NAME), localPassword);
             return true;
-        }catch(Exception ex){
+        }catch(KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException ex){
             return false;
-        }
+        } 
     }
 
     public PublicKey bytesToKey(byte[] bytes){
@@ -45,31 +47,25 @@ public class KeyVault{
     }
 
     //Keystore methods	
-    public void createKeyStore(char[] localPassword) {
+    public static void createKeyStore() {
         try {
             KeyStore ks = KeyStore.getInstance(KEY_STORE_TYPE);  
-            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(localPassword);
-            ks.load(null, localPassword);
-
-            if (checkIfKsExists(KEY_STORE_DIR + KEY_STORE_NAME) != true){
-                FileOutputStream fos = null;
-                fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME);
-                ks.store(fos, localPassword);
-
-                if (fos != null)
-                        fos.close();
+            //KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(User.getPassword());
+            ks.load(null, User.getPassword());
+            if (checkIfKsExists() != true){
+                try (FileOutputStream fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME)) {
+                    ks.store(fos, User.getPassword());
+                }
             }
             else
                 throw new RuntimeException("KEYSTORE ALREADY EXISTS");
-            
         }catch(IOException | RuntimeException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
             throw new RuntimeException(ex);
         }
     }
 
-    public boolean destroyKeyStore(char[] localPassword){
-        KeyVault kv = new KeyVault();
-        if(kv.checkPassword(localPassword)){
+    public static boolean destroyKeyStore(){
+        if(checkPassword(User.getPassword())){
             File vault = new File(KEY_STORE_DIR + KEY_STORE_NAME);
             if(vault.delete()){
                 return true;
@@ -78,76 +74,60 @@ public class KeyVault{
         return false;
     }
 
-    public KeyStore loadKeyStore(char[] localPassword){
-        if (this.checkIfKsExists(KEY_STORE_DIR + KEY_STORE_NAME)== false)
-        createKeyStore(localPassword);         
+    public static KeyStore loadKeyStore(){       
         try{
             KeyStore ks  = KeyStore.getInstance(KEY_STORE_TYPE);
-            ks.load(new FileInputStream(KEY_STORE_DIR + KEY_STORE_NAME), localPassword);
+            ks.load(new FileInputStream(KEY_STORE_DIR + KEY_STORE_NAME), User.getPassword());
             return ks;
         }catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
             throw new RuntimeException(ex);
         }
     }
 
-    private boolean checkIfKsExists(String keyStoreName){
-        File f = new File(KEY_STORE_DIR + keyStoreName);
-        if(f.exists() && !f.isDirectory())
-            return true;
-        return false;
+    public static boolean checkIfKsExists(){
+        File f = new File(KEY_STORE_DIR + KEY_STORE_NAME);
+        return f.exists() && !f.isDirectory();
     }
 
-
     //Setter methods
-    public boolean setRSAKeys(char[] localPassword){
+    public static void setRSAKeys(){
         try{
-            KeyVault kv = new KeyVault();
-            KeyStore ks = kv.loadKeyStore(localPassword);
+            KeyStore ks = loadKeyStore();
             //generate the rsaKeys
             KeyGen kg = new KeyGen();
             KeyPair rsaKeys = kg.generateRSAKeys();
             PublicKey pubKey = rsaKeys.getPublic();
             PrivateKey priKey = rsaKeys.getPrivate();
 
-            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(localPassword);
+            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(User.getPassword());
 
             KeyStore.PrivateKeyEntry rsaEntry = new KeyStore.PrivateKeyEntry(priKey, KeyGen.generateCertificate(pubKey, priKey));
             ks.setEntry("rsaKeys", rsaEntry, passwordProtection);
 
-            FileOutputStream fos = null;
-            fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME);
-            ks.store(fos, localPassword);
-
-            if (fos != null) {
-                fos.close();
-            }
-
-            return true;
+            FileOutputStream fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME);
+            ks.store(fos, User.getPassword());
+            fos.close();
         }catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
             throw new RuntimeException(ex);
         }
     }
 
-    public void setAESKey(char[] localPassword){
+    public static void setAESKey(){
         try{
-            KeyVault kv = new KeyVault();
-            KeyStore ks = kv.loadKeyStore(localPassword);
+            KeyStore ks = loadKeyStore();
             //generate the aesKey
             KeyGen kg = new KeyGen();
             SecretKey aesKey = kg.generateAESKey();
 
-            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(localPassword);
+            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(User.getPassword());
 
             KeyStore.SecretKeyEntry aesKeyEntry = new KeyStore.SecretKeyEntry(aesKey);
             ks.setEntry("aesKey", aesKeyEntry, passwordProtection);
 
-            FileOutputStream fos = null;
-            fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME);
-            ks.store(fos, localPassword);
-
-             if (fos != null) {
-                fos.close();
-            }
+            FileOutputStream fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME);
+            ks.store(fos, User.getPassword());
+            fos.close();
+            
         }catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
             //logger.error("Cannot close connection");
         throw new RuntimeException(ex);
@@ -155,12 +135,10 @@ public class KeyVault{
     }
 
     //Getter methods
-    public KeyPair getRSAKeys(char[] localPassword){
+    public static KeyPair getRSAKeys(){
         try{
-            KeyVault kv = new KeyVault();
-            KeyStore ks = kv.loadKeyStore(localPassword);
-
-            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(localPassword);
+            KeyStore ks = loadKeyStore();
+            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(User.getPassword());
             KeyStore.PrivateKeyEntry rsaKeyEntry = (KeyStore.PrivateKeyEntry) ks.getEntry("rsaKeys", passwordProtection);
             PrivateKey priKey = rsaKeyEntry.getPrivateKey();
             java.security.cert.Certificate rsaCert = rsaKeyEntry.getCertificate();
@@ -173,12 +151,10 @@ public class KeyVault{
     }
 
 
-    public Key getAESKey(char[] localPassword){
+    public static Key getAESKey(){
         try{
-            KeyVault kv = new KeyVault();
-            KeyStore ks = kv.loadKeyStore(localPassword);
-
-            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(localPassword);
+            KeyStore ks = loadKeyStore();
+            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(User.getPassword());
             KeyStore.SecretKeyEntry aesKeyEntry = (KeyStore.SecretKeyEntry) ks.getEntry("aesKey", passwordProtection);
             Key aesKey = aesKeyEntry.getSecretKey();
             return aesKey;
