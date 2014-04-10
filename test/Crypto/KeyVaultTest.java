@@ -6,9 +6,9 @@
 
 package Crypto;
 
+import Console.User;
 import java.security.Key;
 import java.security.KeyPair;
-import java.security.KeyStore;
 import java.security.PublicKey;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -28,24 +28,24 @@ public class KeyVaultTest {
     
     @BeforeClass
     public static void setUpClass() {
+        User.setPassword("password".toCharArray());
     }
     
     @AfterClass
     public static void tearDownClass() {
-        if(KeyVault.checkIfKsExists("keystore") == true)
-            KeyVault.destroyKeyStore("password".toCharArray());
+        if(KeyVault.checkIfKsExists() == true)
+            KeyVault.destroyKeyStore();
     }
     
     @Before
     public void setUp() {
-        KeyVault kv = new KeyVault();
-        kv.createKeyStore("password".toCharArray());
+        //User.setPassword("password".toCharArray());
+        KeyVault.createKeyStore();
     }
     
     @After
     public void tearDown() {
-        KeyVault kv = new KeyVault();
-        kv.destroyKeyStore("password".toCharArray());
+        KeyVault.destroyKeyStore();
     }
 
     /**
@@ -67,13 +67,12 @@ public class KeyVaultTest {
     @Test
     public void testBytesToKey() {
         System.out.println("bytesToKey");
-        KeyVault instance = new KeyVault();
         KeyGen kg = new KeyGen();
         KeyPair kp = kg.generateRSAKeys();
         PublicKey pubKey = kp.getPublic();
         byte[] encoded = pubKey.getEncoded();
         PublicKey expResult = pubKey;
-        PublicKey result = instance.bytesToKey(encoded);
+        PublicKey result = KeyVault.bytesToKey(encoded);
         assertEquals(expResult, result);
     }
 
@@ -83,10 +82,8 @@ public class KeyVaultTest {
     @Test
     public void testCreateKeyStore() {
         System.out.println("createKeyStore");
-        char[] localPassword = "password".toCharArray();
-        KeyVault instance = new KeyVault();
-        instance.destroyKeyStore(localPassword);
-        instance.createKeyStore(localPassword);
+        KeyVault.destroyKeyStore();
+        KeyVault.createKeyStore();
     }
 
     /**
@@ -95,12 +92,10 @@ public class KeyVaultTest {
     @Test
     public void testDestroyKeyStore() {
         System.out.println("destroyKeyStore");
-        char[] localPassword = "password".toCharArray();
-        KeyVault instance = new KeyVault();
         boolean expResult = true;
-        boolean result = instance.destroyKeyStore(localPassword);
+        boolean result = KeyVault.destroyKeyStore();
         assertEquals(expResult, result);
-        instance.createKeyStore(localPassword);
+        KeyVault.createKeyStore();
     }
 
     /**
@@ -109,9 +104,7 @@ public class KeyVaultTest {
     @Test
     public void testLoadKeyStore() {
         System.out.println("loadKeyStore");
-        char[] localPassword = null;
-        KeyVault instance = new KeyVault();
-        KeyStore expResult = instance.loadKeyStore(localPassword);
+        KeyVault.loadKeyStore();
     }
 
     /**
@@ -120,11 +113,7 @@ public class KeyVaultTest {
     @Test
     public void testSetRSAKeys() {
         System.out.println("setRSAKeys");
-        char[] localPassword = "password".toCharArray();
-        KeyVault instance = new KeyVault();
-        boolean expResult = true;
-        boolean result = instance.setRSAKeys(localPassword);
-        assertEquals(expResult, result);
+        KeyVault.setRSAKeys();
     }
 
     /**
@@ -133,9 +122,7 @@ public class KeyVaultTest {
     @Test
     public void testSetAESKey() {
         System.out.println("setAESKey");
-        char[] localPassword = "password".toCharArray();
-        KeyVault instance = new KeyVault();
-        instance.setAESKey(localPassword);
+        KeyVault.setAESKey();
     }
 
     /**
@@ -144,12 +131,10 @@ public class KeyVaultTest {
     @Test
     public void testGetRSAKeys() {
         System.out.println("getRSAKeys");
-        char[] localPassword = "password".toCharArray();
-        KeyVault instance = new KeyVault();
         //NEEDS TO CREATE RSA KEYS THEN COMPARE TO THE ONES BROUGHT BACK!
-        instance.setRSAKeys(localPassword);
+        KeyVault.setRSAKeys();
         
-        KeyPair result = instance.getRSAKeys(localPassword);
+        KeyPair result = KeyVault.getRSAKeys();
         
         KeyPair dummy = new KeyPair(null, null);
 
@@ -164,12 +149,10 @@ public class KeyVaultTest {
     @Test
     public void testGetAESKey() {
         System.out.println("getAESKey");
-        char[] localPassword = "password".toCharArray();
-        KeyVault instance = new KeyVault();
-        instance.setAESKey(localPassword);
-        Key kp = instance.getAESKey(localPassword);
+        KeyVault.setAESKey();
+        Key kp = KeyVault.getAESKey();
         Key expResult = kp;
-        Key result = instance.getAESKey(localPassword);
+        Key result = KeyVault.getAESKey();
         assertEquals(expResult, result);
     }
     
