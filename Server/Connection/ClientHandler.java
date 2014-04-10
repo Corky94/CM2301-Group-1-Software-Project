@@ -12,17 +12,13 @@ import javax.net.ssl.*;
 
 
 public class ClientHandler implements Runnable {
-	private static boolean debug = true;
+    private static boolean debug = true;
         private SSLSocket socket;
         private Message message;
         
         ClientHandler(SSLServerSocket s){
             try {
-<<<<<<< HEAD
                 this.socket = (SSLSocket) s.accept();
-=======
-                this.socket = s.accept();
->>>>>>> 64c80b29aa6e0dd2129a4ea399a7c98e48306225
             }
             catch (IOException ex) {
                 Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -33,7 +29,7 @@ public class ClientHandler implements Runnable {
             
         }
         
-	public void run() {  
+    public void run() {  
   
                         try{
                             Socket s = socket;
@@ -47,14 +43,9 @@ public class ClientHandler implements Runnable {
 
 
                             if (m == null){
-<<<<<<< HEAD
                                 
                                 
                                 
-=======
-                                System.out.println("Message is null");
-
->>>>>>> 64c80b29aa6e0dd2129a4ea399a7c98e48306225
                             }
 
                             else if (m.getKey() != null){
@@ -86,7 +77,6 @@ public class ClientHandler implements Runnable {
                                     s.close(); 
                                     ois.close();
                             }
-<<<<<<< HEAD
                             System.out.println(s.isClosed());
                             ois.reset();
                             
@@ -101,49 +91,38 @@ public class ClientHandler implements Runnable {
                             m = null;
                             System.out.println(s);
 
-=======
-
-                            is.close(); 
-                            
-                            s.close(); 
-                            ois.close();
-                            s = null;
-                            is = null;
-                            ois = null;
-                           
->>>>>>> 64c80b29aa6e0dd2129a4ea399a7c98e48306225
                             Thread.sleep(10);
                     } catch(Exception e){
 
                     }  
                     
         }
-	private static boolean storeMessage(Message m) {
-		Sql s = new Sql();
+    private static boolean storeMessage(Message m) {
+        Sql s = new Sql();
                 System.out.println("Storing");
                 s.sendMessage(m.getSender(), m.getSubject(), m.getMessage(), m.getReceiver());
                 System.out.println("Stored");
-		return true;
-	} 
+        return true;
+    } 
 
-	private static void getMessages(Socket s, String id) {
+    private static void getMessages(Socket s, String id) {
 
                 
                 Sql sq = new Sql();
                 System.out.println("Getting");
                 Message[] m = sq.getMessage(id);
                 System.out.println("Got");
-		try{
-			OutputStream os = s.getOutputStream();  
-			ObjectOutputStream oos = new ObjectOutputStream(os);  
-			oos.writeObject(m);
-			os.close();
-			oos.close();
-		} catch (Exception e) {
-			
-		}
+        try{
+            OutputStream os = s.getOutputStream();  
+            ObjectOutputStream oos = new ObjectOutputStream(os);  
+            oos.writeObject(m);
+            os.close();
+            oos.close();
+        } catch (Exception e) {
+            
+        }
 
-	}
+    }
   
         public static void registerUser(Message m, String all){
             
@@ -188,8 +167,8 @@ public class ClientHandler implements Runnable {
                 s.close();  
             
             }catch(Exception e){
-			
-		}  
+            
+        }  
 }
 
 

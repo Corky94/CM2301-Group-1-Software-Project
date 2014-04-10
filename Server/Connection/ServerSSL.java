@@ -35,7 +35,6 @@ public class ServerSSL {
 
               /* setting up handshake with client */
               
-<<<<<<< HEAD
             
            SSLServerSocketFactory ssf = sc.getServerSocketFactory(); 
            SSLServerSocket s = (SSLServerSocket) ssf.createServerSocket(port);
@@ -46,17 +45,6 @@ public class ServerSSL {
 
            return s;
 
-=======
-            try {
-               SSLServerSocketFactory ssf = sc.getServerSocketFactory(); 
-               SSLServerSocket s = (SSLServerSocket) ssf.createServerSocket(port);
-               System.out.println("Created Server Socket");
-               String[] suites = s.getSupportedCipherSuites();
-               s.setEnabledCipherSuites(suites);
-               
-               return s;
-               
->>>>>>> 64c80b29aa6e0dd2129a4ea399a7c98e48306225
         
           
           } catch (NoSuchAlgorithmException ex) {
