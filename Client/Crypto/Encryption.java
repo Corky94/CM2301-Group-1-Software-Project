@@ -18,7 +18,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.crypto.*;
 
 public class Encryption{
@@ -75,17 +78,32 @@ public class Encryption{
             throw new RuntimeException(ex);
         }
     }
+    
+    //the following two methods are only used when asking for a authentication request, they are unsecure as they are unencrypted.
+    public static byte[] serialiseTicket(Ticket t){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+            oos.writeObject(t);
+        } catch (IOException ex) {
+            Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return baos.toByteArray();
+    }
+    
+    public static Ticket deserialiseTicket(byte[] ticket) throws ClassNotFoundException, IOException{ 
+        ByteArrayInputStream bais = new ByteArrayInputStream(ticket);
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        return (Ticket) ois.readObject();
+    }
 
     public static byte[] encryptAuth(Key publicRsa, Ticket a){
         try{
             Cipher encrypt = Cipher.getInstance("RSA");
             encrypt.init(Cipher.ENCRYPT_MODE, publicRsa);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            CipherOutputStream cos = new CipherOutputStream(baos, encrypt);
-            ObjectOutputStream oos = new ObjectOutputStream(cos);
-            oos.writeObject(a);
-            oos.close();
-            cos.close();
+            try (CipherOutputStream cos = new CipherOutputStream(baos, encrypt); ObjectOutputStream oos = new ObjectOutputStream(cos)) {
+                oos.writeObject(a);
+            }
             return baos.toByteArray();
         }catch(IOException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException ex){
             throw new RuntimeException(ex);
@@ -128,8 +146,7 @@ public class Encryption{
             throw new RuntimeException(ex);
         }
     }
-        
-        
+     
     //This needs to be reworked   
     public PublicKey getKey(String id){
         Message m = new Message();
@@ -141,7 +158,7 @@ public class Encryption{
             KeyFactory kf = KeyFactory.getInstance("RSA");
             PublicKey pk = kf.generatePublic(pubKeySpec);                
             return pk;
-        }catch(Exception ex){
+        }catch(NoSuchAlgorithmException | InvalidKeySpecException ex){
         	throw new RuntimeException(ex);
         }   
     }

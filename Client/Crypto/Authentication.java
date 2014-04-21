@@ -6,40 +6,51 @@
 
 package Crypto;
 
-import Console.SecureDetails;
-import Console.User;
+import java.security.Key;
+
 /**
  *
  * @author maxchandler
  */
 public class Authentication {
     
-    public static byte[] auth(String id){
+    public static byte[] auth(String nodeId){
         //This method is called to connect to a node, if it has the right auth
         //it will return it, if not it will generate a request.
-        if(checkAuth(id) == true){
-            return Encryption.encryptAuth(AuthList.getNode(id).getKey(), AuthList.getAuth(id));
+        if(doesTicketExist(nodeId) == true){
+            //get the ticket and encrypt it ready to be send to the node as authentication
+            Ticket t = AuthenticatedList.getNodeAuthentication(nodeId);
+            return Encryption.encryptAuth(t.getNodePublicKey(), t);
         }else{
-            return Encryption.encryptAuth(AuthList.getNode(id).getKey(), Ticket.generateRequest());
+            //generates a new ticket with a request in, that is then encrypted and ready to be sent to the node, this is not encrypted as client doesn't know nodePublicKey!
+            //            
+            // --- Ticket Content ---
+            //clientId = clientID;
+            //nodeId = nodeID;
+            //otp = null;
+            //clientPublicKey = clientPublicKey;
+            //nodePublicKey = null; 
+            //is_challenge = true; 
+            Key nodePublicKey = getNodePublicKey(nodeId); //HOW DO I CONNECT TO AN ID SERVER AND GET A PUBLIC KEY?
+            return Encryption.encryptAuth(nodePublicKey, Ticket.generateRequest(nodeId));
         } 
     }
     
+    //method to be called as ticket is returned from node
     public static byte[] handleChallenge(byte[] challenge){
-        SecureDetails sd = new SecureDetails(User.getPassword());
-        Ticket decrypted = (Ticket) Encryption.decryptAuth(challenge);        
-        if(decrypted != null){    
-            //Store the password here.
-            AuthList.addAuth(decrypted);
-            //Create the new Ticket ready to be returned to the node, has different details
-            Ticket a = AuthList.getAuth(decrypted.getId());
-            return Encryption.encryptAuth(decrypted.getKey(), a);
+        Ticket t = (Ticket) Encryption.decryptAuth(challenge);        
+        if(t == null){    
+            throw new RuntimeException("Ticket returned null");
         }
-        return null;
+        //Store the password here.
+        AuthenticatedList.addAuth(t);
+        //And return the decrypted ticket ready to send back to the server.
+        return Encryption.encryptAuth(t.getNodePublicKey(), t);
     }
     
-    private static boolean checkAuth(String serverId){
+    private static boolean doesTicketExist(String serverId){
         //tidy up the auth list before we use it, and remove expired auth
-        AuthList.removeExpiredAuth();
-        return AuthList.exists(serverId);
+        AuthenticatedList.removeExpiredAuth();
+        return AuthenticatedList.exists(serverId);
     }
 }

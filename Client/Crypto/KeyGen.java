@@ -30,7 +30,6 @@ public class KeyGen{
     final private int AES_KEY_LENGTH = 128;
     final protected static char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
     static { Security.addProvider(new BouncyCastleProvider());}
-    private String userID;
 
     //Keygen methods
     public KeyPair generateRSAKeys(){
@@ -100,12 +99,6 @@ public class KeyGen{
         }catch(NoSuchAlgorithmException ex){
             throw new RuntimeException(ex);
         }
-    }
-
-    public static byte[] generateRemotePassword(){
-        KeyPair rsaPair = KeyVault.getRSAKeys();
-        PrivateKey rsaPri = rsaPair.getPrivate();
-        return HashUtils.hashKeyToByte(rsaPri);
     }
 
     public static String generateUserID(){

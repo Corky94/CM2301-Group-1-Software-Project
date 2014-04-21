@@ -1,29 +1,26 @@
 package Crypto;
 
-import Console.SecureDetails;
-import Console.User;
-
 /**
  *
  * @author maxchandler
  */
-public class AuthList{
+public class AuthenticatedList{
     private static class Authenticated{
-        private final Ticket au; 
+        private final Ticket t; 
         private final long authTime;
 
         Authenticated(Ticket a){
-            au = a;
+            t = a;
             authTime = System.currentTimeMillis();
         }
 
         Authenticated(Ticket a, long time) {
-            au = a;
+            t = a;
             authTime = time;
         }
         
-        public Ticket getAuth(){
-            return au;
+        public Ticket getTicket(){
+            return t;
         }
         
         public long getTime(){
@@ -34,11 +31,11 @@ public class AuthList{
     private static Authenticated[] list = new Authenticated[1];
     private static int pointer = 0;
     
-    AuthList(){
+    AuthenticatedList(){
         list = new Authenticated[10];
     }
     
-    AuthList(int size){
+    AuthenticatedList(int size){
         list = new Authenticated[size];
     }
     
@@ -50,73 +47,57 @@ public class AuthList{
         pointer++;
     }
     
-    public static void addAuth(){
+    /*public static void addAuth(){
     
-    }
+    }*/
     
-    public static Ticket getNode(String nodeId){
+    public static Ticket getClientTicket(String clientId){
         for(Authenticated a : list){
             if(a != null){
-                if(a.getAuth().getId().equals(nodeId))
-                    return a.getAuth();
+                if(a.getTicket().getClientId().equals(clientId))
+                    return a.getTicket();
             }
         }
         return null;
     }
     
-    public static Ticket getAuth(String nodeId){
-        Ticket out = null;
-        SecureDetails sd = new SecureDetails(User.getPassword());
+    public static Ticket getNodeTicket(String nodeId){
         for(Authenticated a : list){
             if(a != null){
-                if (a.getAuth().getId().equals(nodeId))
-                    return new Ticket(sd.getID(), a.getAuth().getOtp(), KeyVault.getRSAKeys().getPublic(), false);
+                if(a.getTicket().getNodeId().equals(nodeId))
+                    return a.getTicket();
             }
         }
         return null;
     }
     
-    public static void deleteAuth(String userId){
+    public static void deleteAuth(String clientId){
         for(int i = 0; i < list.length; i++){
             if(list[i] != null){
-                if(list[i].getAuth().getId().equals(userId))
+                if(list[i].getTicket().getClientId().equals(clientId))
                     list[i] = null;
             }
         }
     }
     
-    public static boolean exists(String userId){
+    public static boolean exists(String clientId){
         for(Authenticated a : list){
             if(a != null){
-                if (a.getAuth().getId().equals(userId))
+                if (a.getTicket().getClientId().equals(clientId))
                     return true;
             }
         }
         return false;
     }
     
-    /*private static Authenticated getUser(String userId){
-        for(Authenticated a : list){
-            if(a != null){
-                if (a.getAuth().getId().equals(userId))
-                    return a;
-            }
-        }
-        return null;
-    }*/
-    
     private static void expand(){
         Authenticated[] temp = list;
         list = new Authenticated[(2 * temp.length)];
         for (int i = 0; i < temp.length; ++i) {
             if (temp[i] != null) {
-              copyAuthUser(temp[i]);
+              list[pointer] = temp[i];
             }
         }
-    }
-    
-    private static void copyAuthUser(Authenticated a){
-        list[pointer] = a;
     }
     
     public static void removeExpiredAuth(){
@@ -144,6 +125,7 @@ public class AuthList{
     }
     
     private static void findSlot(){
+        //if the list is full this will infinite loop
         while(list[pointer] == null)
             pointer = (pointer + 1) % list.length;
     }
@@ -152,11 +134,15 @@ public class AuthList{
         int i = 0; 
         for(Authenticated a : list){
             if(a != null){
-                System.out.println("Location: " + i);
-                System.out.println("Time: " + a.getTime());
-                System.out.println("ID: " + a.getAuth().getId());
-                System.out.println("Hash: " + a.getAuth().getOtp());
-                System.out.println("Request: " + a.getAuth().is_challenge());
+                System.out.println("Location in list: " + i);
+                System.out.println("Time of Authentication: " + a.getTime());
+                System.out.println("----- Information containted in associated ticket -----");
+                System.out.println("Client ID: " + a.getTicket().getClientId());
+                System.out.println("Client PublicKey: " + a.getTicket().getClientPublicKey());
+                System.out.println("Node ID: " + a.getTicket().getNodeId());
+                System.out.println("Node PublicKey: " + a.getTicket().getNodePublicKey());
+                System.out.println("Hash: " + a.getTicket().getPassword());
+                System.out.println("Request: " + a.getTicket().is_challenge());
             }
         i++;
         }

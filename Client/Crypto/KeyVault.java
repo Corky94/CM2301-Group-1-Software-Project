@@ -40,7 +40,7 @@ public class KeyVault{
     public PublicKey bytesToKey(byte[] bytes){
         try{
             PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(bytes));
-        return publicKey;
+            return publicKey;
         }catch( NoSuchAlgorithmException | InvalidKeySpecException ex){
             throw new RuntimeException(ex);
         }
@@ -104,9 +104,9 @@ public class KeyVault{
             KeyStore.PrivateKeyEntry rsaEntry = new KeyStore.PrivateKeyEntry(priKey, KeyGen.generateCertificate(pubKey, priKey));
             ks.setEntry("rsaKeys", rsaEntry, passwordProtection);
 
-            FileOutputStream fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME);
-            ks.store(fos, User.getPassword());
-            fos.close();
+            try (FileOutputStream fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME)) {
+                ks.store(fos, User.getPassword());
+            }
         }catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
             throw new RuntimeException(ex);
         }
@@ -124,9 +124,9 @@ public class KeyVault{
             KeyStore.SecretKeyEntry aesKeyEntry = new KeyStore.SecretKeyEntry(aesKey);
             ks.setEntry("aesKey", aesKeyEntry, passwordProtection);
 
-            FileOutputStream fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME);
-            ks.store(fos, User.getPassword());
-            fos.close();
+            try (FileOutputStream fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME)) {
+                ks.store(fos, User.getPassword());
+            }
             
         }catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
             //logger.error("Cannot close connection");
@@ -150,7 +150,6 @@ public class KeyVault{
         }
     }
 
-
     public static Key getAESKey(){
         try{
             KeyStore ks = loadKeyStore();
@@ -162,54 +161,4 @@ public class KeyVault{
             throw new RuntimeException(ex);
         }
     }
-
-/* 
-    //
-    // Unit testing
-    //
-    public static void main (String[] args){
-            //First initiate the keyvault kv
-            KeyVault kv = new KeyVault();
-            //Password and fake password created
-            char[] password = "password".toCharArray();
-            char[] badPassword = "wrongpassword".toCharArray();
-            //Create the kv, the kv directory and name needs to be clear else it'll throw an error.
-            System.out.println("Testing KeyVault");
-            kv.destroyKeyStore(password);
-            kv.createKeyStore(password);
-
-            System.out.println("KeyVault created sucessfully");
-            //Test loading the keystore
-            if(kv.loadKeyStore(password) instanceof KeyStore){
-                    System.out.println("KeyVault loaded sucessfully");
-            }
-            //Test if correct password is accepted
-            System.out.println("Testing KeyVault security (with local password)");
-            if(kv.checkPassword(password) == true){
-                    System.out.println("KeyVault accepts password correctly");
-            }
-            //Test if bad password is rejected
-            if(kv.checkPassword(badPassword) == false){
-                    System.out.println("KeyVault rejects badPassword correctly");
-            }
-            System.out.println("Checking key creation and loading");
-
-            System.out.println("Testing AES PrivateKey");
-            //Attempt to set AES Keys
-            kv.setAESKey(password);
-            System.out.println("AES Keys created sucessfully");
-            //Load AES keys
-            if(kv.getAESKey(password) instanceof PrivateKey){
-                    System.out.println("AES Keys loaded sucessfully");
-            }
-
-            System.out.println("Testing RSA KeyPair");
-            //Attempt to set RSA Keys
-            kv.setRSAKeys(password);
-            System.out.println("RSA Keys created sucessfully");
-            //Load RSA Keys
-            if(kv.getRSAKeys(password) instanceof KeyPair){
-                    System.out.println("RSA Keys loaded sucessfully");
-            }
-}*/
 }
