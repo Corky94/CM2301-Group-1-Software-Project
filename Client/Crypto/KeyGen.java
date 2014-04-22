@@ -104,7 +104,7 @@ public class KeyGen{
 
     public static String generateUserID(){
         //https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses
-        KeyPair rsaPair = KeyVault.getRSAKeys(User.getPassword());
+        KeyPair rsaPair = KeyVault.getRSAKeys();
         Key rsaPub = rsaPair.getPublic();
         RIPEMD160Digest d = new RIPEMD160Digest();
         byte[] VERSION_NUMBER = bigIntToByteArray(000);

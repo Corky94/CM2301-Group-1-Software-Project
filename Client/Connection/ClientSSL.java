@@ -1,5 +1,6 @@
 package Connection;
  
+import Console.*;
 import javax.net.ssl.*;
 import java.security.*;
 import java.io.*;
@@ -16,15 +17,15 @@ public class ClientSSL {
     private NodeList n = new NodeList();
     private String node;
  
-    public ClientSSL(char[] localPassword) {
- 
+    public ClientSSL() {
+        char [] localPassword = User.getPassword();
         try {
             KeyVault kv = new KeyVault();
-            KeyStore ks = kv.loadKeyStore(localPassword);
+            KeyStore ks = kv.loadKeyStore();
  
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            kmf.init(ks, localPassword);
+            kmf.init(ks, localPassword );
             tmf.init(ks);
  
             sc = SSLContext.getInstance("TLS");

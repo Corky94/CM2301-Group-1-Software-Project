@@ -22,8 +22,8 @@ import javax.net.ssl.SSLSocket;
 public class ClientUpdate {
     NodeList n = new NodeList();
     
-    ClientUpdate(char[] localPassword){
-     ClientSSL clissl = new ClientSSL(localPassword);
+    ClientUpdate(){
+     ClientSSL clissl = new ClientSSL();
         try (SSLSocket s = clissl.main(12347); OutputStream os = s.getOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(os)) {
             
             InputStream is = s.getInputStream();  

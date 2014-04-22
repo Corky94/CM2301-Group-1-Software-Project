@@ -25,15 +25,15 @@ public class Register {
             KeyVault kv = new KeyVault();
             HashUtils hu = new HashUtils();
             KeyPair k = kg.generateRSAKeys();
-            kv.createKeyStore(password);
+            kv.createKeyStore();
 
-            kv.setRSAKeys(password);
-            kv.setAESKey(password);
+            kv.setRSAKeys();
+            kv.setAESKey();
             
-            byte[] key = kv.getRSAKeys(password).getPublic().getEncoded();
+            byte[] key = kv.getRSAKeys().getPublic().getEncoded();
 
             String UserID =kg.generateUserID();
-            Console.User.clissl = new ClientSSL(password);
+            Console.User.clissl = new ClientSSL();
             ClientSend.registerToServer(UserID, key,password);
 
             SecureDetails setup = new SecureDetails();

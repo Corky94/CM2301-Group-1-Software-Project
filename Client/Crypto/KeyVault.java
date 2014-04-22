@@ -5,6 +5,7 @@
 
 package Crypto;
 
+import Console.User;
 import java.security.*;
 import javax.crypto.*;
 import java.io.*;
@@ -25,10 +26,10 @@ public class KeyVault{
     }
 
     //PASSWORD IN REFERENCE IS TO OPEN THE KEYVAULT (LOCAL PASSWORD)
-    public static boolean checkPassword(char[] localPassword){
+    public static boolean checkPassword(){
         try{
             KeyVault kv = new KeyVault();
-            kv.loadKeyStore(localPassword);
+            kv.loadKeyStore();
             return true;
         }catch(Exception ex){
             return false;
@@ -45,7 +46,8 @@ public class KeyVault{
     }
 
     //Keystore methods	
-    public static void createKeyStore(char[] localPassword) {
+    public static void createKeyStore() {
+        char [] localPassword = User.getPassword();
         try {
             KeyStore ks = KeyStore.getInstance(KEY_STORE_TYPE);  
             KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(localPassword);
@@ -69,7 +71,7 @@ public class KeyVault{
 
     public static boolean destroyKeyStore(char[] localPassword){
         KeyVault kv = new KeyVault();
-        if(kv.checkPassword(localPassword)){
+        if(kv.checkPassword()){
             File vault = new File(KEY_STORE_DIR + KEY_STORE_NAME);
             if(vault.delete()){
                 return true;
@@ -78,9 +80,10 @@ public class KeyVault{
         return false;
     }
 
-    public static KeyStore loadKeyStore(char[] localPassword){
+    public static KeyStore loadKeyStore(){
+        char [] localPassword = User.getPassword();
         if (checkIfKsExists(KEY_STORE_DIR + KEY_STORE_NAME)== false)
-        createKeyStore(localPassword);         
+        createKeyStore();         
         try{
             KeyStore ks  = KeyStore.getInstance(KEY_STORE_TYPE);
             ks.load(new FileInputStream(KEY_STORE_DIR + KEY_STORE_NAME), localPassword);
@@ -99,10 +102,11 @@ public class KeyVault{
 
 
     //Setter methods
-    public static boolean setRSAKeys(char[] localPassword){
+    public static boolean setRSAKeys(){
+        char [] localPassword = User.getPassword();
         try{
             KeyVault kv = new KeyVault();
-            KeyStore ks = kv.loadKeyStore(localPassword);
+            KeyStore ks = kv.loadKeyStore();
             //generate the rsaKeys
             KeyGen kg = new KeyGen();
             KeyPair rsaKeys = kg.generateRSAKeys();
@@ -128,10 +132,11 @@ public class KeyVault{
         }
     }
 
-    public static void setAESKey(char[] localPassword){
+    public static void setAESKey(){
+        char [] localPassword = User.getPassword();
         try{
             KeyVault kv = new KeyVault();
-            KeyStore ks = kv.loadKeyStore(localPassword);
+            KeyStore ks = kv.loadKeyStore();
             //generate the aesKey
             KeyGen kg = new KeyGen();
             SecretKey aesKey = kg.generateAESKey();
@@ -155,10 +160,11 @@ public class KeyVault{
     }
 
     //Getter methods
-    public static KeyPair getRSAKeys(char[] localPassword){
+    public static KeyPair getRSAKeys(){
+        char [] localPassword = User.getPassword();
         try{
             KeyVault kv = new KeyVault();
-            KeyStore ks = kv.loadKeyStore(localPassword);
+            KeyStore ks = kv.loadKeyStore();
 
             KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(localPassword);
             KeyStore.PrivateKeyEntry rsaKeyEntry = (KeyStore.PrivateKeyEntry) ks.getEntry("rsaKeys", passwordProtection);
@@ -173,10 +179,11 @@ public class KeyVault{
     }
 
 
-    public static Key getAESKey(char[] localPassword){
+    public static Key getAESKey(){
+        char [] localPassword = User.getPassword();
         try{
             KeyVault kv = new KeyVault();
-            KeyStore ks = kv.loadKeyStore(localPassword);
+            KeyStore ks = kv.loadKeyStore();
 
             KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(localPassword);
             KeyStore.SecretKeyEntry aesKeyEntry = (KeyStore.SecretKeyEntry) ks.getEntry("aesKey", passwordProtection);

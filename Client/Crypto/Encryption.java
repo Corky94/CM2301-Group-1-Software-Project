@@ -39,7 +39,7 @@ public class Encryption{
     }
 
     public static byte[] decryptString(byte[] data){
-        KeyPair rsaKeys = KeyVault.getRSAKeys(User.getPassword());
+        KeyPair rsaKeys = KeyVault.getRSAKeys();
         PrivateKey privateKey = rsaKeys.getPrivate();
         try{
             Cipher decrypt = Cipher.getInstance("RSA");
@@ -58,7 +58,7 @@ public class Encryption{
 
     public static byte[] encryptRemotePassword(byte[] remotePassword){
         try{
-            Key aesKey = KeyVault.getAESKey(User.getPassword());
+            Key aesKey = KeyVault.getAESKey();
             Cipher encrypt = Cipher.getInstance("AES");
             encrypt.init(Cipher.ENCRYPT_MODE, aesKey);
             byte[] encryptedData = encrypt.doFinal(remotePassword);
@@ -69,7 +69,7 @@ public class Encryption{
     }
 
     public static byte[] decryptRemotePassword(byte[] encryptedPassword){
-        Key aesKey = KeyVault.getAESKey(User.getPassword());
+        Key aesKey = KeyVault.getAESKey();
         try{
             Cipher decrypt = Cipher.getInstance("AES");
             decrypt.init(Cipher.DECRYPT_MODE, aesKey);
@@ -113,7 +113,7 @@ public class Encryption{
 
     public static Object decryptAuth(byte[] auth){
         try {
-            PrivateKey privateRsa = KeyVault.getRSAKeys(User.getPassword()).getPrivate();
+            PrivateKey privateRsa = KeyVault.getRSAKeys().getPrivate();
             Cipher decrypt = Cipher.getInstance("RSA");
             decrypt.init(Cipher.DECRYPT_MODE, privateRsa); 
             ByteArrayInputStream bais = new ByteArrayInputStream(auth);
@@ -126,7 +126,7 @@ public class Encryption{
     }
 
     public static void encryptFile(FileOutputStream data){
-        Key aesKey = KeyVault.getAESKey(User.getPassword());
+        Key aesKey = KeyVault.getAESKey();
         try{
             Cipher encrypt = Cipher.getInstance("AES");
             encrypt.init(Cipher.ENCRYPT_MODE, aesKey);
@@ -137,7 +137,7 @@ public class Encryption{
     }
 
     public static void decryptFile(String dir){
-        Key aesKey = KeyVault.getAESKey(User.getPassword());
+        Key aesKey = KeyVault.getAESKey();
         try{
             Cipher decrypt = Cipher.getInstance("AES");
             decrypt.init(Cipher.DECRYPT_MODE, aesKey);
