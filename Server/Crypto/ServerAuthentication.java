@@ -13,13 +13,13 @@ public class ServerAuthentication {
     
     public static byte[] handleChallenge(byte[] input){
         Ticket t = (Ticket) Encryption.decryptAuth(input);
-        if(t.is_challenge() == false){
+        /*if(t.is_challenge() == false){
             verifyClientChallenge(t);
             return null;
-        }else{
+        }else{*/
            t = generateChallenge(t);
            return Encryption.encryptAuth(t.getClientPublicKey(), t);
-        }
+        //}
     }
     
     private static Ticket generateChallenge(Ticket t){
@@ -57,11 +57,9 @@ public class ServerAuthentication {
                         return true;
                     }
                 }
-            }else{
-                System.out.println("Couldn't verify client identity, verifcation failed");
-                return false;
             }
         }
+        System.out.println("Couldn't verify client identity, verifcation failed");
         return false;
     }
 }

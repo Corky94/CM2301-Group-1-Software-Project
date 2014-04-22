@@ -26,6 +26,15 @@ public class Ticket{
         is_challenge = r; 
     }
     
+    Ticket(Ticket t){
+        clientId = t.clientId;
+        nodeId = t.nodeId;
+        password = t.password;
+        clientPublicKey = t.clientPublicKey;
+        nodePublicKey = t.nodePublicKey; 
+        is_challenge = t.is_challenge;   
+    }
+    
     public static Ticket generateRequest(String nodeId){
         SecureDetails sd = new SecureDetails(Node.getPassword()); //NEEDS TO BE COMPLETED
         return new Ticket(sd.getID(), nodeId, null, KeyVault.getRSAKeys().getPublic(), null, true);

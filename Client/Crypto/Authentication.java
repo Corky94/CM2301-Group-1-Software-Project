@@ -22,7 +22,8 @@ public class Authentication {
             Ticket t = AuthenticatedList.getNodeAuthentication(nodeId);
             return Encryption.encryptAuth(t.getNodePublicKey(), t);
         }else{
-            //generates a new ticket with a request in, that is then encrypted and ready to be sent to the node, this is not encrypted as client doesn't know nodePublicKey!
+            //generates a new ticket with a request in, that is then encrypted and 
+            //ready to be sent to the node
             //            
             // --- Ticket Content ---
             //clientId = clientID;
@@ -42,8 +43,11 @@ public class Authentication {
         if(t == null){    
             throw new RuntimeException("Ticket returned null");
         }
-        //Store the password here.
-        AuthenticatedList.addAuth(t);
+        //Ticket has come back, and is no longer a challenge, however the node does not know this
+        //so we'll return one copy that will be treated as a challenge returned
+        Ticket newTicket = new Ticket(t);
+        newTicket.setChallenge(false);
+        AuthenticatedList.addAuth(newTicket);
         //And return the decrypted ticket ready to send back to the server.
         return Encryption.encryptAuth(t.getNodePublicKey(), t);
     }
