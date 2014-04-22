@@ -708,7 +708,7 @@ class GuiMenu	extends	JFrame
                  if((eistPassword.length ==0)||(newPass.length == 0)||(conNewPass.length == 0)){
                      JOptionPane.showMessageDialog(settingsPanel, "Sorry you left one or more fields Blank, Please complete to continue.", "Invalid Details",
                      JOptionPane.WARNING_MESSAGE);
-                 }else if (kv.checkPassword() == false){
+                 }else if (kv.checkPassword(eistPassword) == false){
                      JOptionPane.showMessageDialog(settingsPanel, "Your existing password is Incorrect, Please try again.", "Invalid Details",
                      JOptionPane.WARNING_MESSAGE); 
                  }else if(Arrays.equals(newPass, conNewPass) == false){

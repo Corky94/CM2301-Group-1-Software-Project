@@ -73,8 +73,7 @@ public class GuiLogin {
 
                     char[] password = passwordText.getPassword();
                     KeyVault kv = new KeyVault();
-                    User.setPassword(password);
-                    if (kv.checkPassword() == false){
+                    if (kv.checkPassword(password) == false){
                         JOptionPane.showMessageDialog(panel, "Sorry incorrect password, Please try again", "Incorrect Password",
                         JOptionPane.WARNING_MESSAGE);               
                     }else{
@@ -147,9 +146,9 @@ public class GuiLogin {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				char[] password = passwordText.getPassword();
-                                User.setPassword(password);
+                              
                                 KeyVault kv = new KeyVault();
-                                if (kv.checkPassword() == false){
+                                if (kv.checkPassword(password) == false){
                                     JOptionPane.showMessageDialog(panel, "Sorry incorrect password, Please try again", "Incorrect Password",
                                     JOptionPane.WARNING_MESSAGE);               
                                 }else{

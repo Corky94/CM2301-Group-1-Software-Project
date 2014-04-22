@@ -43,10 +43,10 @@ public class User {
             KeyVault kv = new KeyVault();
             
             
-            while (kv.checkPassword() != true){
+            while (kv.checkPassword(password) != true){
                  pass = password;
                
-                if (kv.checkPassword() == false){
+                if (kv.checkPassword(password) == false){
                     System.out.println("Password Incorrect \n Press enter to try again");                
  
                 }
