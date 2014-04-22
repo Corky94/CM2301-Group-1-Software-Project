@@ -6,6 +6,9 @@ import java.awt.event.ActionListener;
 import Console.*;
 import Crypto.Encryption;
 import Message.Message;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.*;
 public class GuiMessage {
@@ -67,7 +70,11 @@ public class GuiMessage {
 			public void actionPerformed(ActionEvent arg0) {
 //                            
                             frame.setVisible(false);
-                            new GuiMenu();
+                            try {
+                                new GuiMenu();
+                            } catch (IOException ex) {
+                                Logger.getLogger(GuiMessage.class.getName()).log(Level.SEVERE, null, ex);
+                            }
 			}
 		});
                

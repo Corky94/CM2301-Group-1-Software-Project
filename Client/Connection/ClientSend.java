@@ -10,29 +10,57 @@ import javax.net.ssl.SSLSocket;
  
 public class ClientSend {
  
-    public static void sendMessage(Message m, char[] localPassword) {
-        ClientSSL clissl = new ClientSSL(localPassword);
-        try (SSLSocket s = clissl.main(12346); OutputStream os = s.getOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(os)) {
-            oos.writeObject(m);
-            oos.close();
-        } catch (IOException e) {
-            System.out.println(e);
-        }
- 
-    }
- 
-    public static boolean registerToServer(String id, byte[] key, char[] localPassword) {
-        Message m = new Message();
-        m.setKey(key);
-        m.setReceiver(id);
-        try {
-            ClientSSL clissl = new ClientSSL(localPassword);
-            try (SSLSocket s = clissl.main(12346); OutputStream os = s.getOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(os)) {
+
+
+	public static void sendMessage(Message m , char[] localPassword) {
+
+//		
+            SSLSocket s;
+		try{  
+                        ClientSSL c = Console.User.clissl;
+Socket:
+                        while(true){
+                            s = c.main(12346);
+                            if (s != null){
+                                break Socket;
+                            }
+                        }
+                        OutputStream os = s.getOutputStream();  
+                        
+			ObjectOutputStream oos = new ObjectOutputStream(os);  
+                        
+			oos.writeObject(m);   
+			oos.close();  
+			os.close();  
+			s.close();  
+                        
+		}catch(IOException e){
+			System.out.println(e);
+		}
+		
+	}
+        
+        public static boolean registerToServer(String id, byte[] key, char[] localPassword ){
+            Message m = new Message();
+            m.setKey(key);
+            m.setReceiver(id);
+            ClientSSL c = Console.User.clissl;
+            
+            try {
+                
+                SSLSocket s = c.main(12346);
+                           
+                       
+            
+                OutputStream os = s.getOutputStream(); 
+                ObjectOutputStream oos = new ObjectOutputStream(os);
+              
                 System.out.println("Created Socket");
                 oos.writeObject(m);
                 oos.close();
                 os.close();
-            }
+                s.close();
+            
  
             return true;
         } catch (IOException ex) {
@@ -44,7 +72,7 @@ public class ClientSend {
  
     public static void main(String[] args) {
         char[] pass = "pass".toCharArray();
-        ClientSSL clissl = new ClientSSL(pass);
+        ClientSSL clissl = Console.User.clissl;
         Message m = null;
         while (true) {
             try (SSLSocket s = clissl.main(12346); OutputStream os = s.getOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(os)  ) {
@@ -69,6 +97,9 @@ public class ClientSend {
             }
             
         }
+
     }
  
 }
+
+  

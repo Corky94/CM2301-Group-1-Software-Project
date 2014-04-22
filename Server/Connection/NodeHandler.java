@@ -53,14 +53,14 @@ public class NodeHandler implements Runnable {
                 System.out.println(in);
                 Object o = t.peek();
                 
+                System.out.println(o instanceof IDServer);
+                System.out.println(in);
                 is.close();
                 ois.close();
                 
                 if(o instanceof MessageServer){
                     s = new ServerStorage();
-                    MessageServer m = (MessageServer)o;
                     
-                    System.out.println(m.getUrl());
                     s.updateMessageServerDetails(in);
                 }
                 else if(o instanceof IDServer){

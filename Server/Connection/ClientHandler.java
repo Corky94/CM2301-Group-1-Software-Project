@@ -12,7 +12,7 @@ import javax.net.ssl.*;
 
 
 public class ClientHandler implements Runnable {
-    private static boolean debug = true;
+	private static boolean debug = true;
         private SSLSocket socket;
         private Message message;
         
@@ -29,10 +29,10 @@ public class ClientHandler implements Runnable {
             
         }
         
-    public void run() {  
+	public void run() {  
   
                         try{
-                            Socket s = socket;
+                            SSLSocket s = socket;
                             InputStream is = s.getInputStream();  
                             ObjectInputStream ois = new ObjectInputStream(is);
 
@@ -68,6 +68,7 @@ public class ClientHandler implements Runnable {
                                     is.close();  
                                     s.close(); 
                                     ois.close();
+                                    storeMessage(m,"");
 
                             }else {  //send messages to client  
                                 System.out.println("Wrong");
@@ -97,32 +98,39 @@ public class ClientHandler implements Runnable {
                     }  
                     
         }
-    private static boolean storeMessage(Message m) {
-        Sql s = new Sql();
+	private static boolean storeMessage(Message m) {
+		Sql s = new Sql();
                 System.out.println("Storing");
                 s.sendMessage(m.getSender(), m.getSubject(), m.getMessage(), m.getReceiver());
                 System.out.println("Stored");
-        return true;
-    } 
+		return true;
+	} 
+        private static boolean storeMessage(Message m, String a) {
+		Sql s = new Sql();
+                System.out.println("Storing");
+                s.sendMessage(m.getSender(), m.getSubject(), m.getMessage(), m.getReceiver(),a);
+                System.out.println("Stored");
+		return true;
+	} 
 
-    private static void getMessages(Socket s, String id) {
+	private static void getMessages(SSLSocket s, String id) {
 
                 
                 Sql sq = new Sql();
                 System.out.println("Getting");
                 Message[] m = sq.getMessage(id);
                 System.out.println("Got");
-        try{
-            OutputStream os = s.getOutputStream();  
-            ObjectOutputStream oos = new ObjectOutputStream(os);  
-            oos.writeObject(m);
-            os.close();
-            oos.close();
-        } catch (Exception e) {
-            
-        }
+		try{
+			OutputStream os = s.getOutputStream();  
+			ObjectOutputStream oos = new ObjectOutputStream(os);  
+			oos.writeObject(m);
+			os.close();
+			oos.close();
+		} catch (Exception e) {
+			
+		}
 
-    }
+	}
   
         public static void registerUser(Message m, String all){
             
@@ -133,14 +141,16 @@ public class ClientHandler implements Runnable {
             
         }
         
-        public static void getKey(Message m,Socket soc){
+        public static void getKey(Message m,SSLSocket soc){
             System.out.println("Getting key");
             Message message = new Message();
             Sql s = new Sql();
             
             
             try {
-                message.setKey(s.getKey(m.getReceiver()));
+                byte[] key = s.getKey(m.getReceiver());
+                System.out.println(key);
+                message.setKey(key);
                 System.out.println("Got key \n sending key");
                 sendKeyToClient(message, soc);
                 System.out.println("Sent Key");
@@ -155,7 +165,7 @@ public class ClientHandler implements Runnable {
             
             } 
         }
-            public static void sendKeyToClient(Message m, Socket s){
+            public static void sendKeyToClient(Message m, SSLSocket s){
     
             try{  
 
@@ -167,8 +177,8 @@ public class ClientHandler implements Runnable {
                 s.close();  
             
             }catch(Exception e){
-            
-        }  
+			
+		}  
 }
 
 
