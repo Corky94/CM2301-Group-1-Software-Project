@@ -1,25 +1,38 @@
 package Connection;
 
+import Crypto.*;
 import Message.*;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.*;
+import java.security.*;
+import java.util.Scanner;
+import java.util.logging.*;
 import javax.net.ssl.SSLServerSocket;
+import javax.swing.*;
 
 
 public class Server  {
-  private static boolean debug = true;
+	
+    private static boolean debug = true;
+    public static char[] password;
+    public static String id;
+    public static NodeList list = new NodeList();
+    
         
-  public static void main(String args[]) {
+    public static void main(String args[]) {
                 
-                
+            File f = new File("keystore");
+            
+            if (f.exists() == false){
+                initialSetup();
+            }
+            login();    
   
                 ServerSSL s = new ServerSSL();
                 
                 
-                  SSLServerSocket querySocket = s.main(12346);
-                  SSLServerSocket updateSocket = s.main(12347);
-                  SSLServerSocket nodeSocket = s.main(12348);
+                  SSLServerSocket querySocket = s.main(12346,password);
+                  SSLServerSocket updateSocket = s.main(12347,password);
+                  SSLServerSocket nodeSocket = s.main(12348,password);
                   AdminInput ai = new AdminInput();
                   Thread admin = new Thread(ai); 
                   admin.start();
@@ -37,14 +50,110 @@ public class Server  {
                   NodeAcceptor n = new NodeAcceptor(nodeSocket);
                   Thread node = new Thread(n);
                   node.start();
+                  new Send(list.getList());
 
-                  NodeList list = new NodeList();
-                  list.addNode();
-                  //System.out.println(list.getList());
+                  
                 
         }
      
-            
+    private static void login(){
+        Console console = System.console();
+               
+                
+        System.out.println("Please enter the login password:");
+        char[] pass = console.readPassword();
+        
+        KeyVault kv = new KeyVault();
+        while(true){
+            if (kv.checkPassword(pass) == false){
+                System.out.println("Incorrect Password\n"
+                        + "Please try again");
+                pass = console.readPassword();
+                         
+            }else{
+                
+                try {
+                    password = pass;
+                    FileReader fr = new FileReader("id");
+                    BufferedReader br = new BufferedReader(fr);
+                    id = br.readLine();
+                    fr.close();
+                    br.close();
+                    break;
+                }
+                catch (FileNotFoundException ex) {
+                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                }catch (IOException ex) {
+                        Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    
+                }
+                
+
+            }
+        
+        
+    }
+    private static void initialSetup(){
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("The server has yet to be set up."
+                + "\nPress enter to continue.");
+        sc.nextLine();
+        System.out.println("You random password is now being generated."
+                + "\nRemember to note down the password as it will only be shown on initial setup"
+                + "\nPress enter to continue.");
+        sc.nextLine();
+        char [] pass = RandomPasswordGen.generatePswd(12, 12, 2, 2, 0);
+        String show = new String(pass);
+        System.out.println("Your random password:"
+                + "\n" + show);
+        System.out.println("\n The rest of the setup and updating will now commence."
+                + "\nPress enter to continue.");
+        sc.nextLine();
+        keySetup(pass);
+        password = pass;
+        list.addNode();
+        
+        System.out.println("The current list of operating servers is: \n "
+                + list.getList());
+        System.out.println("\n Once enter is pressed the console will then"
+                + "be cleared to ensure security. \n"
+                + "Please ensure you have remembered your password.");
+        sc.nextLine();
+        clearConsole();
+
+
+    } 
+    private static void keySetup(char[] password){
+            PrintWriter out = null;
+            try {
+                KeyGen kg = new KeyGen();
+                KeyVault kv = new KeyVault();
+                KeyPair k = kg.generateRSAKeys();
+                kv.setRSAKeys(password);
+                kv.setAESKey(password);
+                id = kg.generateUserID(password);
+                out = new PrintWriter("id");
+                out.println(id);
+            }
+            catch (FileNotFoundException ex) {
+                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                out.close();
+            }
+
+    }
+    private final static void clearConsole()
+{
+    for (int i=0; i<=10; i++){
+        
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+
+    }
+    
+}
         
 
     
