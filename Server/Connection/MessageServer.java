@@ -4,6 +4,7 @@
  */
 package Connection;
 
+import java.util.LinkedList;
 import java.util.Stack;
 
 /**
@@ -68,7 +69,7 @@ public class MessageServer implements java.io.Serializable {
      */
     public Stack getDetails() {
         ServerStorage ss = new ServerStorage();
-        return ss.getMessageServerList();
+        return ss.getIdServerList();
     }
 
     /**

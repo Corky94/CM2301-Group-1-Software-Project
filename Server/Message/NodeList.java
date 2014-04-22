@@ -86,6 +86,7 @@ public class NodeList {
                 nodeList.add(address);
                 System.out.println("address added to stack");
                 saveNodeList();
+                new Send(nodeList);
             }
             else{
                 System.out.println("address already in stack, no need to add");
@@ -111,7 +112,7 @@ public class NodeList {
         
     }
     public void updateList(Stack s){
-        nodeList = s;
+       
         System.out.println("List updated");
         this.saveNodeList();
     }
