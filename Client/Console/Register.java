@@ -4,10 +4,12 @@
  */
 package Console;
 
-import Connection.ClientSend;
+import Connection.*;
 import Crypto.*;
 import java.security.*;
 import java.util.Arrays;
+import java.util.Scanner;
+import javax.crypto.SecretKey;
 
 /**
  *
@@ -17,41 +19,28 @@ public class Register {
     
             
     
-        public Register(char[] password, char[] confirm) {
-            System.out.println(Arrays.toString(password));
-            System.out.println(Arrays.toString(confirm));
-      
-            while (Arrays.equals(password, confirm) == false){
-                
-                System.out.println("Error");
-                
-                if (Arrays.equals(password, confirm) == false){
-                    
-                }
-            }
-
+        public Register(char[] password) {
+            User.setPassword(password);
             KeyGen kg = new KeyGen();
             KeyVault kv = new KeyVault();
-            KeyPair k = kg.generateRSAKeys();
             HashUtils hu = new HashUtils();
+            KeyPair k = kg.generateRSAKeys();
+            kv.createKeyStore(password);
 
-            KeyVault.setRSAKeys();
-            KeyVault.setAESKey();
+            kv.setRSAKeys(password);
+            kv.setAESKey(password);
             
-            System.out.println(Arrays.toString(KeyVault.getAESKey().getEncoded()));
-            
-            byte[] key = KeyVault.getRSAKeys().getPublic().getEncoded();
+            byte[] key = kv.getRSAKeys(password).getPublic().getEncoded();
 
-            String UserID = KeyGen.generateUserID();
+            String UserID =kg.generateUserID();
+            Console.User.clissl = new ClientSSL(password);
+            ClientSend.registerToServer(UserID, key,password);
 
-            ClientSend.registerToServer(UserID, key, password);
-
-            SecureDetails setup = new SecureDetails(confirm);
+            SecureDetails setup = new SecureDetails();
 
             setup.setId(UserID);         
             setup.setRegistered();
-            System.out.println(setup.getID());
-            setup.saveDetails(confirm);
+            setup.saveDetails();
             
         
     }

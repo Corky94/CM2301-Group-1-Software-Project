@@ -10,6 +10,8 @@ import java.io.ObjectInputStream;
 import java.net.ConnectException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.*;
+import java.security.spec.*;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +20,7 @@ import javax.net.ssl.SSLSocket;
 public class ClientReceive {
 	private static boolean  debug = true;
 	private static byte[] sender = "sender".getBytes();
-        private static final String host = "192.168.0.2";
+
 
         
         
@@ -29,33 +31,38 @@ public class ClientReceive {
 			m.setSender(null);
 			m.setReceiver(Id);
 			m.setMessage(null);
+                        SSLSocket s;
 
 
 			while (true){
-					ClientSSL c = new ClientSSL(localPassword);
-					SSLSocket s = c.main(12346);
+					ClientSSL c = Console.User.clissl;
 
-
-
-					OutputStream os = s.getOutputStream();  
-					ObjectOutputStream oos = new ObjectOutputStream(os);  
-					oos.writeObject(m);   
-
-
-					//get reply from server
-					InputStream is = s.getInputStream();  
-					ObjectInputStream ois = new ObjectInputStream(is);
-					allMessages = (Message[]) ois.readObject();
-					//if(debug) System.out.println(m);
-					int i = allMessages.length;
+                            
+                            s = c.main(12346);
+                               
 					
 
-					oos.close();  
-					os.close(); 
-					is.close();
-					ois.close();
-					s.close(); 
-					return allMessages;
+
+                            System.out.println(s);
+                            OutputStream os = s.getOutputStream();  
+                            ObjectOutputStream oos = new ObjectOutputStream(os);  
+                            oos.writeObject(m);   
+
+
+                            //get reply from server
+                            InputStream is = s.getInputStream();  
+                            ObjectInputStream ois = new ObjectInputStream(is);
+                            allMessages = (Message[]) ois.readObject();
+                            //if(debug) System.out.println(m);
+                            int i = allMessages.length;
+
+
+                            oos.close();  
+                            os.close(); 
+                            is.close();
+                            ois.close();
+                            s.close(); 
+                            return allMessages;
 			}
 		}
 		catch(Exception e){
@@ -68,13 +75,17 @@ public class ClientReceive {
 			
 	}  
         
-        public static byte[] getKey(Message m, char[] localPassword){  
+        private static byte[] getKeyFromServer(Message m, char[] localPassword){  
             Message message = new Message();
-            System.out.println(m.getReceiver());
+            SSLSocket s;
             try {
                 
-                ClientSSL c = new ClientSSL(localPassword);
-		SSLSocket s = c.main(12346); 
+                ClientSSL c = Console.User.clissl;
+
+               
+                s = c.main(12346);
+                 
+                
                 OutputStream os = s.getOutputStream(); 
                  
                 ObjectOutputStream oos = new ObjectOutputStream(os);
@@ -105,5 +116,23 @@ public class ClientReceive {
 
             return null;
 }
+
+    //This needs to be reworked
+    public static PublicKey getKey(String id, char[] pass) {
+        Message m = new Message();
+        m.setReceiver(id);
+        m.setNeedingKey(true);
+        
+        byte[] key = getKeyFromServer(m, pass);
+        try {
+            X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(key);
+            KeyFactory kf = KeyFactory.getInstance("RSA");
+            PublicKey pk = kf.generatePublic(pubKeySpec);
+            return pk;
+        }
+        catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 }
 

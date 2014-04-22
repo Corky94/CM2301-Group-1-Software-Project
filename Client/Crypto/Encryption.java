@@ -8,6 +8,7 @@
 package Crypto;
 
 import Connection.ClientReceive;
+import Console.User;
 import Message.Message;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,7 +39,7 @@ public class Encryption{
     }
 
     public static byte[] decryptString(byte[] data){
-        KeyPair rsaKeys = KeyVault.getRSAKeys();
+        KeyPair rsaKeys = KeyVault.getRSAKeys(User.getPassword());
         PrivateKey privateKey = rsaKeys.getPrivate();
         try{
             Cipher decrypt = Cipher.getInstance("RSA");
@@ -57,7 +58,7 @@ public class Encryption{
 
     public static byte[] encryptRemotePassword(byte[] remotePassword){
         try{
-            Key aesKey = KeyVault.getAESKey();
+            Key aesKey = KeyVault.getAESKey(User.getPassword());
             Cipher encrypt = Cipher.getInstance("AES");
             encrypt.init(Cipher.ENCRYPT_MODE, aesKey);
             byte[] encryptedData = encrypt.doFinal(remotePassword);
@@ -68,7 +69,7 @@ public class Encryption{
     }
 
     public static byte[] decryptRemotePassword(byte[] encryptedPassword){
-        Key aesKey = KeyVault.getAESKey();
+        Key aesKey = KeyVault.getAESKey(User.getPassword());
         try{
             Cipher decrypt = Cipher.getInstance("AES");
             decrypt.init(Cipher.DECRYPT_MODE, aesKey);
@@ -112,7 +113,7 @@ public class Encryption{
 
     public static Object decryptAuth(byte[] auth){
         try {
-            PrivateKey privateRsa = KeyVault.getRSAKeys().getPrivate();
+            PrivateKey privateRsa = KeyVault.getRSAKeys(User.getPassword()).getPrivate();
             Cipher decrypt = Cipher.getInstance("RSA");
             decrypt.init(Cipher.DECRYPT_MODE, privateRsa); 
             ByteArrayInputStream bais = new ByteArrayInputStream(auth);
@@ -125,7 +126,7 @@ public class Encryption{
     }
 
     public static void encryptFile(FileOutputStream data){
-        Key aesKey = KeyVault.getAESKey();
+        Key aesKey = KeyVault.getAESKey(User.getPassword());
         try{
             Cipher encrypt = Cipher.getInstance("AES");
             encrypt.init(Cipher.ENCRYPT_MODE, aesKey);
@@ -136,7 +137,7 @@ public class Encryption{
     }
 
     public static void decryptFile(String dir){
-        Key aesKey = KeyVault.getAESKey();
+        Key aesKey = KeyVault.getAESKey(User.getPassword());
         try{
             Cipher decrypt = Cipher.getInstance("AES");
             decrypt.init(Cipher.DECRYPT_MODE, aesKey);
@@ -148,18 +149,5 @@ public class Encryption{
     }
      
     //This needs to be reworked   
-    public PublicKey getKey(String id){
-        Message m = new Message();
-        m.setReceiver(id);
-        m.setNeedingKey(true); 
-        byte [] key = ClientReceive.getKey(m, "pass".toCharArray());
-        try {
-            X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(key);
-            KeyFactory kf = KeyFactory.getInstance("RSA");
-            PublicKey pk = kf.generatePublic(pubKeySpec);                
-            return pk;
-        }catch(NoSuchAlgorithmException | InvalidKeySpecException ex){
-        	throw new RuntimeException(ex);
-        }   
-    }
+    
 }

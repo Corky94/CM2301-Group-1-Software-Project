@@ -5,7 +5,7 @@ package Crypto;
  * @author maxchandler
  */
 public class AuthenticatedList{
-    private static class Authenticated{
+    class Authenticated{
         private final Ticket t; 
         private final long authTime;
 
@@ -28,8 +28,8 @@ public class AuthenticatedList{
         }
     }
     
-    private static Authenticated[] list = new Authenticated[1];
-    private static int pointer = 0;
+    private  Authenticated[] list = new Authenticated[1];
+    private  int pointer = 0;
     
     AuthenticatedList(){
         list = new Authenticated[10];
@@ -39,7 +39,7 @@ public class AuthenticatedList{
         list = new Authenticated[size];
     }
     
-    public static void addAuth(Ticket a){
+    public  void addAuth(Ticket a){
         a.setChallenge(false);
         if(pointer >= list.length)
             expand();
@@ -51,7 +51,7 @@ public class AuthenticatedList{
     
     }*/
     
-    public static Ticket getClientTicket(String clientId){
+    public  Ticket getClientTicket(String clientId){
         for(Authenticated a : list){
             if(a != null){
                 if(a.getTicket().getClientId().equals(clientId))
@@ -61,7 +61,7 @@ public class AuthenticatedList{
         return null;
     }
     
-    public static Ticket getNodeTicket(String nodeId){
+    public  Ticket getNodeTicket(String nodeId){
         for(Authenticated a : list){
             if(a != null){
                 if(a.getTicket().getNodeId().equals(nodeId))
@@ -71,7 +71,7 @@ public class AuthenticatedList{
         return null;
     }
     
-    public static void deleteAuth(String clientId){
+    public  void deleteAuth(String clientId){
         for(int i = 0; i < list.length; i++){
             if(list[i] != null){
                 if(list[i].getTicket().getClientId().equals(clientId))
@@ -80,7 +80,7 @@ public class AuthenticatedList{
         }
     }
     
-    public static boolean exists(String clientId){
+    public  boolean exists(String clientId){
         for(Authenticated a : list){
             if(a != null){
                 if (a.getTicket().getClientId().equals(clientId))
@@ -90,7 +90,7 @@ public class AuthenticatedList{
         return false;
     }
     
-    private static void expand(){
+    private  void expand(){
         Authenticated[] temp = list;
         list = new Authenticated[(2 * temp.length)];
         for (int i = 0; i < temp.length; ++i) {
@@ -100,7 +100,7 @@ public class AuthenticatedList{
         }
     }
     
-    public static void removeExpiredAuth(){
+    public  void removeExpiredAuth(){
         for(int i = 0; i < list.length; i++){
             if(list[i] != null){
                 //4 hour expiration time at the moment
@@ -113,7 +113,7 @@ public class AuthenticatedList{
         tidy();
     }
     
-    private static void tidy(){
+    private  void tidy(){
         for(int i = 0; i < list.length; i++){
             if(list[i] == null){
                 for(int x = i; x + 1 < list.length; x++){
@@ -124,13 +124,13 @@ public class AuthenticatedList{
         findSlot();
     }
     
-    private static void findSlot(){
+    private void findSlot(){
         //if the list is full this will infinite loop
         while(list[pointer] == null)
             pointer = (pointer + 1) % list.length;
     }
     
-    public static void printList(){
+    public void printList(){
         int i = 0; 
         for(Authenticated a : list){
             if(a != null){

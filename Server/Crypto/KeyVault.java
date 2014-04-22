@@ -5,12 +5,15 @@
 
 package Crypto;
 
+import Connection.Server;
 import java.io.*;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 
 import java.security.spec.X509EncodedKeySpec;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.crypto.*;
 /*
 *KeyVault is responcible for storing and retreiving keys from the vault, it also provides a password check for user login. 
@@ -50,21 +53,26 @@ public class KeyVault{
         try {
             KeyStore ks = KeyStore.getInstance(KEY_STORE_TYPE);  
             //KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(User.getPassword());
-            ks.load(null, Node.getPassword());
+            ks.load(null, Server.getPassword());
             if (checkIfKsExists() != true){
                 try (FileOutputStream fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME)) {
-                    ks.store(fos, Node.getPassword());
+                    ks.store(fos, Server.getPassword());
                 }
             }
             else
                 throw new RuntimeException("KEYSTORE ALREADY EXISTS");
         }catch(IOException | RuntimeException | KeyStoreException ex){
             throw new RuntimeException(ex);
+        
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(KeyVault.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (CertificateException ex) {
+            Logger.getLogger(KeyVault.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public static boolean destroyKeyStore(){
-        if(checkPassword(Node.getPassword())){
+        if(checkPassword(Server.getPassword())){
             File vault = new File(KEY_STORE_DIR + KEY_STORE_NAME);
             if(vault.delete()){
                 return true;
@@ -76,7 +84,7 @@ public class KeyVault{
     public static KeyStore loadKeyStore(){       
         try{
             KeyStore ks  = KeyStore.getInstance(KEY_STORE_TYPE);
-            ks.load(new FileInputStream(KEY_STORE_DIR + KEY_STORE_NAME), Node.getPassword());
+            ks.load(new FileInputStream(KEY_STORE_DIR + KEY_STORE_NAME), Server.getPassword());
             return ks;
         }catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
             throw new RuntimeException(ex);
@@ -98,13 +106,13 @@ public class KeyVault{
             PublicKey pubKey = rsaKeys.getPublic();
             PrivateKey priKey = rsaKeys.getPrivate();
 
-            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(Node.getPassword());
+            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(Server.getPassword());
 
             KeyStore.PrivateKeyEntry rsaEntry = new KeyStore.PrivateKeyEntry(priKey, KeyGen.generateCertificate(pubKey, priKey));
             ks.setEntry("rsaKeys", rsaEntry, passwordProtection);
 
             FileOutputStream fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME);
-            ks.store(fos, Node.getPassword());
+            ks.store(fos, Server.getPassword());
             fos.close();
         }catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
             throw new RuntimeException(ex);
@@ -118,13 +126,13 @@ public class KeyVault{
             KeyGen kg = new KeyGen();
             SecretKey aesKey = kg.generateAESKey();
 
-            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(Node.getPassword());
+            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(Server.getPassword());
 
             KeyStore.SecretKeyEntry aesKeyEntry = new KeyStore.SecretKeyEntry(aesKey);
             ks.setEntry("aesKey", aesKeyEntry, passwordProtection);
 
             FileOutputStream fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME);
-            ks.store(fos, Node.getPassword());
+            ks.store(fos, Server.getPassword());
             fos.close();
             
         }catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
@@ -137,7 +145,7 @@ public class KeyVault{
     public static KeyPair getRSAKeys(){
         try{
             KeyStore ks = loadKeyStore();
-            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(Node.getPassword());
+            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(Server.getPassword());
             KeyStore.PrivateKeyEntry rsaKeyEntry = (KeyStore.PrivateKeyEntry) ks.getEntry("rsaKeys", passwordProtection);
             PrivateKey priKey = rsaKeyEntry.getPrivateKey();
             java.security.cert.Certificate rsaCert = rsaKeyEntry.getCertificate();
@@ -153,7 +161,7 @@ public class KeyVault{
     public static Key getAESKey(){
         try{
             KeyStore ks = loadKeyStore();
-            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(Node.getPassword());
+            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(Server.getPassword());
             KeyStore.SecretKeyEntry aesKeyEntry = (KeyStore.SecretKeyEntry) ks.getEntry("aesKey", passwordProtection);
             Key aesKey = aesKeyEntry.getSecretKey();
             return aesKey;

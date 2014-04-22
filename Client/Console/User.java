@@ -20,6 +20,7 @@ public class User {
         private ClientSend c;
         private byte[] publicKey;
         private static char[] pass;
+        public  static ClientSSL clissl;
         
 	public User() {
 	
@@ -37,15 +38,15 @@ public class User {
         public void login(char[] password){
             
             realm = null;
-            s = new SecureDetails(password);
+            s = new SecureDetails();
             Scanner in = new Scanner(System.in);
             KeyVault kv = new KeyVault();
             
             
-            while (KeyVault.checkPassword(password) != true){
+            while (kv.checkPassword(pass) != true){
                 
                
-                if (KeyVault.checkPassword(password) == false){
+                if (kv.checkPassword(password) == false){
                     System.out.println("Password Incorrect \n Press enter to try again");                
  
                 }
@@ -88,14 +89,14 @@ public class User {
         
         public void createMessage(String contents, String recipitent, String subject) {
             c = new ClientSend();
-            s = new SecureDetails(pass);
+            s = new SecureDetails();
             Message m = new Message();
             Encryption e = new Encryption();
         
             
             m.setReceiver(recipitent);
           
-            PublicKey pk =  e.getKey(m.getReceiver());
+            PublicKey pk =  ClientReceive.getKey(m.getReceiver(),pass);
 
             String sender = s.getID();
 

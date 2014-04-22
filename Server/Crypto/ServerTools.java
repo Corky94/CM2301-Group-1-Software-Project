@@ -33,7 +33,7 @@ public class ServerTools {
     }
     
     public static String generateOneTimePassword(){
-        char[] chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@£$%^&*()?<>[]{}".toCharArray();
+        char[] chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@Â£$%^&*()?<>[]{}".toCharArray();
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
         for (int i = 0; i < 25; i++) {

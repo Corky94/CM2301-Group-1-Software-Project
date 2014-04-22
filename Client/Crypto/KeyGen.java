@@ -1,7 +1,7 @@
 /*
 *KeyGen is responsible for the creation of symmetric, 
 *asymmetric keys and self signed certificates. 
-*This class allows for user’s to send and store data 
+*This class allows for userâ€™s to send and store data 
 *securely, allowing for sensitive data to be transferred 
 *over insecure networks without the risk of others 
 *viewing the raw data.
@@ -10,6 +10,7 @@
 
 package Crypto;
 
+import Console.User;
 import javax.crypto.*;
 import java.util.*;
 import java.math.*;
@@ -103,7 +104,7 @@ public class KeyGen{
 
     public static String generateUserID(){
         //https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses
-        KeyPair rsaPair = KeyVault.getRSAKeys();
+        KeyPair rsaPair = KeyVault.getRSAKeys(User.getPassword());
         Key rsaPub = rsaPair.getPublic();
         RIPEMD160Digest d = new RIPEMD160Digest();
         byte[] VERSION_NUMBER = bigIntToByteArray(000);

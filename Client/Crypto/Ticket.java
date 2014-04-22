@@ -38,8 +38,8 @@ public class Ticket{
     }
     
     public static Ticket generateRequest(String nodeId){
-        SecureDetails sd = new SecureDetails(User.getPassword());
-        return new Ticket(sd.getID(), nodeId, null, KeyVault.getRSAKeys().getPublic(), null, true);
+        SecureDetails sd = new SecureDetails();
+        return new Ticket(sd.getID(), nodeId, null, KeyVault.getRSAKeys(User.getPassword()).getPublic(), null, true);
     }
     
     public String getClientId(){

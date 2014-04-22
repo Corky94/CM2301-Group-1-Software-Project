@@ -26,17 +26,19 @@ public class Send {
             System.out.println(n.getList());
             System.out.println(st);
             ServerSSL ss = new ServerSSL();
-          
-            while(n.getNode() != null){
-                System.out.println(n.getNode());
-                SSLSocket s = ss.send(n.getNode(),12348);
+            String server = n.getNode();
+            char[] pass = Connection.Server.getPassword();
+            while(server != null){
+                
+                System.out.println(server);
+                SSLSocket s = ss.send(server,12348,pass);
                 OutputStream os = s.getOutputStream();
                 ObjectOutputStream oos = new ObjectOutputStream(os);
                 oos.writeObject(st);
                 oos.close();
                 os.close();
                 s.close();
-                
+                server = n.getNode();
             }
             n =null;
         }

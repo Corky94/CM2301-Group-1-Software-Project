@@ -1,5 +1,6 @@
 package Crypto;
 
+import Connection.Server;
 import java.security.Key;
 
 /**
@@ -9,12 +10,12 @@ import java.security.Key;
 //Client side auth object, it differes to the node as passwords are stored as
 //string and not as hashes of the strings.
 public class Ticket{
-    private final String clientId;
-    private final String nodeId;
-    private final String password;
-    private final Key clientPublicKey;
-    private final Key nodePublicKey;
-    private Boolean is_challenge;
+    private static  String clientId;
+    private static  String nodeId;
+    private static  String password;
+    private static  Key clientPublicKey;
+    private static  Key nodePublicKey;
+    private static Boolean is_challenge;
     
     //constructor for saving auth details
     Ticket(String cId, String nId, String p, Key clientKey, Key nodeKey, boolean r){
@@ -36,34 +37,34 @@ public class Ticket{
     }
     
     public static Ticket generateRequest(String nodeId){
-        SecureDetails sd = new SecureDetails(Node.getPassword()); //NEEDS TO BE COMPLETED
-        return new Ticket(sd.getID(), nodeId, null, KeyVault.getRSAKeys().getPublic(), null, true);
+       
+        return new Ticket(Server.getId(), nodeId, null, KeyVault.getRSAKeys().getPublic(), null, true);
     }
     
-    public String getClientId(){
+    public static String getClientId(){
         return clientId;
     }
     
-    public String getNodeId(){
+    public static String getNodeId(){
         return nodeId;
     }
 
-    public String getPassword(){
+    public static String getPassword(){
         return password;
     }
     
-    public Key getClientPublicKey(){
+    public static Key getClientPublicKey(){
         return clientPublicKey;
     }
     
-    public Key getNodePublicKey(){
+    public static Key getNodePublicKey(){
         return nodePublicKey;
     }
     
-    public boolean is_challenge(){
+    public static boolean is_challenge(){
         return is_challenge;
     }
-    public void setChallenge(boolean b){
+    public static void setChallenge(boolean b){
         is_challenge = b;
     }
 }
