@@ -1,9 +1,7 @@
 package Connection;
 
 import Crypto.*;
-import Message.*;
 import java.io.*;
-import java.net.*;
 import javax.net.ssl.*;
 import java.security.*;
 import java.util.logging.Level;
@@ -13,16 +11,14 @@ public class ServerSSL {
 
 /*Get keys from Max's Keyvault. */
 
-     public  SSLServerSocket main(int port, char[] pass) {
+     public SSLServerSocket main(int port) {
 
           
         try {
-           KeyVault kv = new KeyVault();
-           KeyStore ks = kv.loadKeyStore(pass);
-           kv = null;
+           KeyStore ks = KeyVault.loadKeyStore();
 
            KeyManagerFactory kmf = KeyManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-           kmf.init(ks, pass);
+           kmf.init(ks, "pass".toCharArray());
 
            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm()); 
            tmf.init(ks); 
@@ -47,33 +43,20 @@ public class ServerSSL {
 
         
           
-          } catch (NoSuchAlgorithmException ex) {
+          } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException | UnrecoverableKeyException | IOException ex) {
                   Logger.getLogger(ServerSSL.class.getName()).log(Level.SEVERE, null, ex);
                   return null;
-              } catch (KeyManagementException ex) {
-             Logger.getLogger(ServerSSL.class.getName()).log(Level.SEVERE, null, ex);
-             return null;
-         } catch (KeyStoreException ex) {
-             Logger.getLogger(ServerSSL.class.getName()).log(Level.SEVERE, null, ex);
-             return null;
-         } catch (UnrecoverableKeyException ex) {
-             Logger.getLogger(ServerSSL.class.getName()).log(Level.SEVERE, null, ex);
-             return null;
-         }
-         catch (IOException ex) {
-             Logger.getLogger(ServerSSL.class.getName()).log(Level.SEVERE, null, ex);
-             return null;
-         }
+              }
         
       }
-     public SSLSocket send(String address, int portNumber, char[] pass)  {
+     public SSLSocket send(String address, int portNumber)  {
          try {
-            KeyVault kv = new KeyVault();
-            KeyStore ks = kv.loadKeyStore(pass);
+            char[] localPassword = "pass".toCharArray();
+            KeyStore ks = KeyVault.loadKeyStore();
  
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            kmf.init(ks, pass);
+            kmf.init(ks, localPassword);
             tmf.init(ks);
  
             SSLContext sc = SSLContext.getInstance("TLS");

@@ -87,7 +87,7 @@ public class ServerStorage implements java.io.Serializable  {
                 oos.writeObject(details);
                 oos.close();
                 fos.close();
-                //new Send(details);
+                new Send(details);
                 
             }
             catch(FileNotFoundException ex){
@@ -112,7 +112,7 @@ public class ServerStorage implements java.io.Serializable  {
                     oos.writeObject(details);
                     oos.close();
                     fos.close();
-                   // new Send(details);
+                    new Send(details);
 
                 }
                 catch(FileNotFoundException ex){
@@ -122,10 +122,6 @@ public class ServerStorage implements java.io.Serializable  {
                 }
         }
     
-    public void updateOtherServers(){
-        new Send(idServerList);
-        new Send(messageServerList);
-    }
     public Stack getMessageServerList(){
         
         return messageServerList;

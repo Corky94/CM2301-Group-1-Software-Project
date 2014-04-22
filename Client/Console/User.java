@@ -5,10 +5,9 @@ package Console;
 import Message.Message;
 import Connection.*;
 import Crypto.*;
+import java.io.File;
 import java.security.*;
 import java.util.Scanner;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 
 
@@ -20,20 +19,39 @@ public class User {
         private String realm;
         private ClientSend c;
         private byte[] publicKey;
-        public char[] pass;
-        public static ClientSSL clissl;
+        private static char[] pass;
+        
 	public User() {
 	
 	}
-            
+        
+        public static void setPassword(char[] p){
+            pass = p;
+        }
+         
+        public static char[] getPassword(){
+            return pass;
+        }
         
         
         public void login(char[] password){
             
             realm = null;
-            s = new SecureDetails();
+            s = new SecureDetails(password);
+            Scanner in = new Scanner(System.in);
+            KeyVault kv = new KeyVault();
             
-            clissl = new ClientSSL(password);
+            
+            while (KeyVault.checkPassword(password) != true){
+                
+               
+                if (KeyVault.checkPassword(password) == false){
+                    System.out.println("Password Incorrect \n Press enter to try again");                
+ 
+                }
+
+            }
+            
             loggedIn = true;   
             pass = password;
          
@@ -61,33 +79,30 @@ public class User {
         }
         
         
-        public Message[] receiveEmails() {
-            s = new SecureDetails();
-            return ClientReceive.receive(s.getID(),pass);
+        public Message[] receiveEmails(SecureDetails s) {
+           
+            return ClientReceive.receive(s.getID(), pass);
 
             //return m;
         }
         
         public void createMessage(String contents, String recipitent, String subject) {
             c = new ClientSend();
-            s = new SecureDetails();
+            s = new SecureDetails(pass);
             Message m = new Message();
             Encryption e = new Encryption();
         
             
             m.setReceiver(recipitent);
           
-            PublicKey pk =  new ClientReceive().getKey(m.getReceiver(),pass);
-            System.out.println("got key");
+            PublicKey pk =  e.getKey(m.getReceiver());
 
             String sender = s.getID();
 
-            m.setSubject(e.encryptString(pk, subject));
-            m.setSender(e.encryptString(pk, sender));
-            m.setMessage(e.encryptString(pk, contents));
-            ClientSend.sendMessage(m,pass);
-            System.out.println("Message sent");
-
+            m.setSubject(Encryption.encryptString(pk, subject));
+            m.setSender(Encryption.encryptString(pk, sender));
+            m.setMessage(Encryption.encryptString(pk, contents));
+            ClientSend.sendMessage(m, pass);
             
 
             
@@ -99,22 +114,15 @@ public class User {
             // delete message from savedMessages[x] 
             
         }
-        public static void main(String[] args) throws ClassNotFoundException, IllegalAccessException, InstantiationException {      
+        public static void main(String[] args) {      
             User u = new User();
-            SecureDetails s = new SecureDetails();
-            try {
-            // Set System L&F
-            UIManager.setLookAndFeel(
-            UIManager.getSystemLookAndFeelClassName());
-            } 
-    catch (UnsupportedLookAndFeelException e) {
-       // handle exception
-    }
-            if (s.getRegistered() == true && u.loggedIn != true){
+            File f = new File("user2");
+
+            if (f.exists()){
                 new GUI.GuiLogin();
-                System.out.println(s.getID());
+                
             }
-            else if(s.getRegistered() == false){
+            else {
 
                 GUI.GuiRegister.NewRegister();
                 

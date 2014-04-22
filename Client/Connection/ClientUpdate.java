@@ -30,7 +30,8 @@ public class ClientUpdate {
             ObjectInputStream ois = new ObjectInputStream(is);
             
             n.updateStack((Stack) ois.readObject());
-            
+            System.out.println(n.getNode());
+
             oos.close();  
             os.close(); 
             is.close();

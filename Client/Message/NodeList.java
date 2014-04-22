@@ -74,7 +74,6 @@ public class NodeList {
         this.nodeList = s;
         saveNodeList();
     }
-    
     public String getNode(){
         
         return (String)nodeList.pop();

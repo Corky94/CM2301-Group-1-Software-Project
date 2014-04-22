@@ -4,12 +4,10 @@
  */
 package Console;
 
-import Connection.*;
+import Connection.ClientSend;
 import Crypto.*;
 import java.security.*;
 import java.util.Arrays;
-import java.util.Scanner;
-import javax.crypto.SecretKey;
 
 /**
  *
@@ -19,27 +17,41 @@ public class Register {
     
             
     
-        public Register(char[] password) {
-            Console.User.clissl = new ClientSSL(password);
+        public Register(char[] password, char[] confirm) {
+            System.out.println(Arrays.toString(password));
+            System.out.println(Arrays.toString(confirm));
+      
+            while (Arrays.equals(password, confirm) == false){
+                
+                System.out.println("Error");
+                
+                if (Arrays.equals(password, confirm) == false){
+                    
+                }
+            }
+
             KeyGen kg = new KeyGen();
             KeyVault kv = new KeyVault();
-            HashUtils hu = new HashUtils();
             KeyPair k = kg.generateRSAKeys();
+            HashUtils hu = new HashUtils();
 
-            kv.setRSAKeys(password);
-            kv.setAESKey(password);
+            KeyVault.setRSAKeys();
+            KeyVault.setAESKey();
             
-            byte[] key = kv.getRSAKeys(password).getPublic().getEncoded();
+            System.out.println(Arrays.toString(KeyVault.getAESKey().getEncoded()));
+            
+            byte[] key = KeyVault.getRSAKeys().getPublic().getEncoded();
 
-            String UserID =kg.generateUserID(password);
+            String UserID = KeyGen.generateUserID();
 
-            ClientSend.registerToServer(UserID, key,password);
+            ClientSend.registerToServer(UserID, key, password);
 
-            SecureDetails setup = new SecureDetails();
+            SecureDetails setup = new SecureDetails(confirm);
 
             setup.setId(UserID);         
             setup.setRegistered();
-            setup.saveDetails();
+            System.out.println(setup.getID());
+            setup.saveDetails(confirm);
             
         
     }
