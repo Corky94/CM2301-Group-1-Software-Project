@@ -52,7 +52,6 @@ public class KeyVault{
     public static void createKeyStore() {
         try {
             KeyStore ks = KeyStore.getInstance(KEY_STORE_TYPE);  
-            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(Server.getPassword());
             ks.load(null, Server.getPassword());
             if (checkIfKsExists() != true){
                 try (FileOutputStream fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME)) {

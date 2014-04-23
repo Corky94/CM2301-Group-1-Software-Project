@@ -19,10 +19,9 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
  * @author maxchandler
  */
 public class ServerTools {
-	final static private int RSA_KEY_LENGTH = 2048;
-	final static private int AES_KEY_LENGTH = 256;
-	final static private char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
-	static { Security.addProvider(new BouncyCastleProvider());}
+    final static private int RSA_KEY_LENGTH = 2048;
+    final static private int AES_KEY_LENGTH = 256;
+    static { Security.addProvider(new BouncyCastleProvider());}
         
     public static boolean verifyClientPublicKey(String clientId, Key publicKey){
         return generateUserId(publicKey).equals(clientId);

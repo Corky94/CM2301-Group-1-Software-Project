@@ -50,30 +50,6 @@ public class Encryption{
         String s = new String(input);
         return s;
     }
-
-    public static byte[] encryptRemotePassword(byte[] remotePassword){
-        try{
-            Key aesKey = KeyVault.getAESKey();
-            Cipher encrypt = Cipher.getInstance("AES");
-            encrypt.init(Cipher.ENCRYPT_MODE, aesKey);
-            byte[] encryptedData = encrypt.doFinal(remotePassword);
-            return encryptedData; 
-        }catch( InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex){
-            throw new RuntimeException(ex);
-        }
-    }
-
-    public static byte[] decryptRemotePassword(byte[] encryptedPassword){
-        Key aesKey = KeyVault.getAESKey();
-        try{
-            Cipher decrypt = Cipher.getInstance("AES");
-            decrypt.init(Cipher.DECRYPT_MODE, aesKey);
-            byte[] decryptedData = decrypt.doFinal(encryptedPassword);
-            return decryptedData;
-        }catch(InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex){
-            throw new RuntimeException(ex);
-        }
-    }
     
     //the following two methods are only used when asking for a authentication request, they are unsecure as they are unencrypted.
     public static byte[] serialiseTicket(Ticket t){

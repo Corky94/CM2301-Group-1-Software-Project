@@ -28,6 +28,9 @@ import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 public class KeyGen{
     final private int RSA_KEY_LENGTH = 2048;
     final private int AES_KEY_LENGTH = 128;
+    // 010 for Nodes, 000 for Clients
+    static private int VERSION_NUMBER = 000;
+    final protected static char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
     static { Security.addProvider(new BouncyCastleProvider());}
 
     //Keygen methods
@@ -104,13 +107,12 @@ public class KeyGen{
         //https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses
         Key rsaPub = KeyVault.getRSAKeys().getPublic();
         RIPEMD160Digest d = new RIPEMD160Digest();
-        byte[] VERSION_NUMBER = bigIntToByteArray(000);
-
+        byte[] versionNumber = bigIntToByteArray(VERSION_NUMBER);
         byte[] firstRound = HashUtils.hashKeyToByte(rsaPub);
         d.update (firstRound, 0, firstRound.length);
         byte[] secondRound = new byte[d.getDigestSize()];
         d.doFinal (secondRound, 0);
-        byte[] thirdRound = concancateByteArrays(VERSION_NUMBER, secondRound);
+        byte[] thirdRound = concancateByteArrays(versionNumber, secondRound);
         byte[] fourthRound = HashUtils.hashSha256(thirdRound);
         byte[] fifthRound = Arrays.copyOfRange(HashUtils.hashSha256(fourthRound), 0, 4);
         byte[] sixthRound = concancateByteArrays(fourthRound, fifthRound);
@@ -127,6 +129,5 @@ public class KeyGen{
     private static byte[] bigIntToByteArray(int i) {
         BigInteger bigInt = BigInteger.valueOf(i);      
         return bigInt.toByteArray();
-    }
-    
+    }  
 }
