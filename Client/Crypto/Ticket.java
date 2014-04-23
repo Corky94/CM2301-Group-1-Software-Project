@@ -1,7 +1,6 @@
 package Crypto;
 
 import Console.SecureDetails;
-import Console.User;
 import java.security.Key;
 
 /**

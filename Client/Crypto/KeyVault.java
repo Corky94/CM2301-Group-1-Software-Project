@@ -10,7 +10,6 @@ import java.io.*;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
-
 import java.security.spec.X509EncodedKeySpec;
 import javax.crypto.*;
 /*
@@ -22,9 +21,6 @@ public class KeyVault{
     private static final String KEY_STORE_DIR = "";
     private static final String KEY_STORE_NAME = "keystore";
     private static final String KEY_STORE_TYPE = "JCEKS";
-
-    public KeyVault(){
-    }
 
     //PASSWORD IN REFERENCE IS TO OPEN THE KEYVAULT (LOCAL PASSWORD)
     public static boolean checkPassword(char[] localPassword){
@@ -50,7 +46,6 @@ public class KeyVault{
     public static void createKeyStore() {
         try {
             KeyStore ks = KeyStore.getInstance(KEY_STORE_TYPE);  
-            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(User.getPassword());
             ks.load(null, User.getPassword());
             if (checkIfKsExists() != true){
                 try (FileOutputStream fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME)) {
@@ -93,7 +88,6 @@ public class KeyVault{
     public static void setRSAKeys(){
         try{
             KeyStore ks = loadKeyStore();
-            //generate the rsaKeys
             KeyGen kg = new KeyGen();
             KeyPair rsaKeys = kg.generateRSAKeys();
             PublicKey pubKey = rsaKeys.getPublic();
@@ -115,22 +109,18 @@ public class KeyVault{
     public static void setAESKey(){
         try{
             KeyStore ks = loadKeyStore();
-            //generate the aesKey
             KeyGen kg = new KeyGen();
             SecretKey aesKey = kg.generateAESKey();
 
             KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(User.getPassword());
-
             KeyStore.SecretKeyEntry aesKeyEntry = new KeyStore.SecretKeyEntry(aesKey);
             ks.setEntry("aesKey", aesKeyEntry, passwordProtection);
-
             try (FileOutputStream fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME)) {
                 ks.store(fos, User.getPassword());
             }
             
         }catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
-            //logger.error("Cannot close connection");
-        throw new RuntimeException(ex);
+            throw new RuntimeException(ex);
         }
     }
 

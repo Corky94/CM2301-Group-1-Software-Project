@@ -7,9 +7,6 @@
 
 package Crypto;
 
-import Connection.ClientReceive;
-import Console.User;
-import Message.Message;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -19,8 +16,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.security.*;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.*;
@@ -54,30 +49,6 @@ public class Encryption{
     public static String bTS(byte[] input){
         String s = new String(input);
         return s;
-    }
-
-    public static byte[] encryptRemotePassword(byte[] remotePassword){
-        try{
-            Key aesKey = KeyVault.getAESKey();
-            Cipher encrypt = Cipher.getInstance("AES");
-            encrypt.init(Cipher.ENCRYPT_MODE, aesKey);
-            byte[] encryptedData = encrypt.doFinal(remotePassword);
-            return encryptedData; 
-        }catch( InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex){
-            throw new RuntimeException(ex);
-        }
-    }
-
-    public static byte[] decryptRemotePassword(byte[] encryptedPassword){
-        Key aesKey = KeyVault.getAESKey();
-        try{
-            Cipher decrypt = Cipher.getInstance("AES");
-            decrypt.init(Cipher.DECRYPT_MODE, aesKey);
-            byte[] decryptedData = decrypt.doFinal(encryptedPassword);
-            return decryptedData;
-        }catch(InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex){
-            throw new RuntimeException(ex);
-        }
     }
     
     //the following two methods are only used when asking for a authentication request, they are unsecure as they are unencrypted.
@@ -147,7 +118,4 @@ public class Encryption{
             throw new RuntimeException(ex);
         }
     }
-     
-    //This needs to be reworked   
-    
 }

@@ -10,7 +10,6 @@
 
 package Crypto;
 
-import Console.User;
 import javax.crypto.*;
 import java.util.*;
 import java.math.*;
@@ -29,7 +28,6 @@ import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 public class KeyGen{
     final private int RSA_KEY_LENGTH = 2048;
     final private int AES_KEY_LENGTH = 128;
-    final protected static char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
     static { Security.addProvider(new BouncyCastleProvider());}
 
     //Keygen methods
@@ -104,8 +102,7 @@ public class KeyGen{
 
     public static String generateUserID(){
         //https://en.bitcoin.it/wiki/Technical_background_of_version_1_Bitcoin_addresses
-        KeyPair rsaPair = KeyVault.getRSAKeys();
-        Key rsaPub = rsaPair.getPublic();
+        Key rsaPub = KeyVault.getRSAKeys().getPublic();
         RIPEMD160Digest d = new RIPEMD160Digest();
         byte[] VERSION_NUMBER = bigIntToByteArray(000);
 
