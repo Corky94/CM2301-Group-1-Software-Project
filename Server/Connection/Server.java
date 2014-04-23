@@ -62,9 +62,8 @@ public class Server {
         System.out.println("Please enter the login password:");
         char[] pass = console.readPassword();
 
-        KeyVault kv = new KeyVault();
         while (true) {
-            if (kv.checkPassword(pass) == false) {
+            if (KeyVault.checkPassword(pass) == false) {
                 System.out.println("Incorrect Password\n"
                         + "Please try again");
                 pass = console.readPassword();
@@ -128,14 +127,11 @@ public class Server {
 
     private static void keySetup() {
         PrintWriter out = null;
-        try {
-            KeyGen kg = new KeyGen();
-            
-            KeyPair k = kg.generateRSAKeys();
+        try {            
             KeyVault.createKeyStore();
             KeyVault.setRSAKeys();
             KeyVault.setAESKey();
-            id = kg.generateUserID();
+            id = KeyGen.generateUserID();
             out = new PrintWriter("id");
             out.println(Server.getId());
         } catch (FileNotFoundException ex) {
