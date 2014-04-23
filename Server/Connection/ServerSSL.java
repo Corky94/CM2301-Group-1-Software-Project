@@ -17,9 +17,7 @@ public class ServerSSL {
 
           
         try {
-           KeyVault kv = new KeyVault();
-           KeyStore ks = kv.loadKeyStore();
-           kv = null;
+           KeyStore ks = KeyVault.loadKeyStore();
 
            KeyManagerFactory kmf = KeyManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
            kmf.init(ks, pass);
@@ -68,9 +66,8 @@ public class ServerSSL {
       }
      public SSLSocket send(String address, int portNumber, char[] pass)  {
          try {
-            KeyVault kv = new KeyVault();
-            KeyStore ks = kv.loadKeyStore();
- 
+            KeyStore ks = KeyVault.loadKeyStore();
+
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             kmf.init(ks, pass);

@@ -20,9 +20,7 @@ public class ClientSSL {
     public ClientSSL() {
         char [] localPassword = User.getPassword();
         try {
-            KeyVault kv = new KeyVault();
-            KeyStore ks = kv.loadKeyStore();
- 
+            KeyStore ks = KeyVault.loadKeyStore();
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             kmf.init(ks, localPassword );
