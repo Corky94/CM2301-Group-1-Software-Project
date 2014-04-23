@@ -45,23 +45,10 @@ public class ServerSSL {
 
         
           
-          } catch (NoSuchAlgorithmException ex) {
+          } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException | UnrecoverableKeyException | IOException ex) {
                   Logger.getLogger(ServerSSL.class.getName()).log(Level.SEVERE, null, ex);
                   return null;
-              } catch (KeyManagementException ex) {
-             Logger.getLogger(ServerSSL.class.getName()).log(Level.SEVERE, null, ex);
-             return null;
-         } catch (KeyStoreException ex) {
-             Logger.getLogger(ServerSSL.class.getName()).log(Level.SEVERE, null, ex);
-             return null;
-         } catch (UnrecoverableKeyException ex) {
-             Logger.getLogger(ServerSSL.class.getName()).log(Level.SEVERE, null, ex);
-             return null;
-         }
-         catch (IOException ex) {
-             Logger.getLogger(ServerSSL.class.getName()).log(Level.SEVERE, null, ex);
-             return null;
-         }
+              }
         
       }
      public SSLSocket send(String address, int portNumber, char[] pass)  {

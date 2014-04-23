@@ -113,7 +113,6 @@ public class Server {
         keySetup();
         list.addNode();
         
-        KeyVault.createKeyStore();
 
         System.out.println("The current list of operating servers is: \n "
                 + list.getList());
@@ -126,7 +125,8 @@ public class Server {
 
     private static void keySetup() {
         PrintWriter out = null;
-        try {            
+        try {  
+            KeyVault.createKeyStore();
             KeyVault.setRSAKeys();
             KeyVault.setAESKey();
             id = KeyGen.generateUserID();
@@ -215,9 +215,6 @@ class UpdateAcceptor implements Runnable {
             Thread t = new Thread(u);
             t.start();
             System.out.println(t.getId());
-
-
-
 
         }
     }
