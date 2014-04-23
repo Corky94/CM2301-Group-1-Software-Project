@@ -39,7 +39,6 @@ public class KeyVaultTest {
     
     @Before
     public void setUp() {
-        //User.setPassword("password".toCharArray());
         KeyVault.createKeyStore();
     }
     
@@ -133,11 +132,9 @@ public class KeyVaultTest {
         System.out.println("getRSAKeys");
         //NEEDS TO CREATE RSA KEYS THEN COMPARE TO THE ONES BROUGHT BACK!
         KeyVault.setRSAKeys();
-        
         KeyPair result = KeyVault.getRSAKeys();
-        
+        System.out.println(result.getPublic() +"\n" + result.getPrivate());
         KeyPair dummy = new KeyPair(null, null);
-
         if(!result.getClass().equals(dummy.getClass())){
           fail("Not correct return type");
         }
@@ -150,10 +147,10 @@ public class KeyVaultTest {
     public void testGetAESKey() {
         System.out.println("getAESKey");
         KeyVault.setAESKey();
-        Key kp = KeyVault.getAESKey();
-        Key expResult = kp;
+        Key k = KeyVault.getAESKey();
+        System.out.println(k);
         Key result = KeyVault.getAESKey();
-        assertEquals(expResult, result);
+        assertEquals(k, result);
     }
     
 }

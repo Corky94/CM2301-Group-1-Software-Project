@@ -28,43 +28,62 @@ public class Ticket{
     }
     
     Ticket(Ticket t){
-        clientId = t.clientId;
-        nodeId = t.nodeId;
-        password = t.password;
-        clientPublicKey = t.clientPublicKey;
-        nodePublicKey = t.nodePublicKey; 
-        is_challenge = t.is_challenge;   
+        setClientId(t.getClientId());
+        setNodeId(t.getNodeId());
+        setPassword(t.getPassword());
+        setClientPublicKey(t.getClientPublicKey());
+        setNodePublicKey(t.getNodePublicKey());
+        setChallenge(t.is_challenge());
     }
     
     public static Ticket generateRequest(String nodeId){
-       
         return new Ticket(Server.getId(), nodeId, null, KeyVault.getRSAKeys().getPublic(), null, true);
     }
     
-    public static String getClientId(){
+    public String getClientId(){
         return clientId;
     }
     
-    public static String getNodeId(){
+    public String getNodeId(){
         return nodeId;
     }
 
-    public static String getPassword(){
+    public String getPassword(){
         return password;
     }
     
-    public static Key getClientPublicKey(){
+    public Key getClientPublicKey(){
         return clientPublicKey;
     }
     
-    public static Key getNodePublicKey(){
+    public Key getNodePublicKey(){
         return nodePublicKey;
     }
     
-    public static boolean is_challenge(){
+    public boolean is_challenge(){
         return is_challenge;
     }
     public static void setChallenge(boolean b){
         is_challenge = b;
+    }
+    
+    private static void setClientId(String aClientId) {
+        clientId = aClientId;
+    }
+
+    private static void setNodeId(String aNodeId) {
+        nodeId = aNodeId;
+    }
+
+    private static void setPassword(String aPassword) {
+        password = aPassword;
+    }
+
+    private static void setClientPublicKey(Key aClientPublicKey) {
+        clientPublicKey = aClientPublicKey;
+    }
+
+    private static void setNodePublicKey(Key aNodePublicKey) {
+        nodePublicKey = aNodePublicKey;
     }
 }

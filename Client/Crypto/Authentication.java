@@ -6,6 +6,8 @@
 
 package Crypto;
 
+import Connection.ClientReceive;
+import Console.User;
 import java.security.Key;
 
 /**
@@ -32,7 +34,7 @@ public class Authentication {
             //clientPublicKey = clientPublicKey;
             //nodePublicKey = null; 
             //is_challenge = true; 
-            Key nodePublicKey = getNodePublicKey(nodeId); //HOW DO I CONNECT TO AN ID SERVER AND GET A PUBLIC KEY?
+            Key nodePublicKey = ClientReceive.getKey(nodeId, User.getPassword());
             return Encryption.encryptAuth(nodePublicKey, Ticket.generateRequest(nodeId));
         } 
     }

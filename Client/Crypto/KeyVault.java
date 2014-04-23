@@ -37,7 +37,7 @@ public class KeyVault{
         } 
     }
 
-    public PublicKey bytesToKey(byte[] bytes){
+    public static PublicKey bytesToKey(byte[] bytes){
         try{
             PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(bytes));
             return publicKey;
