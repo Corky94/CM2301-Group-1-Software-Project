@@ -11,6 +11,8 @@ import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.crypto.*;
 /*
 *KeyVault is responcible for storing and retreiving keys from the vault, it also provides a password check for user login. 
@@ -21,6 +23,9 @@ public class KeyVault{
     private static final String KEY_STORE_DIR = "";
     private static final String KEY_STORE_NAME = "keystore";
     private static final String KEY_STORE_TYPE = "JCEKS";
+    private static final String TRUST_STORE_DIR = "";
+    private static final String TRUST_STORE_NAME = "truststore";
+    private static final String TRUST_STORE_TYPE = "JCEKS";
 
     //PASSWORD IN REFERENCE IS TO OPEN THE KEYVAULT (LOCAL PASSWORD)
     public static boolean checkPassword(char[] localPassword){
@@ -149,6 +154,54 @@ public class KeyVault{
             return aesKey;
         }catch(KeyStoreException | NoSuchAlgorithmException | UnrecoverableEntryException ex){
             throw new RuntimeException(ex);
+        }
+    }
+    
+    //truststore methods - Will be implemented once we use CA's	
+    public static void createTrustStore() {
+        try {
+            KeyStore trustStore = KeyStore.getInstance(TRUST_STORE_TYPE);  
+            trustStore.load(null, User.getPassword());
+            if (checkIfKsExists() != true){
+                try (FileOutputStream fos = new FileOutputStream(TRUST_STORE_DIR + TRUST_STORE_NAME)) {
+                    trustStore.store(fos, User.getPassword());
+                }
+            }
+            else
+                throw new RuntimeException("TRUSTSTORE ALREADY EXISTS");
+        }catch(IOException | RuntimeException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public static boolean destroyTrustStore(){
+        if(checkPassword(User.getPassword())){
+            File vault = new File(TRUST_STORE_DIR + TRUST_STORE_NAME);
+            if(vault.delete()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static KeyStore loadTrustStore(){       
+        try{
+            KeyStore ks  = KeyStore.getInstance(TRUST_STORE_TYPE);
+            ks.load(new FileInputStream(TRUST_STORE_DIR + TRUST_STORE_NAME), User.getPassword());
+            return ks;
+        }catch(IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public static void addTrust(java.security.cert.Certificate trustedCert){
+        try {
+            KeyStore ks = KeyVault.loadTrustStore();
+            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(User.getPassword());
+            KeyStore.Entry newEntry = new KeyStore.TrustedCertificateEntry(trustedCert);
+            ks.setEntry("nodeCert", newEntry, null);
+        } catch (KeyStoreException ex) {
+            Logger.getLogger(KeyVault.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

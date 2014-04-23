@@ -40,28 +40,20 @@ Socket:
 		
 	}
         
-        public static boolean registerToServer(String id, byte[] key, char[] localPassword ){
+        public static boolean registerToServer(String id, byte[] key){
             Message m = new Message();
             m.setKey(key);
             m.setReceiver(id);
             ClientSSL c = Console.User.clissl;
-            
             try {
-                
                 SSLSocket s = c.main(12346);
-                           
-                       
-            
                 OutputStream os = s.getOutputStream(); 
                 ObjectOutputStream oos = new ObjectOutputStream(os);
-              
                 System.out.println("Created Socket");
                 oos.writeObject(m);
                 oos.close();
                 os.close();
                 s.close();
-            
- 
             return true;
         } catch (IOException ex) {
             Logger.getLogger(ClientSend.class.getName()).log(Level.SEVERE, null, ex);

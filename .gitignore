@@ -57,3 +57,5 @@ Tor Chat - Node/build/classes/keystore
 Tor Chat - Node/build/classes/Message Servers.ser
 
 Tor Chat - Node/build/classes/NodeList.ser
+/Tor Chat - Node/dist/
+/Client working path/dist/

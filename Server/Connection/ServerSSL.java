@@ -42,9 +42,6 @@ public class ServerSSL {
            sc =null; 
 
            return s;
-
-        
-          
           } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException | UnrecoverableKeyException | IOException ex) {
                   Logger.getLogger(ServerSSL.class.getName()).log(Level.SEVERE, null, ex);
                   return null;

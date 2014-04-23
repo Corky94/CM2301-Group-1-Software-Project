@@ -1,14 +1,15 @@
 package Connection;
  
 import Console.*;
-import javax.net.ssl.*;
-import java.security.*;
-import java.io.*;
 import Crypto.*;
 import Message.NodeList;
+import java.io.*;
 import java.net.*;
+import java.security.*;
+import java.security.cert.X509Certificate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.ssl.*;
  
 public class ClientSSL {
  
@@ -18,18 +19,37 @@ public class ClientSSL {
     private String node;
  
     public ClientSSL() {
-        char [] localPassword = User.getPassword();
         try {
+            //for now, we're not using CAs
+            TrustManager trm = new X509TrustManager() {
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+                
+                @Override
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+                
+                @Override
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                }
+            };
+            
+            
             KeyStore ks = KeyVault.loadKeyStore();
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            kmf.init(ks, localPassword );
-            tmf.init(ks);
+            kmf.init(ks, User.getPassword() );
+            
+            //Leave these incase we decide to introduce CA's again.
+            //KeyStore trustStore = KeyVault.loadTrustStore();
+            //TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm()); 
+            //tmf.init(trustStore);
  
             sc = SSLContext.getInstance("TLS");
             sc.getClientSessionContext().setSessionCacheSize(1);
             sc.getClientSessionContext().setSessionTimeout(1000);
-            sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+            sc.init(kmf.getKeyManagers(),  new TrustManager[] { trm }, null);
             sf = sc.getSocketFactory();
             chooseHost();
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException | KeyManagementException ex) {
@@ -48,6 +68,8 @@ public class ClientSSL {
             
             s.setUseClientMode(true);
             s.setEnabledCipherSuites(s.getSupportedCipherSuites());
+            //In the future, if we need to get a nodes cert. This is 90% complete.
+            //KeyVault.addTrust(getSslCert(node, portNumber));
             s.startHandshake();
             System.out.println("Test");
             return s;
@@ -69,5 +91,39 @@ public class ClientSSL {
             Logger.getLogger(ClientSSL.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+    }
+    
+    
+    //for the future
+    public static java.security.cert.Certificate getSslCert(String host, int port){
+        try {
+            // create custom trust manager to ignore trust paths
+            TrustManager trm = new X509TrustManager() {
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+                
+                @Override
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+                
+                @Override
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                }
+            };
+            
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, new TrustManager[] { trm }, null);
+            SSLSocketFactory factory =sc.getSocketFactory();
+            try (SSLSocket socket = (SSLSocket)factory.createSocket(host, port)) {
+                socket.startHandshake();
+                SSLSession session = socket.getSession();
+                return session.getPeerCertificates()[0];
+            }
+        } catch (KeyManagementException | NoSuchAlgorithmException | IOException ex) {
+            Logger.getLogger(ClientSSL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }

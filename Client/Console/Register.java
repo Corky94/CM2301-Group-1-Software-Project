@@ -1,18 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package Console;
 
 import Connection.*;
 import Crypto.*;
-/**
- *
- * @author Marc
- */
+
 public class Register {
         public Register(char[] password) {
             User.setPassword(password);
+            KeyVault.createTrustStore();
             KeyVault.createKeyStore();
             KeyVault.setRSAKeys();
             KeyVault.setAESKey();
@@ -21,7 +15,7 @@ public class Register {
 
             String UserID = KeyGen.generateUserID();
             Console.User.clissl = new ClientSSL();
-            ClientSend.registerToServer(UserID, key,password);
+            ClientSend.registerToServer(UserID, key);
 
             SecureDetails setup = new SecureDetails();
 
