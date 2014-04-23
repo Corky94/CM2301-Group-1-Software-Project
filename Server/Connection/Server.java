@@ -18,12 +18,11 @@ public class Server {
     public static NodeList list = new NodeList();
 
     public static void main(String args[]) {
-
-        File f = new File("keystore");
-
-        if (f.exists() == false) {
+        
+        if(KeyVault.checkIfKsExists() == false){
             initialSetup();
         }
+
         login();
 
         ServerSSL s = new ServerSSL();
@@ -94,7 +93,7 @@ public class Server {
 
     private static void initialSetup() {
         Scanner sc = new Scanner(System.in);
-
+        
         System.out.println("The server has yet to be set up."
                 + "\nPress enter to continue.");
         sc.nextLine();
@@ -113,6 +112,8 @@ public class Server {
         password = pass;
         keySetup();
         list.addNode();
+        
+        KeyVault.createKeyStore();
 
         System.out.println("The current list of operating servers is: \n "
                 + list.getList());
@@ -121,8 +122,6 @@ public class Server {
                 + "Please ensure you have remembered your password.");
         sc.nextLine();
         clearConsole();
-
-
     }
 
     private static void keySetup() {
