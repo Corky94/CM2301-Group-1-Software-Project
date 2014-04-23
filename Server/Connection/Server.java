@@ -127,7 +127,6 @@ public class Server {
     private static void keySetup() {
         PrintWriter out = null;
         try {            
-            KeyVault.createKeyStore();
             KeyVault.setRSAKeys();
             KeyVault.setAESKey();
             id = KeyGen.generateUserID();
