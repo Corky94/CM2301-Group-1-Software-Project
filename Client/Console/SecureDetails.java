@@ -5,9 +5,7 @@
 package Console;
 
 import Message.Message;
-import Connection.*;
 import java.io.*;
-import java.security.*;
 import java.util.HashMap;
 
 /**
@@ -20,18 +18,13 @@ public class SecureDetails {
     private final String dir = "user2.ser";
     
     public SecureDetails(){
-        
-        
-    
         try{
             
             FileInputStream fis = new FileInputStream(dir);
             ObjectInputStream ois = new ObjectInputStream(fis);
             details = (HashMap) ois.readObject();
             ois.close();
-
-        }
-        catch(FileNotFoundException e){
+        }catch(FileNotFoundException e){
             try{
                 details = new HashMap();
                 details.put("Registered", false);
@@ -51,16 +44,11 @@ public class SecureDetails {
         }
         catch(ClassNotFoundException e){
         }
-
-
     }
-    
-    
+     
     public void setRegistered(){
         details.put("Registered", true);
     }
-    
-    
     
     public void setId(String key){
         details.put("ID", key);
@@ -86,45 +74,31 @@ public class SecureDetails {
         this.saveDetails();
     }
     
-    
     public Message[] getMessages(){
-        Message[] savedMessages = (Message[])details.get("Messages");
-        return savedMessages;
-        
+        return (Message[])details.get("Messages");
     }
-    
-
     
     public String getID(){
-        
-        String id = (String)details.get("ID");
-        return id;
+        return (String)details.get("ID");
     }
-    
 
-    
     public boolean getRegistered(){
-        
-        boolean registered = (boolean)details.get("Registered");
-        return registered;
-        
+        return (boolean)details.get("Registered"); 
     }
     
-    public void saveDetails(){
-        
-         try{
+    public void saveDetails(){    
+        try{
 
-                FileOutputStream fos = new FileOutputStream(dir);
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
-                oos.writeObject(details);
-                oos.close();
-                
-            }
-            catch(FileNotFoundException ex){
-                
-            } 
-            catch (IOException ex) {
-            }
+               FileOutputStream fos = new FileOutputStream(dir);
+               ObjectOutputStream oos = new ObjectOutputStream(fos);
+               oos.writeObject(details);
+               oos.close();
+
+           }catch(FileNotFoundException ex){
+
+           } catch (IOException ex) {
+
+           }
         
     }
 
