@@ -59,6 +59,19 @@ public class KeyVaultTest {
         boolean result = kv.checkPassword(localPassword);
         assertEquals(expResult, result);
     }
+    
+        /**
+     * Test of checkPassword method, of class KeyVault.
+     */
+    @Test
+    public void testCheckBadPassword() {
+        System.out.println("checkBadPassword");
+        char[] localPassword = "badPassword".toCharArray();
+        KeyVault kv = new KeyVault();
+        boolean expResult = false;
+        boolean result = kv.checkPassword(localPassword);
+        assertEquals(expResult, result);
+    }
 
     /**
      * Test of bytesToKey method, of class KeyVault.

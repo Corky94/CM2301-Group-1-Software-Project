@@ -52,7 +52,7 @@ public class KeyVault{
     public static void createKeyStore() {
         try {
             KeyStore ks = KeyStore.getInstance(KEY_STORE_TYPE);  
-            //KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(User.getPassword());
+            KeyStore.ProtectionParameter passwordProtection = new KeyStore.PasswordProtection(Server.getPassword());
             ks.load(null, Server.getPassword());
             if (checkIfKsExists() != true){
                 try (FileOutputStream fos = new FileOutputStream(KEY_STORE_DIR + KEY_STORE_NAME)) {
@@ -63,10 +63,7 @@ public class KeyVault{
                 throw new RuntimeException("KEYSTORE ALREADY EXISTS");
         }catch(IOException | RuntimeException | KeyStoreException ex){
             throw new RuntimeException(ex);
-        
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(KeyVault.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (CertificateException ex) {
+        } catch (NoSuchAlgorithmException | CertificateException ex) {
             Logger.getLogger(KeyVault.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
