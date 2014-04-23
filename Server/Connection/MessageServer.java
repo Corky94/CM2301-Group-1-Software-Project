@@ -15,8 +15,6 @@ public class MessageServer implements java.io.Serializable {
     private String url;
     private String user;
     private String password;
-    private transient ServerStorage ss = new ServerStorage();
-    private transient Stack details;
 
 
 
@@ -69,6 +67,7 @@ public class MessageServer implements java.io.Serializable {
      * @return the details
      */
     public Stack getDetails() {
+        ServerStorage ss = new ServerStorage();
         return ss.getMessageServerList();
     }
 
@@ -76,7 +75,8 @@ public class MessageServer implements java.io.Serializable {
      * @param details the details to set
      */
     public void updateDetails(MessageServer server) {
-        details = ss.getMessageServerList();
+        ServerStorage ss = new ServerStorage();
+        Stack details = ss.getMessageServerList();
         details.add(server);
         ss.updateMessageServerDetails(details);
         
