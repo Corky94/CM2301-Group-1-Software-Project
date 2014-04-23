@@ -6,6 +6,7 @@
 
 package Crypto;
 
+import Console.User;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -27,6 +28,7 @@ public class KeyGenTest {
     
     @BeforeClass
     public static void setUpClass() {
+                User.setPassword("password".toCharArray());
     }
     
     @AfterClass
@@ -57,15 +59,13 @@ public class KeyGenTest {
     @Test
     public void testGenerateCertificate() {
         System.out.println("generateCertificate");
-        char[] localPassword = "password".toCharArray();
-        KeyVault kv = new KeyVault();
-        kv.createKeyStore(localPassword);
-        kv.setRSAKeys(localPassword);
-        KeyPair kp = kv.getRSAKeys(localPassword);
+        KeyVault.createKeyStore();
+        KeyVault.setRSAKeys();
+        KeyPair kp = KeyVault.getRSAKeys();
         PublicKey pubKey = kp.getPublic();
         PrivateKey priKey = kp.getPrivate();
         X509Certificate[] result = KeyGen.generateCertificate(pubKey, priKey);
-        kv.destroyKeyStore(localPassword);
+        KeyVault.destroyKeyStore();
     }
 
     /**
@@ -79,33 +79,16 @@ public class KeyGenTest {
     }
 
     /**
-     * Test of generateRemotePassword method, of class KeyGen.
-     */
-    @Test
-    public void testGenerateRemotePassword() {
-        System.out.println("generateRemotePassword");
-        char[] localPassword = "password".toCharArray();
-        KeyVault kv = new KeyVault();
-        kv.createKeyStore(localPassword);
-        kv.setRSAKeys(localPassword);
-        KeyGen instance = new KeyGen();
-        instance.generateRemotePassword(localPassword);
-        kv.destroyKeyStore(localPassword);
-    }
-
-    /**
      * Test of generateUserID method, of class KeyGen.
      */
     @Test
     public void testGenerateUserID() {
         System.out.println("generateUserID");
-        char[] localPassword = "password".toCharArray();
         KeyVault kv = new KeyVault();
-        kv.createKeyStore(localPassword);
-        kv.setRSAKeys(localPassword);
-        KeyGen instance = new KeyGen();
-        instance.generateUserID(localPassword);
-        kv.destroyKeyStore(localPassword);
+        KeyVault.createKeyStore();
+        KeyVault.setRSAKeys();
+        KeyGen.generateUserID();
+        KeyVault.destroyKeyStore();
     }
     
 }
