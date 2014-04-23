@@ -13,16 +13,16 @@ public class ServerSSL {
 
 /*Get keys from Max's Keyvault. */
 
-     public  SSLServerSocket main(int port, char[] pass) {
+     public  SSLServerSocket main(int port) {
 
           
         try {
            KeyVault kv = new KeyVault();
-           KeyStore ks = kv.loadKeyStore();
+           KeyStore ks = kv.loadKeyStore("pass".toCharArray());
            kv = null;
 
            KeyManagerFactory kmf = KeyManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-           kmf.init(ks, pass);
+           kmf.init(ks, "pass".toCharArray());
 
            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm()); 
            tmf.init(ks); 
@@ -66,14 +66,15 @@ public class ServerSSL {
          }
         
       }
-     public SSLSocket send(String address, int portNumber, char[] pass)  {
+     public SSLSocket send(String address, int portNumber)  {
          try {
+            char[] localPassword = "pass".toCharArray();
             KeyVault kv = new KeyVault();
-            KeyStore ks = kv.loadKeyStore();
+            KeyStore ks = kv.loadKeyStore(localPassword);
  
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            kmf.init(ks, pass);
+            kmf.init(ks, localPassword);
             tmf.init(ks);
  
             SSLContext sc = SSLContext.getInstance("TLS");
