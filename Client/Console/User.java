@@ -12,7 +12,6 @@ import java.util.Scanner;
 
 
 public class User {
-
 //	private Message[] savedMessages;
         private SecureDetails s;
         public boolean loggedIn;
@@ -21,49 +20,40 @@ public class User {
         private byte[] publicKey;
         private static char[] pass;
         public  static ClientSSL clissl;
-        
-	public User() {
-	
-	}
-        
+
+        public User() {
+
+        }
+
         public static void setPassword(char[] p){
             pass = p;
         }
-         
+
         public static char[] getPassword(){
             return pass;
         }
-        
-        
+
+
         public void login(char[] password){
-            
             realm = null;
             s = new SecureDetails();
             Scanner in = new Scanner(System.in);
             KeyVault kv = new KeyVault();
-            
-            
-            while (kv.checkPassword(password) != true){
-                 pass = password;
-               
-                if (kv.checkPassword(password) == false){
+            while (KeyVault.checkPassword(password) != true){
+                pass = password;
+                if (KeyVault.checkPassword(password) == false){
                     System.out.println("Password Incorrect \n Press enter to try again");                
- 
                 }
-
             }
-            
             loggedIn = true;   
-           
-         
         }
 
         public void logout(){            
             loggedIn = false;            
         }
-        
+
         public void readMessages(){
-            
+
 //            if (newMessages.length<=0){                
 //                System.out.println("You have no new messages");                
 //            }
@@ -76,26 +66,21 @@ public class User {
 //            System.out.println("You have " + s.getMessages().length + " saved messages");
 //            
 //            
-            
-        }
-        
-        
-        public Message[] receiveEmails(SecureDetails s) {
-           
-            return ClientReceive.receive(s.getID(), pass);
 
+        }
+
+        public Message[] receiveEmails(SecureDetails s) {
+            return ClientReceive.receive(s.getID(), pass);
             //return m;
         }
-        
+
         public void createMessage(String contents, String recipitent, String subject) {
             c = new ClientSend();
             s = new SecureDetails();
             Message m = new Message();
-            Encryption e = new Encryption();
-        
-            
+
             m.setReceiver(recipitent);
-          
+
             PublicKey pk =  ClientReceive.getKey(m.getReceiver(),pass);
 
             String sender = s.getID();
@@ -103,33 +88,25 @@ public class User {
             m.setSubject(Encryption.encryptString(pk, subject));
             m.setSender(Encryption.encryptString(pk, sender));
             m.setMessage(Encryption.encryptString(pk, contents));
-            ClientSend.sendMessage(m, pass);
-            
-
-            
+            ClientSend.sendMessage(m, pass);   
         } 
-        
-        public void deleteMessage(int x){
-            
-            
-            // delete message from savedMessages[x] 
-            
+
+        public void deleteMessage(int x){  
+            // delete message from savedMessages[x]         
         }
+
         public static void main(String[] args) {      
             User u = new User();
             File f = new File("user2");
 
             if (f.exists()){
                 new GUI.GuiLogin();
-                
+
             }
             else {
-
                 GUI.GuiRegister.NewRegister();
-                
-        }
+            }
 
     }
-
-        
+      
 }
