@@ -7,7 +7,9 @@
 package Crypto;
 
 import Connection.ClientReceive;
+import Connection.Packet;
 import Console.User;
+import Message.Message;
 import java.security.Key;
 
 /**
@@ -15,6 +17,11 @@ import java.security.Key;
  * @author maxchandler
  */
 public class Authentication {
+    
+    public static void authenticateAndSend(Message m, String nodeID){
+        byte[] ticket = auth(nodeID);
+        Packet p = new Packet(ticket, m);
+    }
     
     public static byte[] auth(String nodeId){
         //This method is called to connect to a node, if it has the right auth

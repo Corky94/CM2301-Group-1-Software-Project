@@ -6,33 +6,20 @@ package Console;
 
 import Connection.*;
 import Crypto.*;
-import java.security.*;
-import java.util.Arrays;
-import java.util.Scanner;
-import javax.crypto.SecretKey;
-
 /**
  *
  * @author Marc
  */
 public class Register {
-    
-            
-    
         public Register(char[] password) {
             User.setPassword(password);
-            KeyGen kg = new KeyGen();
-            KeyVault kv = new KeyVault();
-            HashUtils hu = new HashUtils();
-            KeyPair k = kg.generateRSAKeys();
-            kv.createKeyStore();
-
-            kv.setRSAKeys();
-            kv.setAESKey();
+            KeyVault.createKeyStore();
+            KeyVault.setRSAKeys();
+            KeyVault.setAESKey();
             
-            byte[] key = kv.getRSAKeys().getPublic().getEncoded();
+            byte[] key = KeyVault.getRSAKeys().getPublic().getEncoded();
 
-            String UserID =kg.generateUserID();
+            String UserID = KeyGen.generateUserID();
             Console.User.clissl = new ClientSSL();
             ClientSend.registerToServer(UserID, key,password);
 
@@ -40,9 +27,6 @@ public class Register {
 
             setup.setId(UserID);         
             setup.setRegistered();
-            setup.saveDetails();
-            
-        
-    }
-    
+            setup.saveDetails();                   
+    }   
 }
