@@ -138,47 +138,50 @@ public class Sql {
         
     
     
-    public byte[] getKey(String id) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException{
-        Stack servers = this.getIDServers();
-        IDServer idServer = (IDServer) servers.pop();
-        System.out.println("Correct Method");
-        Connection con = this.connection(idServer);
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        System.out.println("Connection Successful");
+    public byte[] getKey(String id) {
+        try {
+            Stack servers = this.getIDServers();
+            IDServer idServer = (IDServer) servers.pop();
+            Connection con = this.connection(idServer);
+            PreparedStatement pst = null;
+            ResultSet rs = null; 
+            pst = con.prepareStatement("SELECT PublicKey FROM id WHERE UserID = (?)");
+            pst.setString(1, id);
+            rs = pst.executeQuery();
+            rs.next();
+            return rs.getBytes(1);
+        } catch (SQLException ex) {
+            Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
-        
-        pst = con.prepareStatement("SELECT PublicKey FROM id WHERE UserID = (?)");
-        pst.setString(1, id);
-        rs = pst.executeQuery();
-        rs.next();
-        System.out.println(rs.getBytes(1));
-        return rs.getBytes(1); 
-        
-
+        return null;
         
     }
     
-    public boolean idExist(String id) throws SQLException{
+    public boolean idExist(String id) {
         
-        Stack servers = this.getIDServers();
-        IDServer idServer = (IDServer) servers.pop();
-        System.out.println("Correct Method");
-        Connection con = this.connection(idServer);
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        
-        pst = con.prepareStatement("SELECT PublicKey FROM id WHERE UserID = (?)");
-        pst.setString(1, id);
-        rs = pst.executeQuery();
-        return rs.next();
+        try {
+            Stack servers = this.getIDServers();
+            IDServer idServer = (IDServer) servers.pop();
+            Connection con = this.connection(idServer);
+            PreparedStatement pst = null;
+            ResultSet rs = null;
+            
+            pst = con.prepareStatement("SELECT PublicKey FROM id WHERE UserID = (?)");
+            pst.setString(1, id);
+            rs = pst.executeQuery();
+            return rs.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
     
     public void sendMessage(byte[] sender, byte[] subject,  byte[] contents, String reciever){
         System.out.println("reg");
         Stack servers = this.getMessageServers();
         Connection con = null;
-        MessageServer messageServerObj = (MessageServer)servers.pop();
+        MessageServer messageServerObj;
         
         while(con ==null){
                try {
@@ -221,7 +224,7 @@ public class Sql {
                        this.setUpMessageTable(con);
                        System.out.println(tableExist(con));
                    }
-
+                    System.out.println(reciever);
                    PreparedStatement pst = null;
 
                     pst = con.prepareStatement("INSERT INTO Messages(UserID, Sender, Subject, Message) VALUES(?,?,?,?)");
@@ -247,17 +250,14 @@ public class Sql {
     }
         
     public Message[] getMessage(String id){
-        
+        System.out.println(id);
         Message newMessage = new Message();
         int arrayLength = 0;
-        System.out.println("Before Stack");
         Stack servers = this.getMessageServers();
-        System.out.println("After Stack");
         Connection con = null;
         MessageServer messageServer;
         
         while(con ==null){
-            System.out.println("Before Try");
                try {
                    System.out.println(servers);
                    
@@ -422,9 +422,9 @@ public class Sql {
          
          id.updateDetails(id);
          setUpIDTable(con);
-         ServerStorage ss = new ServerStorage();
-         ss.updateOtherServers();
- //        this.deleteIDTest(con);
+//         ServerStorage ss = new ServerStorage();
+//         ss.updateOtherServers();
+//         this.deleteIDTest(con);
          return true;
          
      }
@@ -445,42 +445,42 @@ public class Sql {
          }
          mes.updateDetails(mes); 
          setUpMessageTable(con);
-         ServerStorage ss = new ServerStorage();
-         ss.updateOtherServers();
+//         ServerStorage ss = new ServerStorage();
+//         ss.updateOtherServers();
          
 //         this.deleteMessageTest(con);
          return true;
      }
      
-//     public void deleteIDTest(Connection con ){
-//        try {
-//         
-//            PreparedStatement pst = null;
-//            System.out.println(con);
-//            
-//            pst = con.prepareStatement("DROP TABLE id");
-//            pst.executeUpdate();
-//
-//        } catch (SQLException ex) {
-//            Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        
-//     }
-//     public void deleteMessageTest(Connection con ){
-//        try {
-//         
-//            PreparedStatement pst = null;
-//            System.out.println(con);
-//            
-//            pst = con.prepareStatement("DROP TABLE Messages");
-//            pst.executeUpdate();
-//
-//        } catch (SQLException ex) {
-//            Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        
-//     }
-//     
+     public void deleteIDTest(Connection con ){
+        try {
+         
+            PreparedStatement pst = null;
+            System.out.println(con);
+            
+            pst = con.prepareStatement("DROP TABLE id");
+            pst.executeUpdate();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+     }
+     public void deleteMessageTest(Connection con ){
+        try {
+         
+            PreparedStatement pst = null;
+            System.out.println(con);
+            
+            pst = con.prepareStatement("DROP TABLE Messages");
+            pst.executeUpdate();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+     }
+     
      
      
 }
