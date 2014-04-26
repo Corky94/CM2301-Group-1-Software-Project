@@ -76,9 +76,9 @@ public class GuiLogin {
                         JOptionPane.showMessageDialog(panel, "Sorry incorrect password, Please try again", "Incorrect Password",
                         JOptionPane.WARNING_MESSAGE);               
                     }else{
-                    User u = new User();
+                    
 
-                    u.login(password);
+                    User.login(password);
 
                     panel.setVisible(false);
                     frame.setVisible(false);
@@ -150,9 +150,9 @@ public class GuiLogin {
                                     JOptionPane.showMessageDialog(panel, "Sorry incorrect password, Please try again", "Incorrect Password",
                                     JOptionPane.WARNING_MESSAGE);               
                                 }else{
-                                User u = new User();
+                      
 				
-                                u.login(password);
+                                User.login(password);
                                 
                                 panel.setVisible(false);
                                 frame.setVisible(false);

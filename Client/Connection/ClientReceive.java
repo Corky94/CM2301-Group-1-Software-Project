@@ -25,10 +25,11 @@ public class ClientReceive {
             m.setSender(null);
             m.setReceiver(Id);
             m.setMessage(null);
-            Packet p = Authentication.createPacket(m, null);
+            ClientSSL c = Console.User.clissl;
+            Packet p = Authentication.createPacket(m, c.getNodeAddress());
             SSLSocket s;
             while (true){
-                ClientSSL c = Console.User.clissl;
+                
                 s = c.main(12346);
 
                 System.out.println(s);

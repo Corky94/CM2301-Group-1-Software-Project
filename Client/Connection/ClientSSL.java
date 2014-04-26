@@ -2,13 +2,12 @@ package Connection;
  
 import Console.*;
 import Crypto.*;
-import Message.NodeList;
+import Message.*;
 import java.io.*;
 import java.net.*;
 import java.security.*;
-import java.security.cert.X509Certificate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.security.cert.*;
+import java.util.logging.*;
 import javax.net.ssl.*;
  
 public class ClientSSL {
@@ -82,6 +81,9 @@ public class ClientSSL {
     
     private void chooseHost(){
         node = n.getNode();
+        SecureDetails sd = new SecureDetails();
+        Message m = new Message();
+        m.setReceiver(sd.getID());
         try{
             SSLSocket s = (SSLSocket) sf.createSocket(node, 12346);
         }catch(ConnectException ste){

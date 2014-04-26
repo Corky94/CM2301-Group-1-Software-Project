@@ -39,8 +39,8 @@ class GuiMenu	extends	JFrame
       private	      JPanel        contactsPanel;
       private	      JPanel        settingsPanel;
       private	      JPanel        stegPanel;
-      private         SecureDetails s = new SecureDetails(); 
-      private         Message[]     m;
+      private         static SecureDetails s = new SecureDetails(); 
+      private         static Message[]     m;
       private         JFrame        mainFrame;
       private         JList         inboxList;
       
@@ -120,8 +120,8 @@ class GuiMenu	extends	JFrame
         inboxPanel.add(forward);
         inboxPanel.add(reply);
 
-        User u = new User();
-        m = u.receiveEmails(s);
+        
+        m = User.receiveEmails();
         int length = m.length;
         String[] listContent = new String[length];
 
@@ -404,8 +404,8 @@ class GuiMenu	extends	JFrame
                     if(dialogResult == 0)
                     {
                         System.out.println(to);
-                        User u = new User();
-                        u.createMessage(message, to, subject);
+                       
+                        User.createMessage(message, to, subject);
                         JOptionPane.showMessageDialog(composePanel, "Message Successfully sent.", "Successfull",
                         JOptionPane.INFORMATION_MESSAGE); 
                         try {
@@ -417,8 +417,8 @@ class GuiMenu	extends	JFrame
                     }
                 }else{
                     System.out.println(to);
-                    User u = new User();
-                    u.createMessage(message, to, subject);
+                    
+                    User.createMessage(message, to, subject);
                     JOptionPane.showMessageDialog(composePanel, "Message Successfully sent.", "Successfull",
                     JOptionPane.INFORMATION_MESSAGE); 
 

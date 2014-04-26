@@ -12,8 +12,8 @@ import java.security.*;
 
 public class User {
 //	private Message[] savedMessages;
-    private SecureDetails s;
-    public boolean loggedIn;
+    private static SecureDetails s;
+    public static boolean loggedIn;
     private String realm;
     private ClientSend c;
     private byte[] publicKey;
@@ -33,16 +33,17 @@ public class User {
     }
 
 
-    public void login(char[] password){
-        realm = null;
-        s = new SecureDetails();
+    public static void login(char[] password){
+ 
+        
         while (KeyVault.checkPassword(password) != true){
-            pass = password;
+            
             if (KeyVault.checkPassword(password) == false){
                 System.out.println("Password Incorrect \n Press enter to try again");                
-            }
-        }
-        loggedIn = true;   
+            }   
+        } 
+        pass = password;
+        clissl = new ClientSSL();
     }
 
     public void logout(){            
@@ -66,12 +67,12 @@ public class User {
 
     }
 
-    public Message[] receiveEmails(SecureDetails s) {
+    public static Message[] receiveEmails() {
+        s = new SecureDetails();
         return ClientReceive.receive(s.getID());
     }
 
-    public void createMessage(String contents, String recipitent, String subject) {
-        c = new ClientSend();
+    public static void createMessage(String contents, String recipitent, String subject) {
         s = new SecureDetails();
         Message m = new Message();
         m.setReceiver(recipitent);
@@ -92,7 +93,7 @@ public class User {
 
     public static void main(String[] args) {      
         User u = new User();
-        File f = new File("user2");
+        File f = new File("user2.ser");
         if (f.exists())
             new GUI.GuiLogin();
         else
