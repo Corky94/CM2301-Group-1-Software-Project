@@ -67,7 +67,6 @@ public class Encryption{
     }
     
     public static Ticket decryptTicket(Packet p){
-        System.out.println("verifyEncryptedTicket -> sessionKey: " + p.getSessionKey());
         return Encryption.decryptAuth(Encryption.decryptSessionKey(p.getSessionKey()), p.getEncryptedTicket());
     }
     

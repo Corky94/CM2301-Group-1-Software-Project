@@ -29,6 +29,7 @@ import org.bouncycastle.x509.X509V3CertificateGenerator;
 public class KeyGen{
     static private int RSA_KEY_LENGTH = 2048;
     static private int AES_KEY_LENGTH = 128;
+    static private int IV_LENGTH = 16;
     // 010 for Nodes, 000 for Clients
     static private int VERSION_NUMBER = 000;
     final protected static char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
@@ -111,7 +112,9 @@ public class KeyGen{
             KeyGenerator aesGenerator = KeyGenerator.getInstance("AES");
             aesGenerator.init(AES_KEY_LENGTH);
             SecretKey aesKey = aesGenerator.generateKey();
-            byte[] iv = { 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8 };
+            SecureRandom sr = new SecureRandom();
+            byte[] iv = new byte[IV_LENGTH];
+            sr.nextBytes(iv);
             sKey.setKey(aesKey);
             sKey.setIvSpec(iv);
             return sKey;
