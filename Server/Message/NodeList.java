@@ -47,9 +47,7 @@ public class NodeList {
             } 
             catch (IOException ex) {
             }
-        } catch (IOException ex) {
-            Logger.getLogger(ServerStorage.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
+        } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ServerStorage.class.getName()).log(Level.SEVERE, null, ex);
         }
         

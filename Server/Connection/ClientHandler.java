@@ -133,8 +133,8 @@ public class ClientHandler implements Runnable {
             oos.flush();
             oos.close();
             os.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
@@ -157,7 +157,3 @@ public class ClientHandler implements Runnable {
         System.out.println("Sent Key"); 
     }
 }
-    
-        
-
-

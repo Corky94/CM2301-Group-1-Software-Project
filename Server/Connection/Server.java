@@ -45,7 +45,6 @@ public class Server {
 
         ServerSSL s = new ServerSSL();
 
-
         SSLServerSocket querySocket = s.main(12346, getPassword());
         SSLServerSocket updateSocket = s.main(12347, getPassword());
         SSLServerSocket nodeSocket = s.main(12348, getPassword());
@@ -85,9 +84,7 @@ public class Server {
                     fr.close();
                     br.close();
                     break;
-                } catch (FileNotFoundException ex) {
-                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IOException ex) {
+                } catch ( IOException ex) {
                     Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -164,9 +161,8 @@ class ClientAcceptor implements Runnable {
         while (true) {
             socket = ss;
             ClientHandler c = new ClientHandler(socket);
-
             Thread t = new Thread(c);
-            System.out.println(t.getId());
+            System.out.println("Thread ID: " + t.getId());
             t.start();
             socket = null;
             t = null;
@@ -175,7 +171,6 @@ class ClientAcceptor implements Runnable {
 }
 
 class UpdateAcceptor implements Runnable {
-
     private static boolean debug = true;
     private SSLServerSocket socket;
     private Message message;
@@ -187,12 +182,11 @@ class UpdateAcceptor implements Runnable {
     public void run() {
         SSLServerSocket ss = socket;
         while (true) {
-
             socket = ss;
             UpdateHandler u = new UpdateHandler(socket);
             Thread t = new Thread(u);
             t.start();
-            System.out.println(t.getId());
+            System.out.println("Thread ID: " + t.getId());
 
         }
     }
@@ -211,15 +205,11 @@ class NodeAcceptor implements Runnable {
     public void run() {
         SSLServerSocket ss = socket;
         while (true) {
-
             socket = ss;
             NodeHandler n = new NodeHandler(socket);
             Thread t = new Thread(n);
             t.start();
-            System.out.println(t.getId());
-
-
-
+            System.out.println("Thread ID: " + t.getId());
         }
     }
 }
