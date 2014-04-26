@@ -6,45 +6,40 @@
 
 package Crypto;
 
+import Connection.Packet;
 import Connection.Server;
 
 /**
  *
  * @author maxchandler
  */
-public class ServerAuthentication {
-    private AuthenticatedList al = new AuthenticatedList();
-    
-    public byte[] handleChallenge(byte[] input){
-        Ticket t = (Ticket) Encryption.decryptAuth(input);
-        /*if(t.is_challenge() == false){
-            verifyClientChallenge(t);
-            return null;
-        }else{*/
-           t = generateChallenge(t);
-           return Encryption.encryptAuth(t.getClientPublicKey(), t);
-        //}
-    }
-    
-    private  Ticket generateChallenge(Ticket t){
-        //takes incomming request ticket from client, adds node details and onetime password to be returned to the client
+public class ServerAuthentication {    
+    public static Packet handleChallenge(Ticket t){
+        //takes incomming request ticket from client, adds node details and 
+        //onetime password to be returned to the client
         Ticket newTicket =  new Ticket(
                 t.getClientId(),
-                Server.getId(), //TO COMPLETE
+                Server.getId(),
+                t.getNodeAddress(), //Is there a method of getting it from the node? Node.getCurrentAddress()?
                 ServerTools.generateOneTimePassword(),
                 t.getClientPublicKey(),
                 KeyVault.getRSAKeys().getPublic(),
                 true
         );
-        al.addAuth(newTicket);
-        return newTicket;
-        
-        //String cId, String nId, String password, Key clientKey, Key nodeKey, boolean r
+        AuthenticatedList.addAuth(newTicket);
+        AuthenticatedList.printList();
+        return Encryption.encryptTicket(newTicket);        
     }
     
-    private boolean verifyClientChallenge(Ticket t){    
+    public static boolean verifyEncryptedTicket(Packet p){
+        Ticket t = Encryption.decryptTicket(p);
+        Ticket current = AuthenticatedList.getClientTicket(t.getClientId());
+        return(t.getClientId().equals(current.getClientId()) & t.getPassword().equals(current.getPassword()));
+    }
+    
+    public static boolean verifyClientChallenge(Ticket t){    
         //get the current ticket
-        Ticket current = al.getClientTicket(t.getClientId());
+        Ticket current = AuthenticatedList.getClientTicket(t.getClientId());
         if(t.is_challenge() == false){
             if(current.equals(t)){
                 return true;
@@ -55,9 +50,9 @@ public class ServerAuthentication {
                     //passwords & ids match node records
                     if(current.is_challenge() == true){
                         //challenge has returned, user is free to roam. better make sure the node knows
-                        al.deleteAuth(current.getClientId());
+                        AuthenticatedList.deleteAuth(current.getClientId());
                         current.setChallenge(false);
-                        al.addAuth(current);
+                        AuthenticatedList.addAuth(current);
                         return true;
                     }
                 }

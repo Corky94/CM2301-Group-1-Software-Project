@@ -1,6 +1,6 @@
 package Crypto;
 
-import Console.SecureDetails;
+import java.io.Serializable;
 import java.security.Key;
 
 /**
@@ -9,18 +9,20 @@ import java.security.Key;
  */
 //Client side auth object, it differes to the node as passwords are stored as
 //string and not as hashes of the strings.
-public class Ticket{
+public class Ticket implements Serializable{
     private final String clientId;
     private final String nodeId;
     private final String password;
+    private String nodeAddress;
     private final Key clientPublicKey;
     private final Key nodePublicKey;
     private Boolean is_challenge;
     
     //constructor for saving auth details
-    Ticket(String cId, String nId, String p, Key clientKey, Key nodeKey, boolean r){
+    Ticket(String cId, String nId, String nAddress, String p, Key clientKey, Key nodeKey, boolean r){
         clientId = cId;
         nodeId = nId;
+        nodeAddress = nAddress;
         password = p;
         clientPublicKey = clientKey;
         nodePublicKey = nodeKey; 
@@ -30,15 +32,15 @@ public class Ticket{
     Ticket(Ticket t){
         clientId = t.clientId;
         nodeId = t.nodeId;
+        nodeAddress = t.nodeAddress;
         password = t.password;
         clientPublicKey = t.clientPublicKey;
         nodePublicKey = t.nodePublicKey; 
         is_challenge = t.is_challenge;   
     }
     
-    public static Ticket generateRequest(String nodeId){
-        SecureDetails sd = new SecureDetails();
-        return new Ticket(sd.getID(), nodeId, null, KeyVault.getRSAKeys().getPublic(), null, true);
+    public static Ticket generateRequest(String ID, String nodeAddress){
+        return new Ticket(ID, null, nodeAddress, null, KeyVault.getRSAKeys().getPublic(), null, true);
     }
     
     public String getClientId(){
@@ -47,6 +49,10 @@ public class Ticket{
     
     public String getNodeId(){
         return nodeId;
+    }
+    
+    public String getNodeAddress(){
+        return nodeAddress;
     }
 
     public String getPassword(){
@@ -64,7 +70,12 @@ public class Ticket{
     public boolean is_challenge(){
         return is_challenge;
     }
+    
     public void setChallenge(boolean b){
         is_challenge = b;
     }
+    
+    public void setNodeAddress(String nAddress){
+        nodeAddress = nAddress;
+    }  
 }

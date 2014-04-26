@@ -5,9 +5,9 @@ package Crypto;
  * @author maxchandler
  */
 public class AuthenticatedList{
-    class Authenticated{
-        private final Ticket t; 
-        private final long authTime;
+    static class Authenticated{
+        private static Ticket t; 
+        private static long authTime;
 
         Authenticated(Ticket a){
             t = a;
@@ -28,8 +28,8 @@ public class AuthenticatedList{
         }
     }
     
-    private  Authenticated[] list = new Authenticated[1];
-    private  int pointer = 0;
+    static private  Authenticated[] list = new Authenticated[1];
+    static private  int pointer = 0;
     
     AuthenticatedList(){
         list = new Authenticated[10];
@@ -39,7 +39,7 @@ public class AuthenticatedList{
         list = new Authenticated[size];
     }
     
-    public  void addAuth(Ticket a){
+    public static void addAuth(Ticket a){
         a.setChallenge(false);
         if(pointer >= list.length)
             expand();
@@ -51,7 +51,7 @@ public class AuthenticatedList{
     
     }*/
     
-    public  Ticket getClientTicket(String clientId){
+    public static  Ticket getClientTicket(String clientId){
         for(Authenticated a : list){
             if(a != null){
                 if(a.getTicket().getClientId().equals(clientId))
@@ -61,7 +61,7 @@ public class AuthenticatedList{
         return null;
     }
     
-    public  Ticket getNodeTicket(String nodeId){
+    public static  Ticket getNodeTicket(String nodeId){
         for(Authenticated a : list){
             if(a != null){
                 if(a.getTicket().getNodeId().equals(nodeId))
@@ -71,7 +71,7 @@ public class AuthenticatedList{
         return null;
     }
     
-    public  void deleteAuth(String clientId){
+    public static void deleteAuth(String clientId){
         for(int i = 0; i < list.length; i++){
             if(list[i] != null){
                 if(list[i].getTicket().getClientId().equals(clientId))
@@ -80,7 +80,7 @@ public class AuthenticatedList{
         }
     }
     
-    public  boolean exists(String clientId){
+    public static boolean exists(String clientId){
         for(Authenticated a : list){
             if(a != null){
                 if (a.getTicket().getClientId().equals(clientId))
@@ -90,7 +90,7 @@ public class AuthenticatedList{
         return false;
     }
     
-    private  void expand(){
+    private static void expand(){
         Authenticated[] temp = list;
         list = new Authenticated[(2 * temp.length)];
         for (int i = 0; i < temp.length; ++i) {
@@ -100,7 +100,7 @@ public class AuthenticatedList{
         }
     }
     
-    public  void removeExpiredAuth(){
+    public static void removeExpiredAuth(){
         for(int i = 0; i < list.length; i++){
             if(list[i] != null){
                 //4 hour expiration time at the moment
@@ -113,7 +113,7 @@ public class AuthenticatedList{
         tidy();
     }
     
-    private  void tidy(){
+    private static void tidy(){
         for(int i = 0; i < list.length; i++){
             if(list[i] == null){
                 for(int x = i; x + 1 < list.length; x++){
@@ -124,14 +124,17 @@ public class AuthenticatedList{
         findSlot();
     }
     
-    private void findSlot(){
+    private static void findSlot(){
         //if the list is full this will infinite loop
         while(list[pointer] == null)
             pointer = (pointer + 1) % list.length;
     }
     
-    public void printList(){
+    public static void printList(){
         int i = 0; 
+        System.out.println("---------------------------");
+        System.out.println("Authenticated List Contents");
+        System.out.println("---------------------------");
         for(Authenticated a : list){
             if(a != null){
                 System.out.println("Location in list: " + i);
@@ -140,19 +143,15 @@ public class AuthenticatedList{
                 System.out.println("Client ID: " + a.getTicket().getClientId());
                 System.out.println("Client PublicKey: " + a.getTicket().getClientPublicKey());
                 System.out.println("Node ID: " + a.getTicket().getNodeId());
+                System.out.println("Node Address: " + a.getTicket().getNodeAddress());
                 System.out.println("Node PublicKey: " + a.getTicket().getNodePublicKey());
                 System.out.println("Hash: " + a.getTicket().getPassword());
                 System.out.println("Request: " + a.getTicket().is_challenge());
             }
         i++;
         }
+        System.out.println("---------------------------");
+        System.out.println("END");
+        System.out.println("---------------------------");
     }
-    
-    /*public static void main(String[] args){
-        while(true){
-            Ticket a = new Ticket("asjduedasd232", "password", null);
-            AuthList.addAuth(a);
-            printList();
-        }
-    }*/
 }

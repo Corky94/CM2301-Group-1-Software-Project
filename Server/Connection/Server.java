@@ -3,19 +3,37 @@ package Connection;
 import Crypto.*;
 import Message.*;
 import java.io.*;
-import java.security.*;
 import java.util.Scanner;
 import java.util.logging.*;
 import javax.net.ssl.SSLServerSocket;
-import javax.swing.*;
-
 
 public class Server {
-
     private static boolean debug = true;
     private static char[] password;
     private static String id;
     public static NodeList list = new NodeList();
+    
+    Server(String serverId, char[] pass){
+        id = serverId;
+        password = pass;
+    }
+    /**
+     * @return the password
+     */
+    public static char[] getPassword() {
+        return password;
+    }
+
+    /**
+     * @return the id
+     */
+    public static String getId() {
+        return id;
+    }
+    
+    public static void setId(String ID){
+        id = ID;
+    }
 
     public static void main(String args[]) {
         
@@ -34,12 +52,10 @@ public class Server {
         AdminInput ai = new AdminInput();
         Thread admin = new Thread(ai);
         admin.start();
-
-
+        
         ClientAcceptor c = new ClientAcceptor(querySocket);
         Thread query = new Thread(c);
         query.start();
-
 
         UpdateAcceptor u = new UpdateAcceptor(updateSocket);
         Thread update = new Thread(u);
@@ -49,31 +65,23 @@ public class Server {
         Thread node = new Thread(n);
         node.start();
         new Send(list.getList());
-
-
-
     }
 
     private static void login() {
         Console console = System.console();
-
-
         System.out.println("Please enter the login password:");
         char[] pass = console.readPassword();
-
         while (true) {
             if (KeyVault.checkPassword(pass) == false) {
                 System.out.println("Incorrect Password\n"
                         + "Please try again");
                 pass = console.readPassword();
-
             } else {
-
                 try {
                     password = pass;
                     FileReader fr = new FileReader("id");
                     BufferedReader br = new BufferedReader(fr);
-                    id = br.readLine();
+                    //id = br.readLine();
                     fr.close();
                     br.close();
                     break;
@@ -82,18 +90,12 @@ public class Server {
                 } catch (IOException ex) {
                     Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
             }
-
-
         }
-
-
     }
 
     private static void initialSetup() {
-        Scanner sc = new Scanner(System.in);
-        
+        Scanner sc = new Scanner(System.in);   
         System.out.println("The server has yet to be set up."
                 + "\nPress enter to continue.");
         sc.nextLine();
@@ -105,18 +107,20 @@ public class Server {
         String show = new String(pass);
         System.out.println("Your random password:"
                 + "\n" + show);
-        System.out.println("\n The rest of the setup and updating will now commence."
+        System.out.println("\nThe rest of the setup and updating will now commence."
                 + "\nPress enter to continue.");
         sc.nextLine();
         
+
         password = pass;
         keySetup();
+        Server s = new Server(KeyGen.generateUserID(), pass);
+        
         list.addNode();
         
-
         System.out.println("The current list of operating servers is: \n "
                 + list.getList());
-        System.out.println("\n Once enter is pressed the console will then"
+        System.out.println("\nOnce enter is pressed the console will then"
                 + "be cleared to ensure security. \n"
                 + "Please ensure you have remembered your password.");
         sc.nextLine();
@@ -129,7 +133,6 @@ public class Server {
             KeyVault.createKeyStore();
             KeyVault.setRSAKeys();
             KeyVault.setAESKey();
-            id = KeyGen.generateUserID();
             out = new PrintWriter("id");
             out.println(Server.getId());
         } catch (FileNotFoundException ex) {
@@ -137,31 +140,13 @@ public class Server {
         } finally {
             //out.close();
         }
-
     }
 
     private final static void clearConsole() {
         for (int i = 0; i <= 10; i++) {
-
             System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
             System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-
         }
-
-    }
-
-    /**
-     * @return the password
-     */
-    public static char[] getPassword() {
-        return password;
-    }
-
-    /**
-     * @return the id
-     */
-    public static String getId() {
-        return id;
     }
 }
 class ClientAcceptor implements Runnable {
@@ -185,13 +170,6 @@ class ClientAcceptor implements Runnable {
             t.start();
             socket = null;
             t = null;
-
-
-
-
-
-
-
         }
     }
 }

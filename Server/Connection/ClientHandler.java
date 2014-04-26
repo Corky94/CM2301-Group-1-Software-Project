@@ -1,8 +1,10 @@
 package Connection;
 
+import Crypto.AuthenticatedList;
+import Crypto.Encryption;
+import Crypto.ServerAuthentication;
 import Message.*;
 import java.io.*;
-import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
@@ -25,128 +27,134 @@ public class ClientHandler implements Runnable {
             }
             finally{
                 s = null;
-        }
-            
+            }  
         }
         
-	public void run() {  
-  
-                        try{
-                            SSLSocket s = socket;
-                            InputStream is = s.getInputStream();  
-                            ObjectInputStream ois = new ObjectInputStream(is);
+        public void run() {  
+            try{
+                SSLSocket s = socket;
+                InputStream is = s.getInputStream();  
+                ObjectInputStream ois = new ObjectInputStream(is);
+                Packet p = (Packet) ois.readObject();
+//                System.out.println(p);
+//                System.out.println("Ticket: " + p.getTicket());
+//                System.out.println("Message: " + p.getMessages());
+//                System.out.println("Encrypted Ticket: " + p.getEncryptedTicket());
+//                System.out.println("Session Key: " + p.getSessionKey());
+                if(p.getEncryptedTicket()!= null){
+                    System.out.println("Received Auth Ticket");
+                    //System.out.println("Authenticated?: " + ServerAuthentication.verifyEncryptedTicket(p));
+                    if(ServerAuthentication.verifyEncryptedTicket(p) == true){
+                        System.out.println("User Authenticated Sucessfully");
+                        if(p.getMessages() != null){
+                            Message m = p.getMessages()[0];
+                            if (m == null){   
 
-
-
-                            Message m = (Message) ois.readObject();
-
-
-
-                            if (m == null){
-                                
-                                
-                                
                             }
-
                             else if (m.getKey() != null){
-
                                 registerUser(m,null);                              
                                 s.close(); 
                                 is.close();
                                 ois.close();
                                 registerUser(m,"all");
-
                             }else if (m.isNeedingKey() == true) {
-
-                                    getKey(m,s);
-                                    is.close();  
-                                    s.close(); 
-                                    ois.close();
-
+                                getKey(m,s);
+                                is.close();  
+                                s.close(); 
+                                ois.close();
                             }else if(m.getMessage() != null && m.getReceiver() != null) {
-                                    storeMessage(m);
-                                    is.close();  
-                                    s.close(); 
-                                    ois.close();
-                                    storeMessage(m,"");
-
+                                storeMessage(m);
+                                is.close();  
+                                s.close(); 
+                                ois.close();
+                                storeMessage(m,"");
                             }else {  //send messages to client  
                                 System.out.println("Wrong");
-
-                                    getMessages(s, m.getReceiver());
-                                    is.close();  
-                                    s.close(); 
-                                    ois.close();
+                                getMessages(s, m.getReceiver());
+                                is.close();  
+                                s.close(); 
+                                ois.close();
                             }
-                            System.out.println(s.isClosed());
-                            ois.reset();
-                            
-                            ois.close();
-                            is.close(); 
-                            s.close(); 
-                            System.out.println(s.isClosed());
-                            
-                            s = null;
-                            is = null;
-                            ois = null;
                             m = null;
-                            System.out.println(s);
-
-                            Thread.sleep(10);
-                    } catch(Exception e){
-
-                    }  
-                    
+                        }
+                    }
+                }else if(p.getTicket() != null){
+                    System.out.println("Challenge request from client: " + p.getTicket().getClientId());
+                    //Client is trying to initiate authentication challenge
+                    Packet challenge = ServerAuthentication.handleChallenge(p.getTicket());
+                    returnChallenge(s, challenge);
+                }
+                //System.out.println("Socket is closed? " + s.isClosed());
+                ois.close();
+                is.close(); 
+                s.close(); 
+                //System.out.println("Socket is closed? " + s.isClosed());
+                s = null;
+                is = null;
+                ois = null;
+                //System.out.println("Socket is null? " + s);
+                Thread.sleep(10);
+            } catch(IOException | ClassNotFoundException | InterruptedException e){
+                throw new RuntimeException(e);             
+            }  
         }
-	private static boolean storeMessage(Message m) {
-		Sql s = new Sql();
+        private static boolean storeMessage(Message m) {
+                Sql s = new Sql();
                 System.out.println("Storing");
                 s.sendMessage(m.getSender(), m.getSubject(), m.getMessage(), m.getReceiver());
                 System.out.println("Stored");
-		return true;
-	} 
+                return true;
+        } 
+
         private static boolean storeMessage(Message m, String a) {
-		Sql s = new Sql();
+                Sql s = new Sql();
                 System.out.println("Storing");
                 s.sendMessage(m.getSender(), m.getSubject(), m.getMessage(), m.getReceiver(),a);
                 System.out.println("Stored");
-		return true;
-	} 
-
-	private static void getMessages(SSLSocket s, String id) {
-
-                
-                Sql sq = new Sql();
-                System.out.println("Getting");
-                Message[] m = sq.getMessage(id);
-                System.out.println("Got");
-		try{
-			OutputStream os = s.getOutputStream();  
-			ObjectOutputStream oos = new ObjectOutputStream(os);  
-			oos.writeObject(m);
-			os.close();
-			oos.close();
-		} catch (Exception e) {
-			
-		}
-
-	}
-  
-        public static void registerUser(Message m, String all){
-            
-            Sql s = new Sql();
- 
-            s.register(m.getReceiver(), m.getKey(),all);
-            
-            
+                return true;
+        } 
+        
+        private static void returnChallenge(SSLSocket s, Packet challenge){  
+            try (OutputStream os = s.getOutputStream()) {
+                ObjectOutputStream oos = new ObjectOutputStream(os);
+                oos.writeObject(challenge);
+                oos.flush();
+                oos.close();
+                os.flush();
+                os.close();
+            }catch (IOException ex) {
+                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
+        private static void getMessages(SSLSocket s, String id) {  
+            Sql sq = new Sql();
+            System.out.println("Getting messages for client: " + id);
+            Message[] m = sq.getMessage(id);
+            System.out.println("Retreived messages for client:" + id);
+            Packet p = Encryption.encryptTicket(AuthenticatedList.getClientTicket(id));
+            p.setMessages(m);
+            try{
+                OutputStream os = s.getOutputStream();  
+                ObjectOutputStream oos = new ObjectOutputStream(os);  
+                oos.writeObject(p);
+                oos.flush();
+                oos.close();
+                os.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        public static void registerUser(Message m, String all){
+            Sql s = new Sql();
+            s.register(m.getReceiver(), m.getKey(),all);      
+        }
+
         public static void getKey(Message m,SSLSocket soc){
             System.out.println("Getting key");
             Message message = new Message();
             Sql s = new Sql();
-            
-            
             try {
                 byte[] key = s.getKey(m.getReceiver());
                 System.out.println(key);
@@ -154,34 +162,23 @@ public class ClientHandler implements Runnable {
                 System.out.println("Got key \n sending key");
                 sendKeyToClient(message, soc);
                 System.out.println("Sent Key");
-            } catch (NoSuchAlgorithmException ex) {
+            } catch (NoSuchAlgorithmException | InvalidKeySpecException | SQLException ex) {
                 throw new RuntimeException(ex);
-            } catch (InvalidKeySpecException ex) {
-                throw new RuntimeException(ex);   
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-
-            
-            
             } 
         }
-            public static void sendKeyToClient(Message m, SSLSocket s){
-    
-            try{  
 
-                OutputStream os = s.getOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(os);  
-                oos.writeObject(m);   
-                oos.close();  
-                os.close();  
-                s.close();  
-            
-            }catch(Exception e){
-			
-		}  
-}
+        public static void sendKeyToClient(Message m, SSLSocket s){
+        try{  
+            OutputStream os = s.getOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(os);  
+            oos.writeObject(m);   
+            oos.close();  
+            os.close();  
+            s.close();  
+        }catch(IOException e){
 
-
+        }  
+    }
 }
     
         

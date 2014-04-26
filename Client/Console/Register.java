@@ -15,12 +15,11 @@ public class Register {
 
             String UserID = KeyGen.generateUserID();
             Console.User.clissl = new ClientSSL();
-            ClientSend.registerToServer(UserID, key);
-
             SecureDetails setup = new SecureDetails();
-
             setup.setId(UserID);         
             setup.setRegistered();
-            setup.saveDetails();                   
+            setup.saveDetails(); 
+     
+            ClientSend.registerToServer(UserID, key);              
     }   
 }

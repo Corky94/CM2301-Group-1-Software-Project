@@ -10,24 +10,25 @@
 
 package Crypto;
 
-import javax.crypto.*;
-import java.util.*;
+import Connection.SessionKey;
 import java.math.*;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import java.util.*;
+import javax.crypto.*;
 import org.bouncycastle.asn1.x509.X509Name;
-import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.x509.X509V3CertificateGenerator;
 
 /*
 *KeyGen is responcible for RSA and AES keygen, it also generates a self signed certificate from RSA keys & userID, remotePassword. 
 */
 
 public class KeyGen{
-    final private int RSA_KEY_LENGTH = 2048;
-    final private int AES_KEY_LENGTH = 128;
+    static private int RSA_KEY_LENGTH = 2048;
+    static private int AES_KEY_LENGTH = 128;
     // 010 for Nodes, 000 for Clients
     static private int VERSION_NUMBER = 000;
     final protected static char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
@@ -98,6 +99,22 @@ public class KeyGen{
             aesGenerator.init(AES_KEY_LENGTH);
             SecretKey aesKey = aesGenerator.generateKey();
             return aesKey;
+        }catch(NoSuchAlgorithmException ex){
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public static SessionKey generateSessionKey(){
+        SessionKey sKey = new SessionKey();
+        try{
+            //different methods in this one, uses javax.crypto instead of java.security
+            KeyGenerator aesGenerator = KeyGenerator.getInstance("AES");
+            aesGenerator.init(AES_KEY_LENGTH);
+            SecretKey aesKey = aesGenerator.generateKey();
+            byte[] iv = { 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8 };
+            sKey.setKey(aesKey);
+            sKey.setIvSpec(iv);
+            return sKey;
         }catch(NoSuchAlgorithmException ex){
             throw new RuntimeException(ex);
         }

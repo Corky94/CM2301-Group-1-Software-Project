@@ -7,6 +7,8 @@
 
 package Crypto;
 
+import Connection.Packet;
+import Connection.SessionKey;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -16,9 +18,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.security.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Arrays;
 import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
 
 public class Encryption{
     
@@ -26,8 +28,7 @@ public class Encryption{
         try{
             Cipher encrypt = Cipher.getInstance("RSA");
             encrypt.init(Cipher.ENCRYPT_MODE, publicKey);
-            byte[] encryptedData = encrypt.doFinal(data.getBytes());
-            return encryptedData; 
+            return encrypt.doFinal(data.getBytes());
         }catch(InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex){
             throw new RuntimeException(ex);
         }
@@ -39,8 +40,7 @@ public class Encryption{
         try{
             Cipher decrypt = Cipher.getInstance("RSA");
             decrypt.init(Cipher.DECRYPT_MODE, privateKey);
-            byte[] decryptedData = decrypt.doFinal(data);
-            return decryptedData;
+            return decrypt.doFinal(data);
         }catch(InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex){
             throw new RuntimeException(ex);
         }
@@ -51,46 +51,96 @@ public class Encryption{
         return s;
     }
     
-    //the following two methods are only used when asking for a authentication request, they are unsecure as they are unencrypted.
-    public static byte[] serialiseTicket(Ticket t){
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
-            oos.writeObject(t);
-        } catch (IOException ex) {
-            Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return baos.toByteArray();
+    public static Packet encryptTicket(Ticket t){
+        Packet p = new Packet();
+        SessionKey sKey = KeyGen.generateSessionKey();
+        //encrypt ticket with AES session key
+        p.setEncryptedTicket(Encryption.encryptAuth(sKey, t));
+        //encrypt AES key with public RSA key
+        p.setSessionKey(Encryption.encryptSessionKey(sKey, t.getClientPublicKey()));
+        return p;
     }
     
-    public static Ticket deserialiseTicket(byte[] ticket) throws ClassNotFoundException, IOException{ 
-        ByteArrayInputStream bais = new ByteArrayInputStream(ticket);
-        ObjectInputStream ois = new ObjectInputStream(bais);
-        return (Ticket) ois.readObject();
+    public static Ticket decryptTicket(Packet p){
+        return Encryption.decryptAuth(Encryption.decryptSessionKey(p.getSessionKey()), p.getEncryptedTicket());
     }
-
-    public static byte[] encryptAuth(Key publicRsa, Ticket a){
+    
+    public static byte[] encryptAuth(SessionKey sKey, Ticket t){
+        SecretKey sessionKey = sKey.getKey();
+        byte[] iv = sKey.getIvSpec();
+        IvParameterSpec ivspec = new IvParameterSpec(iv);
         try{
-            Cipher encrypt = Cipher.getInstance("RSA");
-            encrypt.init(Cipher.ENCRYPT_MODE, publicRsa);
+            Cipher encrypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            encrypt.init(Cipher.ENCRYPT_MODE, sessionKey, ivspec);            
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            try (CipherOutputStream cos = new CipherOutputStream(baos, encrypt); ObjectOutputStream oos = new ObjectOutputStream(cos)) {
-                oos.writeObject(a);
-            }
-            return baos.toByteArray();
-        }catch(IOException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException ex){
+            CipherOutputStream cos = new CipherOutputStream( baos, encrypt );
+            ObjectOutputStream oos = new ObjectOutputStream( cos );
+            oos.writeObject( t );
+            oos.close();
+            byte[] bytes = baos.toByteArray();        
+            cos.close();
+            baos.close();
+            return bytes;
+        }catch(IOException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException ex){
             throw new RuntimeException(ex);
         }
     }
 
-    public static Object decryptAuth(byte[] auth){
+    public static Ticket decryptAuth(SessionKey sKey, byte[] auth){
+        SecretKey sessionKey = sKey.getKey();
+        byte[] iv = sKey.getIvSpec();
+        IvParameterSpec ivspec = new IvParameterSpec(iv);
+        try {
+            Cipher decrypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            decrypt.init(Cipher.DECRYPT_MODE, sessionKey, ivspec); 
+            ByteArrayInputStream bais = new ByteArrayInputStream(auth);
+            CipherInputStream sis = new CipherInputStream(bais, decrypt);
+            ObjectInputStream ois = new ObjectInputStream(sis);
+            Ticket t = (Ticket) ois.readObject();
+            ois.close();
+            sis.close();
+            bais.close();
+            return t;
+        } catch (NoSuchAlgorithmException | IOException | InvalidAlgorithmParameterException | NoSuchPaddingException | InvalidKeyException | ClassNotFoundException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public static SessionKey encryptSessionKey(SessionKey sessionKey, Key publicKey){
+        SecretKey secretKey = sessionKey.getKey();
+        try{
+            Cipher encrypt = Cipher.getInstance("RSA");
+            encrypt.init(Cipher.ENCRYPT_MODE, publicKey);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            CipherOutputStream cos = new CipherOutputStream(baos, encrypt); 
+            ObjectOutputStream oos = new ObjectOutputStream(cos);
+            oos.writeObject(secretKey);
+            oos.close();
+            byte[] encryptedKey = baos.toByteArray();
+            sessionKey.deleteKey();
+            sessionKey.setEncryptedKey(encryptedKey);
+            return sessionKey;
+        }catch(IOException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException ex){
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public static SessionKey decryptSessionKey(SessionKey sKey){
+        byte[] encryptedKey = sKey.getEncryptedKey();
         try {
             PrivateKey privateRsa = KeyVault.getRSAKeys().getPrivate();
             Cipher decrypt = Cipher.getInstance("RSA");
             decrypt.init(Cipher.DECRYPT_MODE, privateRsa); 
-            ByteArrayInputStream bais = new ByteArrayInputStream(auth);
+            ByteArrayInputStream bais = new ByteArrayInputStream(encryptedKey);
             CipherInputStream sis = new CipherInputStream(bais, decrypt);
             ObjectInputStream ois = new ObjectInputStream(sis);
-            return ois.readObject();
+            sKey.setKey((SecretKey) ois.readObject());
+            sKey.deleteEncryptedKey();
+            ois.close();
+            sis.close();
+            bais.close();
+            return sKey;
         } catch (    NoSuchAlgorithmException | IOException | NoSuchPaddingException | InvalidKeyException | ClassNotFoundException ex) {
             throw new RuntimeException(ex);
         }

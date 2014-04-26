@@ -1,11 +1,12 @@
 package GUI;
 
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import Connection.SessionKey;
 import Console.*;
 import Crypto.Encryption;
 import Message.Message;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,8 +15,8 @@ import javax.swing.*;
 public class GuiMessage {
 
 	public static void newMessage(Message m) {
-                Encryption e = new Encryption();
-                String subject = e.bTS(e.decryptString(m.getSubject()));
+                SessionKey sKey = Encryption.decryptSessionKey(m.getSessionKey());
+                String subject = Encryption.bTS(Encryption.decryptString(sKey, m.getSubject()));
 		JFrame frame = new JFrame(subject);
 		frame.setSize(700, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -24,11 +25,11 @@ public class GuiMessage {
 	}
 
 	private static void placeComponents(final JFrame frame, Message m) {
-            
-                Encryption e = new Encryption();
-                String message = e.bTS(e.decryptString(m.getMessage()));
-                String sender = e.bTS(e.decryptString(m.getSender()));
-                String subject = e.bTS(e.decryptString(m.getSubject()));
+                
+                SessionKey sKey = Encryption.decryptSessionKey(m.getSessionKey());
+                String message = Encryption.bTS(Encryption.decryptString(sKey, m.getMessage()));
+                String sender = Encryption.bTS(Encryption.decryptString(sKey, m.getSender()));
+                String subject = Encryption.bTS(Encryption.decryptString(sKey, m.getSubject()));
             
             
 		frame.setLayout(null);

@@ -16,7 +16,7 @@ public class ClientSSL {
     private SSLContext sc;
     private SSLSocketFactory sf;
     private NodeList n = new NodeList();
-    private String node;
+    private static String node;
  
     public ClientSSL() {
         try {
@@ -59,8 +59,6 @@ public class ClientSSL {
  
     public SSLSocket main(int portNumber) throws IOException {
         System.out.println("Start Socket");
-        
-   
         try{
             System.out.println(node);
             SSLSocket s = (SSLSocket) sf.createSocket(node, portNumber);
@@ -73,13 +71,15 @@ public class ClientSSL {
             s.startHandshake();
             System.out.println("Test");
             return s;
-            
         }catch(ConnectException ste){
             return null;
         }
-        
-        
     }
+    
+    public static String getNodeAddress(){
+        return node;
+    }
+    
     private void chooseHost(){
         node = n.getNode();
         try{

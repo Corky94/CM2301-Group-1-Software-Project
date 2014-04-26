@@ -10,6 +10,7 @@
 
 package Crypto;
 
+import Connection.SessionKey;
 import javax.crypto.*;
 import java.util.*;
 import java.math.*;
@@ -26,8 +27,8 @@ import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 */
 
 public class KeyGen{
-    final private int RSA_KEY_LENGTH = 2048;
-    final private int AES_KEY_LENGTH = 128;
+    static private int RSA_KEY_LENGTH = 2048;
+    static private int AES_KEY_LENGTH = 128;
     // 010 for Nodes, 000 for Clients
     static private int VERSION_NUMBER = 010;
     final protected static char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
@@ -98,6 +99,22 @@ public class KeyGen{
             aesGenerator.init(AES_KEY_LENGTH);
             SecretKey aesKey = aesGenerator.generateKey();
             return aesKey;
+        }catch(NoSuchAlgorithmException ex){
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    public static SessionKey generateSessionKey(){
+        SessionKey sKey = new SessionKey();
+        try{
+            //different methods in this one, uses javax.crypto instead of java.security
+            KeyGenerator aesGenerator = KeyGenerator.getInstance("AES");
+            aesGenerator.init(AES_KEY_LENGTH);
+            SecretKey aesKey = aesGenerator.generateKey();
+            byte[] iv = { 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8 };
+            sKey.setKey(aesKey);
+            sKey.setIvSpec(iv);
+            return sKey;
         }catch(NoSuchAlgorithmException ex){
             throw new RuntimeException(ex);
         }

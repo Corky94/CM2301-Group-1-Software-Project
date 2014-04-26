@@ -61,6 +61,26 @@ public class AuthenticatedList{
         return null;
     }
     
+    public static Ticket getNodeAuthenticationByAddress(String nodeAddress){
+        for(Authenticated a : list){
+            if(a != null){
+                if(a.getTicket().getNodeAddress().equals(nodeAddress))
+                    return a.getTicket();
+            }
+        }
+        return null;
+    }
+    
+    public static Ticket getClientAuthentication(String clientId){
+        for(Authenticated a : list){
+            if(a != null){
+                if(a.getTicket().getClientId().equals(clientId))
+                    return a.getTicket();
+            }
+        }
+        return null;
+    }
+    
     /*public static Ticket getTicket(String nodeId){
         Ticket out = null;
         SecureDetails sd = new SecureDetails(User.getPassword());
@@ -82,10 +102,10 @@ public class AuthenticatedList{
         }
     }
     
-    public static boolean exists(String clientId){
+    public static boolean exists(String nodeAddress){
         for(Authenticated a : list){
             if(a != null){
-                if (a.getTicket().getClientId().equals(clientId))
+                if (a.getTicket().getNodeAddress().equals(nodeAddress))
                     return true;
             }
         }
@@ -144,6 +164,9 @@ public class AuthenticatedList{
     
     public static void printList(){
         int i = 0; 
+        System.out.println("---------------------------");
+        System.out.println("Authenticated List Contents");
+        System.out.println("---------------------------");
         for(Authenticated a : list){
             if(a != null){
                 System.out.println("Location in list: " + i);
@@ -152,19 +175,15 @@ public class AuthenticatedList{
                 System.out.println("Client ID: " + a.getTicket().getClientId());
                 System.out.println("Client PublicKey: " + a.getTicket().getClientPublicKey());
                 System.out.println("Node ID: " + a.getTicket().getNodeId());
+                System.out.println("Node Address: " + a.getTicket().getNodeAddress());
                 System.out.println("Node PublicKey: " + a.getTicket().getNodePublicKey());
                 System.out.println("Hash: " + a.getTicket().getPassword());
                 System.out.println("Request: " + a.getTicket().is_challenge());
             }
         i++;
         }
+        System.out.println("---------------------------");
+        System.out.println("END");
+        System.out.println("---------------------------");
     }
-    
-    /*public static void main(String[] args){
-        while(true){
-            Ticket a = new Ticket("asjduedasd232", "password", null);
-            AuthList.addAuth(a);
-            printList();
-        }
-    }*/
 }

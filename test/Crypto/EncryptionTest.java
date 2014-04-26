@@ -6,16 +6,19 @@
 
 package Crypto;
 
+import Connection.SessionKey;
 import Console.User;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.PublicKey;
+import java.util.Arrays;
+import javax.crypto.SecretKey;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -49,10 +52,9 @@ public class EncryptionTest {
     @Test
     public void testEncryptString() {
         System.out.println("encryptString");
-        KeyGen kg = new KeyGen();
-        Key publicKey = kg.generateRSAKeys().getPublic();
+        SessionKey sKey = KeyGen.generateSessionKey();
         String data = "Test String 1 √ ) &" ;
-        Encryption.encryptString(publicKey, data);
+        Encryption.encryptString(sKey, data);
     }
 
     /**
@@ -61,11 +63,13 @@ public class EncryptionTest {
     @Test
     public void testDecryptString() {
         System.out.println("decryptString");
-        KeyVault.createKeyStore();
-        KeyVault.setRSAKeys();
+        SessionKey sKey = KeyGen.generateSessionKey();
         String data = "Test String 1 √ ) &";
-        PublicKey pk = KeyVault.getRSAKeys().getPublic();
-        String decrypted = Encryption.bTS(Encryption.decryptString(Encryption.encryptString(pk, data)));
+        System.out.println("String:" + data);
+        byte[] encrypted = Encryption.encryptString(sKey, data);
+        System.out.println("Encrypted data:" + Arrays.toString(encrypted));
+        String decrypted = Encryption.bTS(Encryption.decryptString(sKey, encrypted));
+        System.out.println("Decrypted String:" + decrypted);
         if(! decrypted.equals(data)){
             fail("Did not decrypt secussfully");
         }
@@ -86,35 +90,36 @@ public class EncryptionTest {
     }
 
     /**
-     * Test of encryptRemotePassword method, of class Encryption.
+     * Test of encryptAuth method, of class Encryption.
      */
     @Test
-    public void testEncryptRemotePassword() {
-        System.out.println("encryptRemotePassword");
-        KeyVault kv = new KeyVault();
+    public void testEncryptTicket() {
+        System.out.println("encryptTicket");
         KeyVault.createKeyStore();
         KeyVault.setRSAKeys();
         KeyVault.setAESKey();
-        KeyPair kp = KeyVault.getRSAKeys();
-        byte[] remotePassword = HashUtils.hashKeyToByte(kp.getPrivate());
-        byte[] result = Encryption.encryptRemotePassword(remotePassword);
+        Ticket t = Ticket.generateRequest("123123");
+        SessionKey sKey = KeyGen.generateSessionKey();
+        System.out.println("Session Key:" + sKey);
+        System.out.println("Encrypt Auth: " + Arrays.toString(Encryption.encryptAuth(sKey, t)));
+        System.out.println("Decrypt Auth:" + Encryption.decryptAuth(sKey, Encryption.encryptAuth(sKey, t)));
         KeyVault.destroyKeyStore();
     }
-
+    
     /**
-     * Test of decryptRemotePassword method, of class Encryption.
+     * Test of encrypt/decrytpSessionKey method, of class Encryption.
      */
     @Test
-    public void testDecryptRemotePassword() {
-        System.out.println("decryptRemotePassword");
-        KeyVault kv = new KeyVault();
-        HashUtils hu = new HashUtils();
+    public void testEncryptSessionKey() {
+        System.out.println("encrypt & decrypt session key");
         KeyVault.createKeyStore();
         KeyVault.setRSAKeys();
         KeyVault.setAESKey();
         KeyPair kp = KeyVault.getRSAKeys();
-        byte[] remotePassword = HashUtils.hashKeyToByte(kp.getPrivate());
-        Encryption.decryptRemotePassword(Encryption.encryptRemotePassword(remotePassword)) ;
+        SessionKey sessionKey = KeyGen.generateSessionKey();
+        SessionKey encrypted = Encryption.encryptSessionKey(sessionKey, kp.getPublic());
+        SessionKey decrypted = Encryption.decryptSessionKey(encrypted);
+        System.out.println("Do the keys match? " + decrypted.equals(sessionKey));
         KeyVault.destroyKeyStore();
     }
 }

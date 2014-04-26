@@ -6,11 +6,16 @@
 
 package Crypto;
 
-import Connection.ClientReceive;
+import Connection.ClientSSL;
 import Connection.Packet;
-import Console.User;
+import Console.SecureDetails;
 import Message.Message;
-import java.security.Key;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import javax.net.ssl.SSLSocket;
 
 /**
  *
@@ -18,37 +23,74 @@ import java.security.Key;
  */
 public class Authentication {
     
-    public static void authenticateAndSend(Message m, String nodeID){
-        byte[] ticket = auth(nodeID);
-        Packet p = new Packet(ticket, m);
+    public static Packet createPacket(Message messages, String nodeAddress){
+        Packet p = auth(nodeAddress);
+        p.setMessage(messages);
+        return p;
     }
     
-    public static byte[] auth(String nodeId){
+    public static Packet auth(String nodeAddress){
         //This method is called to connect to a node, if it has the right auth
         //it will return it, if not it will generate a request.
-        if(doesTicketExist(nodeId) == true){
+        Packet p = new Packet();
+        if(AuthenticatedList.getNodeAuthenticationByAddress(nodeAddress) != null){
             //get the ticket and encrypt it ready to be send to the node as authentication
-            Ticket t = AuthenticatedList.getNodeAuthentication(nodeId);
-            return Encryption.encryptAuth(t.getNodePublicKey(), t);
+            Ticket t = AuthenticatedList.getNodeAuthenticationByAddress(nodeAddress);
+            return Encryption.encryptTicket(t);
         }else{
             //generates a new ticket with a request in, that is then encrypted and 
             //ready to be sent to the node
             //            
             // --- Ticket Content ---
             //clientId = clientID;
-            //nodeId = nodeID;
+            //nodeId = null;
             //otp = null;
             //clientPublicKey = clientPublicKey;
             //nodePublicKey = null; 
             //is_challenge = true; 
-            Key nodePublicKey = ClientReceive.getKey(nodeId, User.getPassword());
-            return Encryption.encryptAuth(nodePublicKey, Ticket.generateRequest(nodeId));
+            SecureDetails sd = new SecureDetails();
+            p.setTicket(Ticket.generateRequest(sd.getID(), nodeAddress));
+            try {
+                ClientSSL c = Console.User.clissl;
+                //send challenge
+                try (SSLSocket s = c.main(12346)) {
+                    //send challenge
+                    OutputStream os = s.getOutputStream();
+                    ObjectOutputStream oos = new ObjectOutputStream(os);
+                    System.out.println("Created Socket & sent challenge");
+                    oos.writeObject(p);
+                    oos.flush();
+                    //receive challenge
+                    InputStream is = s.getInputStream();
+                    ObjectInputStream ois = new ObjectInputStream(is);
+                    p = (Packet) ois.readObject();
+                }
+            } catch ( ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
+            } catch (IOException ex){
+                System.out.println(ex);
+            }
+//            System.out.println(p);
+//            System.out.println("Ticket: " + p.getTicket());
+//            System.out.println("Message: " + p.getMessages());
+//            System.out.println("Encrypted Ticket: " + p.getEncryptedTicket());
+//            System.out.println("SessionKey: " + p.getSessionKey());
+//            System.out.println("Session Encrypted Key: " + p.getSessionKey().getEncryptedKey());
+//            System.out.println("Session IV Spec: " + p.getSessionKey().getIvSpec());
+//            System.out.println("Session Key: " + p.getSessionKey().getKey());
+
+            System.out.println("Received challenge");
+            //process challenge
+            p = Authentication.handleChallenge(p);
+            p.setTicket(null);
+            System.out.println("Processed challenge");
+            return p;
         } 
     }
     
     //method to be called as ticket is returned from node
-    public static byte[] handleChallenge(byte[] challenge){
-        Ticket t = (Ticket) Encryption.decryptAuth(challenge);        
+    public static Packet handleChallenge(Packet p){
+        Ticket t = Encryption.decryptTicket(p);
         if(t == null){    
             throw new RuntimeException("Ticket returned null");
         }
@@ -57,13 +99,14 @@ public class Authentication {
         Ticket newTicket = new Ticket(t);
         newTicket.setChallenge(false);
         AuthenticatedList.addAuth(newTicket);
+        AuthenticatedList.printList();
         //And return the decrypted ticket ready to send back to the server.
-        return Encryption.encryptAuth(t.getNodePublicKey(), t);
+        return Encryption.encryptTicket(t);
     }
     
-    private static boolean doesTicketExist(String serverId){
+    private static boolean doesTicketExist(String serverAddress){
         //tidy up the auth list before we use it, and remove expired auth
         AuthenticatedList.removeExpiredAuth();
-        return AuthenticatedList.exists(serverId);
+        return AuthenticatedList.exists(serverAddress);
     }
 }

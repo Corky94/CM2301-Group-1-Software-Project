@@ -1,7 +1,10 @@
 package Message;
 
+import Connection.SessionKey;
+import java.io.Serializable;
 
-public class Message implements java.io.Serializable {
+
+public class Message implements Serializable {
     private byte[] sender;
     private String receiver;
     private byte[] subject;
@@ -9,6 +12,15 @@ public class Message implements java.io.Serializable {
     private byte[] timeAndDate;
     private byte[] key;
     private boolean needingKey;
+    private SessionKey sessionKey;
+    
+    public void setSessionKey(SessionKey sKey){
+        sessionKey = sKey;
+    }
+    
+    public SessionKey getSessionKey(){
+        return sessionKey;
+    }
 
     /**
      * @return the sender

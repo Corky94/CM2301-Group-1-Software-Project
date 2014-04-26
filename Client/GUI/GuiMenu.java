@@ -1,5 +1,6 @@
 package GUI;
 
+import Connection.SessionKey;
 import Console.*;
 import Crypto.*;
 import static GUI.GuiLogin.frame;
@@ -123,13 +124,13 @@ class GuiMenu	extends	JFrame
         m = u.receiveEmails(s);
         int length = m.length;
         String[] listContent = new String[length];
-        Encryption e = new Encryption();
 
         if (length >0){
             for (int i =0; i< m.length ; i++){
-                String message = e.bTS(e.decryptString(m[i].getMessage()));
-                String sender = e.bTS(e.decryptString(m[i].getSender()));
-                String subject = e.bTS(e.decryptString(m[i].getSubject()));
+                SessionKey sKey = Encryption.decryptSessionKey(m[i].getSessionKey());
+                String message = Encryption.bTS(Encryption.decryptString(sKey, m[i].getMessage()));
+                String sender = Encryption.bTS(Encryption.decryptString(sKey, m[i].getSender()));
+                String subject = Encryption.bTS(Encryption.decryptString(sKey, m[i].getSubject()));
                 listContent[i] =/*"From: " +sender +*/"Subject: " + subject ;;
             }
         }
@@ -202,11 +203,11 @@ class GuiMenu	extends	JFrame
 
                 if (!(inboxList.getSelectedIndex() == -1)) {
                     int loc = inboxList.getSelectedIndex();
-                    Encryption en = new Encryption();
 
-                    String message = en.bTS(en.decryptString(m[loc].getMessage()));                               
-                    String sender = en.bTS(en.decryptString(m[loc].getSender()));
-                    String subject = en.bTS(en.decryptString(m[loc].getSubject()));
+                    SessionKey sKey = Encryption.decryptSessionKey(m[loc].getSessionKey());
+                    String message = Encryption.bTS(Encryption.decryptString(sKey, m[loc].getMessage()));                               
+                    String sender = Encryption.bTS(Encryption.decryptString(sKey, m[loc].getSender()));
+                    String subject = Encryption.bTS(Encryption.decryptString(sKey, m[loc].getSubject()));
                     
                     //output user's name rather that long hashcoded to indicate the recepiants id
                     //if id not in contacts folder then output the long id

@@ -1,5 +1,6 @@
 package Connection;
 
+import Crypto.Authentication;
 import Message.Message;
 
 import java.io.IOException;
@@ -17,13 +18,14 @@ public class ClientReceive {
     private static boolean  debug = true;
     private static byte[] sender = "sender".getBytes();
 
-    public static Message[] receive(String Id, char[] localPassword) {
+    public static Message[] receive(String Id) {
         try{
             Message[] allMessages;
             Message m = new Message();
             m.setSender(null);
             m.setReceiver(Id);
             m.setMessage(null);
+            Packet p = Authentication.createPacket(m, null);
             SSLSocket s;
             while (true){
                 ClientSSL c = Console.User.clissl;
@@ -32,15 +34,14 @@ public class ClientReceive {
                 System.out.println(s);
                 OutputStream os = s.getOutputStream();  
                 ObjectOutputStream oos = new ObjectOutputStream(os);  
-                oos.writeObject(m);   
+                oos.writeObject(p);   
 
                 //get reply from server
                 InputStream is = s.getInputStream();  
                 ObjectInputStream ois = new ObjectInputStream(is);
-                allMessages = (Message[]) ois.readObject();
+                Packet input = (Packet) ois.readObject();
+                allMessages = input.getMessages();
                 //if(debug) System.out.println(m);
-                int i = allMessages.length;
-
                 oos.close();  
                 os.close(); 
                 is.close();
@@ -56,16 +57,18 @@ public class ClientReceive {
         
     private static byte[] getKeyFromServer(Message m){  
         Message message = new Message();
+        Packet p = Authentication.createPacket(m, null);
         SSLSocket s;
         try {
             ClientSSL c = Console.User.clissl;
             s = c.main(12346);
             OutputStream os = s.getOutputStream(); 
             ObjectOutputStream oos = new ObjectOutputStream(os);
-            oos.writeObject(m);
+            oos.writeObject(p);
             InputStream is = s.getInputStream();  
             ObjectInputStream ois = new ObjectInputStream(is);
-            message = (Message) ois.readObject();             
+            Packet input = (Packet) ois.readObject();  
+            message = input.getMessage();
             is.close();
             ois.close();
             return message.getKey();
@@ -76,7 +79,7 @@ public class ClientReceive {
         return null;
     }
 
-    public static PublicKey getKey(String id, char[] pass) {
+    public static PublicKey getKey(String id) {
         Message m = new Message();
         m.setReceiver(id);
         m.setNeedingKey(true);
