@@ -27,7 +27,7 @@ public class Sql {
             con = DriverManager.getConnection(url, user, password);
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
-        } 
+        }
         return con;
     }  
     
