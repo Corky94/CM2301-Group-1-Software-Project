@@ -45,7 +45,7 @@ public class Sql {
     } 
     
     public void register(String id, byte[] key){
-        System.out.println("reg");
+        System.out.println("SQL Register Command");
         Stack servers = this.getIDServers();
         Connection con = null;
         IDServer idServerObj;     
@@ -136,7 +136,7 @@ public class Sql {
     }
     
     public void sendMessage(byte[] sender, byte[] subject,  byte[] contents, String reciever){
-        System.out.println("reg");
+        System.out.println("sendMessage -> reg");
         Stack servers = this.getMessageServers();
         Connection con = null;
         MessageServer messageServerObj;        
@@ -162,7 +162,7 @@ public class Sql {
     }
     
     public void sendMessage(byte[] sender, byte[] subject,  byte[] contents, String reciever, String all){
-        System.out.println("reg");
+        System.out.println("sendMessage -> reg");
         Stack servers = this.getMessageServers();
         Connection con = null;
         MessageServer messageServerObj = (MessageServer)servers.pop();
@@ -174,15 +174,14 @@ public class Sql {
                    this.setUpMessageTable(con);
                    System.out.println(tableExist(con));
                 }
-                System.out.println(reciever);
+                System.out.println("Receiver: " + reciever);
                 PreparedStatement pst = null;
                 pst = con.prepareStatement("INSERT INTO Messages(UserID, Sender, Subject, Message) VALUES(?,?,?,?)");
                 pst.setString(1, reciever);
                 pst.setBytes(2, sender); 
                 pst.setBytes(3, subject);
                 pst.setBytes(4, contents);
-                pst.executeUpdate();
-                  
+                pst.executeUpdate();            
             }       
         }catch (SQLException ex) {
                 Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);        
@@ -192,7 +191,6 @@ public class Sql {
     }
         
     public Message[] getMessage(String id){
-        System.out.println(id);
         Message newMessage = new Message();
         int arrayLength = 0;
         Stack servers = this.getMessageServers();
@@ -200,9 +198,9 @@ public class Sql {
         MessageServer messageServer;        
         while(con ==null){
             try {
-                System.out.println(servers); 
+                System.out.println("Servers to choose from: " + servers); 
                 messageServer = (MessageServer) servers.pop();   
-                System.out.println(messageServer);
+                System.out.println("Chosen message server to connect too: " + messageServer);
                 con = this.connection(messageServer);
                 if (this.tableExist(con) == false){
                     this.setUpMessageTable(con);
