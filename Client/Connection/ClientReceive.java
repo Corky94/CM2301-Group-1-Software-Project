@@ -41,7 +41,7 @@ public class ClientReceive {
                 InputStream is = s.getInputStream();  
                 ObjectInputStream ois = new ObjectInputStream(is);
                 Packet input = (Packet) ois.readObject();
-                input.printPacket(input);
+                input.shortPrintPacket();
                 allMessages = input.getMessages();
                 //if(debug) System.out.println(m);
                 oos.close();  

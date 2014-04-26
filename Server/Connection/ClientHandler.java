@@ -36,7 +36,7 @@ public class ClientHandler implements Runnable {
                 System.out.println("Received Auth Ticket");
                 if(ServerAuthentication.verifyEncryptedTicket(p) == true){
                     System.out.println("User Authenticated Sucessfully");
-                    p.printPacket(p);
+                    p.shortPrintPacket();
                     if(p.getMessages() != null){
                         Message m = p.getMessages()[0];
                         if (m == null){   

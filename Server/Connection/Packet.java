@@ -83,14 +83,24 @@ public class Packet implements Serializable {
         t = null;
     }
     
-    public void printPacket(Packet p){
+    public void printPacket(){
         System.out.println("--------------------------");
         System.out.println("Packet Contents");
         System.out.println("--------------------------");
-        System.out.println("Encrypted Ticket: " + Arrays.toString(p.getEncryptedTicket()));
-        System.out.println("Messages: " + Arrays.toString(p.getMessages()));
-        System.out.println("Session Key: " + p.getSessionKey());
-        System.out.println("Ticket:" + p.getTicket());
+        System.out.println("Encrypted Ticket: " + Arrays.toString(this.getEncryptedTicket()));
+        System.out.println("Messages: " + Arrays.toString(this.getMessages()));
+        System.out.println("Session Key: " + this.getSessionKey());
+        System.out.println("Ticket:" + this.getTicket());
+    }
+    
+    public void shortPrintPacket(){
+        System.out.println("--------------------------");
+        System.out.println("Packet Contents");
+        System.out.println("--------------------------");
+        System.out.println("Encrypted Ticket: " + this.getEncryptedTicket());
+        System.out.println("Messages: " + this.getMessages());
+        System.out.println("Session Key: " + this.getSessionKey());
+        System.out.println("Ticket:" + this.getTicket());
     }
 
 }
