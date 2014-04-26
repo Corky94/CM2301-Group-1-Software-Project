@@ -47,10 +47,6 @@ public class AuthenticatedList{
         pointer++;
     }
     
-    /*public static void addAuth(){
-    
-    }*/
-    
     public static Ticket getNodeAuthentication(String nodeId){
         for(Authenticated a : list){
             if(a != null){

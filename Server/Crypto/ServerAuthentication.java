@@ -20,12 +20,14 @@ public class ServerAuthentication {
         Ticket newTicket =  new Ticket(
                 t.getClientId(),
                 Server.getId(),
-                t.getNodeAddress(), //Is there a method of getting it from the node? Node.getCurrentAddress()?
+                t.getNodeAddress(),
                 ServerTools.generateOneTimePassword(),
                 t.getClientPublicKey(),
                 KeyVault.getRSAKeys().getPublic(),
                 true
         );
+        System.out.println("IMPORTANT");
+        newTicket.printTicket();
         AuthenticatedList.addAuth(newTicket);
         AuthenticatedList.shortPrintList();
         return Encryption.encryptTicket(newTicket);        

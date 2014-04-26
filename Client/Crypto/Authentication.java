@@ -83,10 +83,9 @@ public class Authentication {
         }
         //Ticket has come back, and is no longer a challenge, however the node does not know this
         //so we'll return one copy that will be treated as a challenge returned
-        if(t.getNodeAddress() == null)
-            throw new RuntimeException("Ticket returned without Node Address");
         Ticket newTicket = new Ticket(t);
         newTicket.setChallenge(false);
+        AuthenticatedList.deleteAuth(newTicket.getClientId());
         AuthenticatedList.addAuth(newTicket);
         AuthenticatedList.printList();
         //And return the decrypted ticket ready to send back to the server.

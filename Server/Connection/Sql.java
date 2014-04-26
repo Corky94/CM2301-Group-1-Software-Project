@@ -26,7 +26,7 @@ public class Sql {
         try {
             con = DriverManager.getConnection(url, user, password);
         } catch (SQLException ex) {
-            return null;
+            throw new RuntimeException(ex);
         } 
         return con;
     }  
@@ -36,10 +36,11 @@ public class Sql {
         String url = id.getUrl();
         String user = id.getUser();
         String password = id.getPassword();
+        //System.out.println("ID: " + id.getUrl() +"\n" +"User: "+  id.getUser()+"\n" +"Password: " + id.getPassword());
         try {
             con = DriverManager.getConnection(url, user, password);
         } catch (SQLException ex) {
-            return null;
+            throw new RuntimeException(ex);
         } 
         return con;
     } 
@@ -95,7 +96,7 @@ public class Sql {
                 Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);        
         }
         catch(EmptyStackException ex){
-       
+            throw new RuntimeException(ex);
         }
     }
 
