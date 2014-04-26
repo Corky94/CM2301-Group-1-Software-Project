@@ -3,7 +3,6 @@ package Message;
 import Connection.SessionKey;
 import java.io.Serializable;
 
-
 public class Message implements Serializable {
     private byte[] sender;
     private String receiver;

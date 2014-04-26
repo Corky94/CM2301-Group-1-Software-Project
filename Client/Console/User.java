@@ -84,7 +84,6 @@ public class User {
         m.setMessage(Encryption.encryptString(sKey, contents));
         Encryption.encryptSessionKey(sKey, recipientPK);
         m.setSessionKey(sKey);
-        System.out.println("Message Session Key: " + m.getSessionKey());
         ClientSend.send(m);   
     } 
 
