@@ -130,6 +130,24 @@ public class AuthenticatedList{
             pointer = (pointer + 1) % list.length;
     }
     
+    public static void shortPrintList(){
+        int i = 0; 
+        System.out.println("---------------------------");
+        System.out.println("Authenticated List Contents");
+        System.out.println("---------------------------");
+        for(Authenticated a : list){
+            if(a != null){
+                System.out.println("\nLocation in list: " + i);
+                System.out.println("Client ID: " + a.getTicket().getClientId());
+                System.out.println("\n");
+            }
+        i++;
+        }
+        System.out.println("---------------------------");
+        System.out.println("END");
+        System.out.println("---------------------------");
+    }
+    
     public static void printList(){
         int i = 0; 
         System.out.println("---------------------------");

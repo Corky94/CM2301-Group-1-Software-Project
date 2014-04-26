@@ -27,7 +27,7 @@ public class ServerAuthentication {
                 true
         );
         AuthenticatedList.addAuth(newTicket);
-        AuthenticatedList.printList();
+        AuthenticatedList.shortPrintList();
         return Encryption.encryptTicket(newTicket);        
     }
     
