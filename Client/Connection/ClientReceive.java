@@ -85,6 +85,7 @@ public class ClientReceive {
         m.setReceiver(id);
         m.setNeedingKey(true);
         byte[] key = getKeyFromServer(m);
+        System.out.println(key);
         try {
             X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(key);
             KeyFactory kf = KeyFactory.getInstance("RSA");

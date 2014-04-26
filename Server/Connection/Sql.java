@@ -8,6 +8,7 @@ package Connection;
 
 
 import Message.Message;
+import java.io.*;
 import java.sql.*;
 import java.util.EmptyStackException;
 import java.util.Stack;
@@ -143,7 +144,7 @@ public class Sql {
         return false;
     }
     
-    public void sendMessage(byte[] sender, byte[] subject,  byte[] contents, String reciever){
+    public void sendMessage(byte[] sender, byte[] subject,  byte[] contents, String reciever, SessionKey sk){
         System.out.println("sendMessage -> reg");
         Stack servers = this.getMessageServers();
         Connection con = null;
@@ -157,19 +158,32 @@ public class Sql {
                     System.out.println(tableExist(con));
                 }
                 PreparedStatement pst = null;
-                pst = con.prepareStatement("INSERT INTO Messages(UserID, Sender, Subject, Message) VALUES(?,?,?,?)");
+                pst = con.prepareStatement("INSERT INTO Messages(UserID, Sender, Subject, Message, SessionKey) VALUES(?,?,?,?,?)");
                 pst.setString(1, reciever);
                 pst.setBytes(2, sender); 
                 pst.setBytes(3, subject);
                 pst.setBytes(4, contents);
+                
+                ByteArrayOutputStream b = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(b);
+                
+                oos.writeObject(sk);
+                oos.flush();
+                oos.close();
+                b.close();
+                
+                byte [] data = b.toByteArray();
+                
+                pst.setObject(5, sk);
+                
                 pst.executeUpdate();
-            }catch (SQLException ex) {
+            }catch (SQLException | IOException ex) {
                 Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
             }  
         }
     }
     
-    public void sendMessage(byte[] sender, byte[] subject,  byte[] contents, String reciever, String all){
+    public void sendMessage(byte[] sender, byte[] subject,  byte[] contents, String reciever, SessionKey sk, String all){
         System.out.println("sendMessage -> reg");
         Stack servers = this.getMessageServers();
         Connection con = null;
@@ -184,14 +198,26 @@ public class Sql {
                 }
                 System.out.println("Receiver: " + reciever);
                 PreparedStatement pst = null;
-                pst = con.prepareStatement("INSERT INTO Messages(UserID, Sender, Subject, Message) VALUES(?,?,?,?)");
+                pst = con.prepareStatement("INSERT INTO Messages(UserID, Sender, Subject, Message, SessionKey) VALUES(?,?,?,?,?)");
                 pst.setString(1, reciever);
                 pst.setBytes(2, sender); 
                 pst.setBytes(3, subject);
                 pst.setBytes(4, contents);
+                
+                ByteArrayOutputStream b = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(b);
+                
+                oos.writeObject(sk);
+                oos.flush();
+                oos.close();
+                b.close();
+                
+                byte [] data = b.toByteArray();
+                
+                pst.setObject(5, data);
                 pst.executeUpdate();            
             }       
-        }catch (SQLException ex) {
+        }catch (SQLException | IOException ex) {
                 Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);        
         }catch(EmptyStackException ex){
                 System.out.println("All Servers sent to");
@@ -215,7 +241,7 @@ public class Sql {
                     System.out.println(tableExist(con));
                 }
                 PreparedStatement pst = null;
-                pst = con.prepareStatement("SELECT Sender, Subject, Message FROM Messages WHERE UserID = (?)");
+                pst = con.prepareStatement("SELECT Sender, Subject, Message, SessionKey FROM Messages WHERE UserID = (?)");
                 pst.setString(1, id);
                 ResultSet rs = pst.executeQuery();
                 System.out.println("query executed");
@@ -236,6 +262,17 @@ public class Sql {
                     byte[] blobAsBytes = blob.getBytes(1, blobLength);
                     blob.free();
                     newMessage.setMessage(blobAsBytes);
+                    
+                    ByteArrayInputStream bis = new ByteArrayInputStream(rs.getBytes(4));
+                    ObjectInputStream ois = new ObjectInputStream(bis);
+                    
+                    SessionKey sk = (SessionKey) ois.readObject();
+                    
+                    newMessage.setSessionKey(sk);
+                    ois.close();
+                    bis.close();
+                    
+                    
                     messages[arrayLocation] = newMessage;
 
                     System.out.println(messages[arrayLocation]);
@@ -245,7 +282,7 @@ public class Sql {
                 con.close();
                 System.out.println(messages.length);
                 return messages;
-            }catch (SQLException ex) {
+            }catch (SQLException | IOException | ClassNotFoundException ex) {
                 Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -285,6 +322,7 @@ public class Sql {
                     "Sender VARBINARY(4096)," +
                     "Subject VARBINARY(4096)," +
                     "Message LONGBLOB,"
+                    + "SessionKey LONGBLOB,"
                     + "PRIMARY KEY (keyId)) ");
             pst.executeUpdate();    
         } catch (SQLException ex) {

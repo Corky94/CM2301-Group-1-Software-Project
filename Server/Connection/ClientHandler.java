@@ -91,7 +91,7 @@ public class ClientHandler implements Runnable {
     private static boolean storeMessage(Message m) {
         Sql s = new Sql();
         System.out.println("Storing");
-        s.sendMessage(m.getSender(), m.getSubject(), m.getMessage(), m.getReceiver());
+        s.sendMessage(m.getSender(), m.getSubject(), m.getMessage(), m.getReceiver(), m.getSessionKey());
         System.out.println("Stored");
         return true;
     } 
@@ -99,7 +99,7 @@ public class ClientHandler implements Runnable {
     private static boolean storeMessage(Message m, String a) {
         Sql s = new Sql();
         System.out.println("Storing");
-        s.sendMessage(m.getSender(), m.getSubject(), m.getMessage(), m.getReceiver(),a);
+        s.sendMessage(m.getSender(), m.getSubject(), m.getMessage(), m.getReceiver(),m.getSessionKey(),a);
         System.out.println("Stored");
         return true;
     } 

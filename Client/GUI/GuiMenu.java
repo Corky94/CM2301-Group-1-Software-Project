@@ -204,7 +204,7 @@ class GuiMenu	extends	JFrame
                 if (!(inboxList.getSelectedIndex() == -1)) {
                     int loc = inboxList.getSelectedIndex();
 
-                    SessionKey sKey = Encryption.decryptSessionKey(m[loc].getSessionKey());
+                    SessionKey sKey = m[loc].getSessionKey();
                     String message = Encryption.bTS(Encryption.decryptString(sKey, m[loc].getMessage()));                               
                     String sender = Encryption.bTS(Encryption.decryptString(sKey, m[loc].getSender()));
                     String subject = Encryption.bTS(Encryption.decryptString(sKey, m[loc].getSubject()));
@@ -730,7 +730,7 @@ class GuiMenu	extends	JFrame
     boolean debug = true;
 
     JLabel lblEncode, lblDecode, lblMessageOut;
-    JButton btnEncode, btnBrowseIn, btnDecode, btnAddContact, btnBrowseOut;
+    JButton btnEncode, btnBrowseIn, btnDecode, btnAddContact, btnBrowseOut, btnStegE, btnStegD;
     JTextField txtFileIn, txtFileOut, txtMessage;
     JFileChooser fc;
 
@@ -744,66 +744,119 @@ class GuiMenu	extends	JFrame
         stegPanel = new JPanel();
         stegPanel.setLayout(null);
            
-           // Create encode panel
+        btnStegE = new JButton("Encode Image");
+        btnStegE.setLocation(300, 50);
+        btnStegE.setSize(120, 30);
+        stegPanel.add(btnStegE);
    
-        //encodePanel.setLocation(0, 0);
-        //encodePanel.setSize(580, 100);
+        btnStegD = new JButton("Decode Image");
+        btnStegD.setLocation(410, 50);
+        btnStegD.setSize(120, 30);
+        stegPanel.add(btnStegD);
+
+        //encode screen.
 
         lblEncode = new JLabel("Select image to hide ID within: ");
         lblEncode.setLocation(60, 100);
         lblEncode.setSize(300, 30);
+        lblEncode.setVisible(false);
         stegPanel.add(lblEncode);
 
         txtFileIn = new JTextField();
         txtFileIn.setLocation(60, 125);
         txtFileIn.setSize(400, 30);
+        txtFileIn.setVisible(false);
         stegPanel.add(txtFileIn);
 
         btnBrowseIn = new JButton("Browse...");
         btnBrowseIn.setLocation(470, 125);
         btnBrowseIn.setSize(120, 30);
+        btnBrowseIn.setVisible(false);
         stegPanel.add(btnBrowseIn);
 
         btnEncode = new JButton("Encode");
         btnEncode.setLocation(470, 160);
         btnEncode.setSize(120, 30);
-        //btnEncode.addActionListener(this);
+        btnEncode.setVisible(false);
         stegPanel.add(btnEncode);
         
         //******************************************
         
         lblDecode = new JLabel("Select encoded image: ");
-        lblDecode.setLocation(60, 200);
+        lblDecode.setLocation(60, 100);
         lblDecode.setSize(300, 30);
+        lblDecode.setVisible(false);
         stegPanel.add(lblDecode);
 
         txtFileOut = new JTextField();
-        txtFileOut.setLocation(60, 225);
+        txtFileOut.setLocation(60, 125);
         txtFileOut.setSize(700, 30);
+        txtFileOut.setVisible(false);
         stegPanel.add(txtFileOut);
 
         btnBrowseOut = new JButton("Browse...");
-        btnBrowseOut.setLocation(470, 305);
+        btnBrowseOut.setLocation(470, 190);
         btnBrowseOut.setSize(120, 30);
-        //btnBrowseOut.addActionListener(this);
+        btnBrowseOut.setVisible(false);
         stegPanel.add(btnBrowseOut);
 
         btnDecode = new JButton("Decode");
-        btnDecode.setLocation(470, 345);
+        btnDecode.setLocation(470, 225);
         btnDecode.setSize(120, 30);
-        //btnDecode.addActionListener(this);
+        btnDecode.setVisible(false);
         stegPanel.add(btnDecode);
 
         lblMessageOut = new JLabel("Message: ");
-        lblMessageOut.setLocation(60, 280);
+        lblMessageOut.setLocation(60, 165);
         lblMessageOut.setSize(300, 30);
+        lblMessageOut.setVisible(false);
         stegPanel.add(lblMessageOut);
 
         txtMessage = new JTextField();
-        txtMessage.setLocation(60, 305);
+        txtMessage.setLocation(60, 190);
         txtMessage.setSize(400, 30);
+        txtMessage.setVisible(false);
         stegPanel.add(txtMessage);
 
+        
+    btnStegE.addActionListener(new ActionListener(){        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+        //reveal encoding objects.
+        lblEncode.setVisible(true);
+        txtFileIn.setVisible(true);
+        btnBrowseIn.setVisible(true);
+        btnEncode.setVisible(true);
+        
+        //hiding decoding objects if needed.
+        lblDecode.setVisible(false);
+        txtFileOut.setVisible(false);
+        btnBrowseOut.setVisible(false);
+        btnDecode.setVisible(false);
+        lblMessageOut.setVisible(false);
+        txtMessage.setVisible(false);
+        }
+    });
+    
+    btnStegD.addActionListener(new ActionListener(){        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+        //reveal decoding objects
+        lblDecode.setVisible(true);
+        txtFileOut.setVisible(true);
+        btnBrowseOut.setVisible(true);
+        btnDecode.setVisible(true);
+        lblMessageOut.setVisible(true);
+        txtMessage.setVisible(true);
+        
+        //hiding encoding objects if needed.
+        lblEncode.setVisible(false);
+        txtFileIn.setVisible(false);
+        btnBrowseIn.setVisible(false);
+        btnEncode.setVisible(false);
+        }
+    });
+    
     btnBrowseIn.addActionListener(new ActionListener(){        
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -906,7 +959,7 @@ class GuiMenu	extends	JFrame
         byte[] decode;
         try {
             // user space is necessary for decrypting
-            BufferedImage image = user_space(getImage(image_path()));
+            BufferedImage image = user_space(getImage(image_path_out()));
             decode = decode_text(get_byte_data(image));
             System.out.println(new String(decode));
             return (new String(decode));
@@ -930,6 +983,10 @@ class GuiMenu	extends	JFrame
      */
     private String image_path() {
         return fileInPath;
+    }
+
+    private String image_path_out() {
+        return fileOutPath;
     }
 
     /*
