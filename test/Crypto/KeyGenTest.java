@@ -28,19 +28,23 @@ public class KeyGenTest {
     
     @BeforeClass
     public static void setUpClass() {
-                User.setPassword("password".toCharArray());
+        User.setPassword("password".toCharArray());
     }
     
     @AfterClass
     public static void tearDownClass() {
+        if(KeyVault.checkIfKsExists() == true)
+            KeyVault.destroyKeyStore();
     }
     
     @Before
     public void setUp() {
+        KeyVault.createKeyStore();
     }
     
     @After
     public void tearDown() {
+        KeyVault.destroyKeyStore();
     }
 
     /**

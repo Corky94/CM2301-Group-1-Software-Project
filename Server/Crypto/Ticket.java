@@ -13,7 +13,7 @@ public class Ticket implements Serializable{
     private final String clientId;
     private final String nodeId;
     private final String password;
-    private String nodeAddress;
+    private final String nodeAddress;
     private final Key clientPublicKey;
     private final Key nodePublicKey;
     private Boolean is_challenge;
@@ -74,9 +74,4 @@ public class Ticket implements Serializable{
     public void setChallenge(boolean b){
         is_challenge = b;
     }
-    
-    public void setNodeAddress(String nAddress){
-        nodeAddress = nAddress;
-    }  
-    
 }
