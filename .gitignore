@@ -2,60 +2,12 @@
 .metadata/.lock
 .metadata/
 /nbproject/private/
-/Client working path/nbproject/private/
-/Tor Chat - Node/nbproject/private/
 *.xml
-
 *.mf
-
 *.properties
-/Client working path/build/
-Tor Chat - Node/keystore
-
-Tor Chat - Node/build/classes/Message/Message.class
-
 *.class
-
-Tor Chat - Node/build/classes/.netbeans_update_resources
-
-Tor Chat - Node/build/classes/.netbeans_automatic_build
-
 client meeting notes.txt
-
-Individual report.pages/Index.zip
-
 Individual Report.docx
-
-Individual report.pages/preview.jpg
-
-Individual report.pages/preview-web.jpg
-
-Individual report.pages/Metadata/Properties.plist
-
-Individual report.pages/Metadata/DocumentIdentifier
-
-Individual report.pages/Data/Hardcover_bullet_black-13.png
-
-Individual report.pages/Metadata/BuildVersionHistory.plist
-
-Individual report.pages/preview-micro.jpg
-
-Tor Chat - Node/NodeList.ser
-
-Client working path/keystore
-
-Client working path/NodeList.ser
-
-Tor Chat - Node/build/classes/Connection/Server.rs
-
-Tor Chat - Node/build/classes/id
-
-Tor Chat - Node/build/classes/Id Servers.ser
-
-Tor Chat - Node/build/classes/keystore
-
-Tor Chat - Node/build/classes/Message Servers.ser
-
-Tor Chat - Node/build/classes/NodeList.ser
-/Tor Chat - Node/dist/
-/Client working path/dist/
+Individual report.pages/*
+Tor Chat - Node/*
+Client working path/*
