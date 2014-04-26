@@ -96,7 +96,6 @@ public class Encryption{
         SecretKey sessionKey = sKey.getKey();
         byte[] iv = sKey.getIvSpec();
         IvParameterSpec ivspec = new IvParameterSpec(iv);
-        System.out.println("Key, IVspec, auth len:" + sessionKey + ivspec + auth.length);
         try {
             Cipher decrypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
             decrypt.init(Cipher.DECRYPT_MODE, sessionKey, ivspec); 

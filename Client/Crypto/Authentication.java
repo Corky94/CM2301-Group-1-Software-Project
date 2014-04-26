@@ -57,7 +57,6 @@ public class Authentication {
                     //send challenge
                     OutputStream os = s.getOutputStream();
                     ObjectOutputStream oos = new ObjectOutputStream(os);
-                    System.out.println("Created Socket & sent challenge");
                     oos.writeObject(p);
                     oos.flush();
                     //receive challenge
@@ -79,11 +78,9 @@ public class Authentication {
 //            System.out.println("Session IV Spec: " + p.getSessionKey().getIvSpec());
 //            System.out.println("Session Key: " + p.getSessionKey().getKey());
 
-            System.out.println("Received challenge");
             //process challenge
             p = Authentication.handleChallenge(p);
             p.setTicket(null);
-            System.out.println("Processed challenge");
             return p;
         } 
     }
@@ -102,11 +99,5 @@ public class Authentication {
         AuthenticatedList.printList();
         //And return the decrypted ticket ready to send back to the server.
         return Encryption.encryptTicket(t);
-    }
-    
-    private static boolean doesTicketExist(String serverAddress){
-        //tidy up the auth list before we use it, and remove expired auth
-        AuthenticatedList.removeExpiredAuth();
-        return AuthenticatedList.exists(serverAddress);
     }
 }
