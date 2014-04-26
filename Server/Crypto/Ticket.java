@@ -74,4 +74,14 @@ public class Ticket implements Serializable{
     public void setChallenge(boolean b){
         is_challenge = b;
     }
+    
+    public void printTicket(){
+        System.out.println("Client ID: " + this.getClientId());
+        System.out.println("Client PublicKey: " + this.getClientPublicKey());
+        System.out.println("Node ID: " + this.getNodeId());
+        System.out.println("Node Address: " + this.getNodeAddress());
+        System.out.println("Node PublicKey: " + this.getNodePublicKey());
+        System.out.println("Hash: " + this.getPassword());
+        System.out.println("Request: " + this.is_challenge());
+    }
 }

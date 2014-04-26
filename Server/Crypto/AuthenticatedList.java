@@ -158,13 +158,7 @@ public class AuthenticatedList{
                 System.out.println("Location in list: " + i);
                 System.out.println("Time of Authentication: " + a.getTime());
                 System.out.println("----- Information containted in associated ticket -----");
-                System.out.println("Client ID: " + a.getTicket().getClientId());
-                System.out.println("Client PublicKey: " + a.getTicket().getClientPublicKey());
-                System.out.println("Node ID: " + a.getTicket().getNodeId());
-                System.out.println("Node Address: " + a.getTicket().getNodeAddress());
-                System.out.println("Node PublicKey: " + a.getTicket().getNodePublicKey());
-                System.out.println("Hash: " + a.getTicket().getPassword());
-                System.out.println("Request: " + a.getTicket().is_challenge());
+                a.getTicket().printTicket();
             }
         i++;
         }
