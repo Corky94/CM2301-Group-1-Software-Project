@@ -26,10 +26,8 @@ public class ServerAuthentication {
                 KeyVault.getRSAKeys().getPublic(),
                 true
         );
-        System.out.println("IMPORTANT");
-        newTicket.printTicket();
         AuthenticatedList.addAuth(newTicket);
-        AuthenticatedList.shortPrintList();
+        AuthenticatedList.printList();
         return Encryption.encryptTicket(newTicket);        
     }
     
@@ -40,7 +38,7 @@ public class ServerAuthentication {
     }
     
     public static boolean verifyClientChallenge(Ticket t){    
-        //get the current ticket
+        //get the current ticket        
         Ticket current = AuthenticatedList.getClientTicket(t.getClientId());
         if(t.is_challenge() == false){
             if(current.equals(t)){

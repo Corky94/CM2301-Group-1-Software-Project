@@ -33,6 +33,8 @@ public class Authentication {
         //This method is called to connect to a node, if it has the right auth
         //it will return it, if not it will generate a request.
         Packet p = new Packet();
+        System.out.println("\n\nauth");
+        AuthenticatedList.printList();
         if(AuthenticatedList.getNodeAuthenticationByAddress(nodeAddress) != null){
             //get the ticket and encrypt it ready to be send to the node as authentication
             Ticket t = AuthenticatedList.getNodeAuthenticationByAddress(nodeAddress);
@@ -86,8 +88,14 @@ public class Authentication {
         Ticket newTicket = new Ticket(t);
         newTicket.setChallenge(false);
         AuthenticatedList.deleteAuth(newTicket.getClientId());
+        System.out.println("\nADDING TICKET: ");
+        newTicket.printTicket();
+        if(t.getNodeAddress() == null){
+            throw new RuntimeException("FOUND IT!");
+        }
+        System.out.println("\n");
         AuthenticatedList.addAuth(newTicket);
-        AuthenticatedList.printList();
+        //AuthenticatedList.printList();
         //And return the decrypted ticket ready to send back to the server.
         return Encryption.encryptTicket(t);
     }

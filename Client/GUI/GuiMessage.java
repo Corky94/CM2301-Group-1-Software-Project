@@ -3,6 +3,7 @@ package GUI;
 
 import Connection.SessionKey;
 import Console.*;
+import Crypto.AuthenticatedList;
 import Crypto.Encryption;
 import Message.Message;
 import java.awt.event.ActionEvent;
@@ -26,6 +27,7 @@ public class GuiMessage {
 
 	private static void placeComponents(final JFrame frame, Message m) {
                 
+                AuthenticatedList.printList();
                 SessionKey sKey = Encryption.decryptSessionKey(m.getSessionKey());
                 String message = Encryption.bTS(Encryption.decryptString(sKey, m.getMessage()));
                 String sender = Encryption.bTS(Encryption.decryptString(sKey, m.getSender()));

@@ -15,7 +15,7 @@ public class Message implements Serializable {
     private SessionKey sessionKey;
     
     public void setSessionKey(SessionKey sKey){
-        sessionKey = sKey;
+        this.sessionKey = sKey;
     }
     
     public SessionKey getSessionKey(){

@@ -91,6 +91,7 @@ public class Packet implements Serializable {
         System.out.println("Messages: " + Arrays.toString(this.getMessages()));
         System.out.println("Session Key: " + this.getSessionKey());
         System.out.println("Ticket:" + this.getTicket());
+        System.out.println("--------------------------");
     }
     
     public void shortPrintPacket(){
@@ -101,6 +102,6 @@ public class Packet implements Serializable {
         System.out.println("Messages: " + this.getMessages());
         System.out.println("Session Key: " + this.getSessionKey());
         System.out.println("Ticket:" + this.getTicket());
+        System.out.println("--------------------------");
     }
-
 }

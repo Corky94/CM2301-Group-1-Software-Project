@@ -41,7 +41,6 @@ public class ClientReceive {
                 InputStream is = s.getInputStream();  
                 ObjectInputStream ois = new ObjectInputStream(is);
                 Packet input = (Packet) ois.readObject();
-                input.shortPrintPacket();
                 allMessages = input.getMessages();
                 //if(debug) System.out.println(m);
                 oos.close();  
@@ -59,11 +58,11 @@ public class ClientReceive {
         
     private static byte[] getKeyFromServer(Message m){  
         Message message = new Message();
-        Packet p = Authentication.createPacket(m, null);
         SSLSocket s;
         try {
             ClientSSL c = Console.User.clissl;
             s = c.main(12346);
+            Packet p = Authentication.createPacket(m, c.getNodeAddress());
             OutputStream os = s.getOutputStream(); 
             ObjectOutputStream oos = new ObjectOutputStream(os);
             oos.writeObject(p);

@@ -23,10 +23,14 @@ public class Sql {
         String url = id.getUrl();
         String user = id.getUser();
         String password = id.getPassword();
+        //System.out.println("ID: " + id.getUrl() +"\n" +"User: "+  id.getUser()+"\n" +"Password: " + id.getPassword());
         try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
             con = DriverManager.getConnection(url, user, password);
         } catch (SQLException ex) {
-            throw new RuntimeException(ex);
+            //throw new RuntimeException(ex);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+            Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
         }
         return con;
     }  
@@ -38,9 +42,12 @@ public class Sql {
         String password = id.getPassword();
         //System.out.println("ID: " + id.getUrl() +"\n" +"User: "+  id.getUser()+"\n" +"Password: " + id.getPassword());
         try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
             con = DriverManager.getConnection(url, user, password);
         } catch (SQLException ex) {
-            throw new RuntimeException(ex);
+            //throw new RuntimeException(ex);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+            Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
         } 
         return con;
     } 

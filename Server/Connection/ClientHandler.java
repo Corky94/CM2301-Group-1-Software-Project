@@ -36,7 +36,6 @@ public class ClientHandler implements Runnable {
                 System.out.println("Received Auth Ticket");
                 if(ServerAuthentication.verifyEncryptedTicket(p) == true){
                     System.out.println("User Authenticated Sucessfully");
-                    p.shortPrintPacket();
                     if(p.getMessages() != null){
                         Message m = p.getMessages()[0];
                         if (m == null){   
@@ -105,7 +104,7 @@ public class ClientHandler implements Runnable {
         return true;
     } 
 
-    private static void send(SSLSocket s, Packet p){  
+    private static void send(SSLSocket s, Packet p){
         try (OutputStream os = s.getOutputStream()) {
             ObjectOutputStream oos = new ObjectOutputStream(os);
             oos.writeObject(p);
