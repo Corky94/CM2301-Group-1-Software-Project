@@ -69,16 +69,6 @@ public class Authentication {
             } catch (IOException ex){
                 System.out.println(ex);
             }
-//            System.out.println(p);
-//            System.out.println("Ticket: " + p.getTicket());
-//            System.out.println("Message: " + p.getMessages());
-//            System.out.println("Encrypted Ticket: " + p.getEncryptedTicket());
-//            System.out.println("SessionKey: " + p.getSessionKey());
-//            System.out.println("Session Encrypted Key: " + p.getSessionKey().getEncryptedKey());
-//            System.out.println("Session IV Spec: " + p.getSessionKey().getIvSpec());
-//            System.out.println("Session Key: " + p.getSessionKey().getKey());
-
-            //process challenge
             p = Authentication.handleChallenge(p);
             p.setTicket(null);
             return p;
@@ -93,6 +83,8 @@ public class Authentication {
         }
         //Ticket has come back, and is no longer a challenge, however the node does not know this
         //so we'll return one copy that will be treated as a challenge returned
+        if(t.getNodeAddress() == null)
+            throw new RuntimeException("Ticket returned without Node Address");
         Ticket newTicket = new Ticket(t);
         newTicket.setChallenge(false);
         AuthenticatedList.addAuth(newTicket);
