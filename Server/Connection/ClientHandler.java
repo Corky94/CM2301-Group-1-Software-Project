@@ -151,27 +151,25 @@ public class ClientHandler implements Runnable {
             s.register(m.getReceiver(), m.getKey(),all);      
         }
 
-        public static void getKey(Message m,SSLSocket soc){
+        public static void getKey(Message m, SSLSocket soc){
             System.out.println("Getting key");
             Message message = new Message();
             Sql s = new Sql();
-            try {
-                byte[] key = s.getKey(m.getReceiver());
-                System.out.println(key);
-                message.setKey(key);
-                System.out.println("Got key \n sending key");
-                sendKeyToClient(message, soc);
-                System.out.println("Sent Key");
-            } catch (NoSuchAlgorithmException | InvalidKeySpecException | SQLException ex) {
-                throw new RuntimeException(ex);
-            } 
+            byte[] key = s.getKey(m.getReceiver());
+            System.out.println(key);
+            message.setKey(key);
+            System.out.println("Got key \n sending key");
+            sendKeyToClient(message, soc);
+            System.out.println("Sent Key"); 
         }
 
         public static void sendKeyToClient(Message m, SSLSocket s){
-        try{  
+        try{
+            Packet p = new Packet();
+            p.setMessage(m);
             OutputStream os = s.getOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(os);  
-            oos.writeObject(m);   
+            oos.writeObject(p);   
             oos.close();  
             os.close();  
             s.close();  
