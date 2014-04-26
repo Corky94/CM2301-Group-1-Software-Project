@@ -1,6 +1,5 @@
 package Connection;
 
-import Crypto.AuthenticatedList;
 import Crypto.Encryption;
 import Crypto.ServerAuthentication;
 import Message.*;
@@ -37,13 +36,14 @@ public class ClientHandler implements Runnable {
                 System.out.println("Received Auth Ticket");
                 if(ServerAuthentication.verifyEncryptedTicket(p) == true){
                     System.out.println("User Authenticated Sucessfully");
+                    p.printPacket(p);
                     if(p.getMessages() != null){
                         Message m = p.getMessages()[0];
                         if (m == null){   
 
                         }
                         else if (m.getKey() != null){
-                            registerUser(m,null);                              
+                            registerUser(m, null);                              
                             s.close(); 
                             is.close();
                             ois.close();
@@ -61,7 +61,7 @@ public class ClientHandler implements Runnable {
                             storeMessage(m,"");
                         }else {  //send messages to client  
                             System.out.println("Wrong");
-                            getMessages(s, m.getReceiver());
+                            getMessages(s, p);
                             is.close();  
                             s.close(); 
                             ois.close();
@@ -73,7 +73,7 @@ public class ClientHandler implements Runnable {
                 System.out.println("Challenge request from client: " + p.getTicket().getClientId());
                 //Client is trying to initiate authentication challenge
                 Packet challenge = ServerAuthentication.handleChallenge(p.getTicket());
-                returnChallenge(s, challenge);
+                send(s, challenge);
             }
             //System.out.println("Socket is closed? " + s.isClosed());
             ois.close();
@@ -105,10 +105,10 @@ public class ClientHandler implements Runnable {
         return true;
     } 
 
-    private static void returnChallenge(SSLSocket s, Packet challenge){  
+    private static void send(SSLSocket s, Packet p){  
         try (OutputStream os = s.getOutputStream()) {
             ObjectOutputStream oos = new ObjectOutputStream(os);
-            oos.writeObject(challenge);
+            oos.writeObject(p);
             oos.flush();
             oos.close();
             os.flush();
@@ -118,12 +118,13 @@ public class ClientHandler implements Runnable {
         }
     }
         
-    private static void getMessages(SSLSocket s, String id) {  
+    private static void getMessages(SSLSocket s, Packet p) {  
         Sql sq = new Sql();
+        String id = p.getTicket().getClientId();
         System.out.println("Getting messages for client: " + id);
         Message[] m = sq.getMessage(id);
         System.out.println("Retreived messages for client:" + id);
-        Packet p = Encryption.encryptTicket(AuthenticatedList.getClientTicket(id));
+        p = Encryption.encryptTicket(p.getTicket());
         p.setMessages(m);
         try{
             OutputStream os = s.getOutputStream();  
@@ -150,22 +151,10 @@ public class ClientHandler implements Runnable {
         System.out.println(key);
         message.setKey(key);
         System.out.println("Got key \n sending key");
-        sendKeyToClient(message, soc);
+        Packet p = new Packet();
+        p.setMessage(message);
+        send(soc, p);
         System.out.println("Sent Key"); 
-    }
-
-    public static void sendKeyToClient(Message m, SSLSocket s){
-        try{
-            Packet p = new Packet();
-            p.setMessage(m);
-            OutputStream os = s.getOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(os);  
-            oos.writeObject(p);   
-            oos.close();  
-            os.close();  
-            s.close();  
-            }catch(IOException e){
-        }  
     }
 }
     

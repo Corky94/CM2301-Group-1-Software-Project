@@ -32,7 +32,7 @@ public class ServerAuthentication {
     }
     
     public static boolean verifyEncryptedTicket(Packet p){
-        Ticket t = Encryption.decryptTicket(p);
+        Ticket t = Encryption.decryptTicket(p).getTicket();
         Ticket current = AuthenticatedList.getClientTicket(t.getClientId());
         return(t.getClientId().equals(current.getClientId()) & t.getPassword().equals(current.getPassword()));
     }

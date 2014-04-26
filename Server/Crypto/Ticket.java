@@ -78,4 +78,5 @@ public class Ticket implements Serializable{
     public void setNodeAddress(String nAddress){
         nodeAddress = nAddress;
     }  
+    
 }

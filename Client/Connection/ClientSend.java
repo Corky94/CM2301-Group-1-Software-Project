@@ -22,7 +22,7 @@ public class ClientSend {
                     break Socket;
                 }
             }
-            Packet p = Authentication.createPacket(m, ClientSSL.getNodeAddress());
+            Packet p = Authentication.createPacket(m, c.getNodeAddress());
             OutputStream os = s.getOutputStream();  
             ObjectOutputStream oos = new ObjectOutputStream(os);  
             oos.writeObject(p);   

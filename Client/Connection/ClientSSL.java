@@ -75,7 +75,7 @@ public class ClientSSL {
         }
     }
     
-    public static String getNodeAddress(){
+    public String getNodeAddress(){
         return node;
     }
     

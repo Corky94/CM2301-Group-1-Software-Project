@@ -66,8 +66,9 @@ public class Encryption{
         return p;
     }
     
-    public static Ticket decryptTicket(Packet p){
-        return Encryption.decryptAuth(Encryption.decryptSessionKey(p.getSessionKey()), p.getEncryptedTicket());
+    public static Packet decryptTicket(Packet p){
+        p.setTicket(Encryption.decryptAuth(Encryption.decryptSessionKey(p.getSessionKey()), p.getEncryptedTicket()));
+        return p;
     }
     
     public static byte[] encryptAuth(SessionKey sKey, Ticket t){

@@ -24,13 +24,10 @@ public class ClientUpdate {
     
     ClientUpdate(){
      ClientSSL clissl = new ClientSSL();
-        try (SSLSocket s = clissl.main(12347); OutputStream os = s.getOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(os)) {
-            
+        try (SSLSocket s = clissl.main(12347); OutputStream os = s.getOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(os)) {    
             InputStream is = s.getInputStream();  
-            ObjectInputStream ois = new ObjectInputStream(is);
-            
+            ObjectInputStream ois = new ObjectInputStream(is);            
             n.updateStack((Stack) ois.readObject());
-            
             oos.close();  
             os.close(); 
             is.close();

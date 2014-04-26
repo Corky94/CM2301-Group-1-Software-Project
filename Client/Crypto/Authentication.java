@@ -90,7 +90,7 @@ public class Authentication {
     
     //method to be called as ticket is returned from node
     public static Packet handleChallenge(Packet p){
-        Ticket t = Encryption.decryptTicket(p);
+        Ticket t = Encryption.decryptTicket(p).getTicket();
         if(t == null){    
             throw new RuntimeException("Ticket returned null");
         }

@@ -9,6 +9,7 @@ package Connection;
 import Crypto.Ticket;
 import Message.Message;
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  *
@@ -86,8 +87,8 @@ public class Packet implements Serializable {
         System.out.println("--------------------------");
         System.out.println("Packet Contents");
         System.out.println("--------------------------");
-        System.out.println("Encrypted Ticket: " + p.getEncryptedTicket());
-        System.out.println("Messages: " + p.getMessages());
+        System.out.println("Encrypted Ticket: " + Arrays.toString(p.getEncryptedTicket()));
+        System.out.println("Messages: " + Arrays.toString(p.getMessages()));
         System.out.println("Session Key: " + p.getSessionKey());
         System.out.println("Ticket:" + p.getTicket());
     }
