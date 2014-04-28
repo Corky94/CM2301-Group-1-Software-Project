@@ -1,0 +1,13 @@
+/Client/Client/nbproject/private/
+.metadata/.lock
+.metadata/
+/nbproject/private/
+*.xml
+*.mf
+*.properties
+*.class
+client meeting notes.txt
+Individual Report.docx
+Individual report.pages/*
+Tor Chat - Node/*
+Client working path/*
