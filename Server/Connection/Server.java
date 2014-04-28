@@ -8,15 +8,16 @@ import java.util.logging.*;
 import javax.net.ssl.SSLServerSocket;
 
 public class Server {
-    private static boolean debug = true;
+
     private static char[] password;
     private static String id;
     public static NodeList list = new NodeList();
-    
-    Server(String serverId, char[] pass){
+
+    Server(String serverId, char[] pass) {
         id = serverId;
         password = pass;
     }
+
     /**
      * @return the password
      */
@@ -30,14 +31,14 @@ public class Server {
     public static String getId() {
         return id;
     }
-    
-    public static void setId(String ID){
+
+    public static void setId(String ID) {
         id = ID;
     }
 
     public static void main(String args[]) {
-        
-        if(KeyVault.checkIfKsExists() == false){
+
+        if (KeyVault.checkIfKsExists() == false) {
             initialSetup();
         }
 
@@ -51,7 +52,7 @@ public class Server {
         AdminInput ai = new AdminInput();
         Thread admin = new Thread(ai);
         admin.start();
-        
+
         ClientAcceptor c = new ClientAcceptor(querySocket);
         Thread query = new Thread(c);
         query.start();
@@ -83,8 +84,9 @@ public class Server {
                     //id = br.readLine();
                     fr.close();
                     br.close();
+                    System.out.println("Login Successfull");
                     break;
-                } catch ( IOException ex) {
+                } catch (IOException ex) {
                     Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -92,12 +94,12 @@ public class Server {
     }
 
     private static void initialSetup() {
-        Scanner sc = new Scanner(System.in);   
+        Scanner sc = new Scanner(System.in);
         System.out.println("The server has yet to be set up."
                 + "\nPress enter to continue.");
         sc.nextLine();
         System.out.println("You random password is now being generated."
-                + "\nRemember to note down the password as it will only be shown on initial setup"
+                + "\nRemember to note down the password as it will only be shown on initial setup."
                 + "\nPress enter to continue.");
         sc.nextLine();
         char[] pass = RandomPasswordGen.generatePswd(12, 12, 2, 2, 0);
@@ -107,14 +109,13 @@ public class Server {
         System.out.println("\nThe rest of the setup and updating will now commence."
                 + "\nPress enter to continue.");
         sc.nextLine();
-        
 
         password = pass;
         keySetup();
         Server s = new Server(KeyGen.generateUserID(), pass);
-        
+
         list.addNode();
-        
+
         System.out.println("The current list of operating servers is: \n "
                 + list.getList());
         System.out.println("\nOnce enter is pressed the console will then"
@@ -126,7 +127,7 @@ public class Server {
 
     private static void keySetup() {
         PrintWriter out = null;
-        try {  
+        try {
             KeyVault.createKeyStore();
             KeyVault.setRSAKeys();
             KeyVault.setAESKey();
@@ -146,13 +147,14 @@ public class Server {
         }
     }
 }
+
 class ClientAcceptor implements Runnable {
 
     private static boolean debug = true;
     private SSLServerSocket socket;
     private Message message;
 
-    ClientAcceptor(SSLServerSocket s) {
+    public ClientAcceptor(SSLServerSocket s) {
         this.socket = s;
     }
 
@@ -162,7 +164,7 @@ class ClientAcceptor implements Runnable {
             socket = ss;
             ClientHandler c = new ClientHandler(socket);
             Thread t = new Thread(c);
-            System.out.println("Thread ID: " + t.getId());
+           
             t.start();
             socket = null;
             t = null;
@@ -171,6 +173,7 @@ class ClientAcceptor implements Runnable {
 }
 
 class UpdateAcceptor implements Runnable {
+
     private static boolean debug = true;
     private SSLServerSocket socket;
     private Message message;
@@ -186,7 +189,7 @@ class UpdateAcceptor implements Runnable {
             UpdateHandler u = new UpdateHandler(socket);
             Thread t = new Thread(u);
             t.start();
-            System.out.println("Thread ID: " + t.getId());
+            
 
         }
     }
@@ -209,7 +212,7 @@ class NodeAcceptor implements Runnable {
             NodeHandler n = new NodeHandler(socket);
             Thread t = new Thread(n);
             t.start();
-            System.out.println("Thread ID: " + t.getId());
+           
         }
     }
 }

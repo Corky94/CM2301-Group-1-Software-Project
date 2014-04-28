@@ -1,4 +1,3 @@
-
 // This is a basic structure of the User class, there is still much to be done and al the methods to be implimented
 package Console;
 
@@ -8,63 +7,32 @@ import Crypto.*;
 import java.io.File;
 import java.security.*;
 
-
-
 public class User {
-//	private Message[] savedMessages;
+
     private static SecureDetails s;
     public static boolean loggedIn;
-    private String realm;
-    private ClientSend c;
-    private byte[] publicKey;
     private static char[] pass;
-    public  static ClientSSL clissl;
+    public static ClientSSL clissl;
 
     public User() {
 
     }
 
-    public static void setPassword(char[] p){
+    public static void setPassword(char[] p) {
         pass = p;
     }
 
-    public static char[] getPassword(){
+    public static char[] getPassword() {
         return pass;
     }
 
-
-    public static void login(char[] password){
- 
-        
-        while (KeyVault.checkPassword(password) != true){
-            
-            if (KeyVault.checkPassword(password) == false){
-                System.out.println("Password Incorrect \n Press enter to try again");                
-            }   
-        } 
+    public static void login(char[] password) {
         pass = password;
         clissl = new ClientSSL();
     }
 
-    public void logout(){            
-        loggedIn = false;            
-    }
-
-    public void readMessages(){
-
-//            if (newMessages.length<=0){                
-//                System.out.println("You have no new messages");                
-//            }
-//            else if(newMessages.length == 1){                
-//                System.out.println("You have one new message");
-//            }            
-//            else{
-//              System.out.println("You have " + newMessages.length + " new messages");
-//            }            
-//            System.out.println("You have " + s.getMessages().length + " saved messages");
-//            
-//            
-
+    public void logout() {
+        loggedIn = false;
     }
 
     public static Message[] receiveEmails() {
@@ -76,7 +44,7 @@ public class User {
         s = new SecureDetails();
         Message m = new Message();
         m.setReceiver(recipitent);
-        PublicKey recipientPK =  ClientReceive.getKey(m.getReceiver());
+        PublicKey recipientPK = ClientReceive.getKey(m.getReceiver());
         String sender = s.getID();
         SessionKey sKey = KeyGen.generateSessionKey();
         m.setSubject(Encryption.encryptString(sKey, subject));
@@ -84,20 +52,26 @@ public class User {
         m.setMessage(Encryption.encryptString(sKey, contents));
         Encryption.encryptSessionKey(sKey, recipientPK);
         m.setSessionKey(sKey);
-        ClientSend.send(m);   
-    } 
-
-    public void deleteMessage(int x){  
-        // delete message from savedMessages[x]         
+        ClientSend.send(m);
     }
 
-    public static void main(String[] args) {      
+    public static void deleteMessage(Message m) {
+        m.setKey(null);
+        m.setNeedingKey(false);
+        m.setSender(null);
+
+        ClientSend.send(m);
+    }
+
+    public static void main(String[] args) {
         User u = new User();
         File f = new File("user2.ser");
-        if (f.exists())
+        if (f.exists()) {
             new GUI.GuiLogin();
-        else
+        }
+        else {
             GUI.GuiRegister.NewRegister();
+        }
     }
-      
+
 }

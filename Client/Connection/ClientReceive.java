@@ -15,11 +15,9 @@ import java.util.logging.Logger;
 import javax.net.ssl.SSLSocket;
 
 public class ClientReceive {
-    private static boolean  debug = true;
-    private static byte[] sender = "sender".getBytes();
 
     public static Message[] receive(String Id) {
-        try{
+        try {
             Message[] allMessages;
             Message m = new Message();
             m.setSender(null);
@@ -28,55 +26,56 @@ public class ClientReceive {
             ClientSSL c = Console.User.clissl;
             Packet p = Authentication.createPacket(m, c.getNodeAddress());
             SSLSocket s;
-            while (true){
-                
+            while (true) {
+
                 s = c.main(12346);
 
-                System.out.println(s);
-                OutputStream os = s.getOutputStream();  
-                ObjectOutputStream oos = new ObjectOutputStream(os);  
-                oos.writeObject(p);   
+                OutputStream os = s.getOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(os);
+                oos.writeObject(p);
 
                 //get reply from server
-                InputStream is = s.getInputStream();  
+                InputStream is = s.getInputStream();
                 ObjectInputStream ois = new ObjectInputStream(is);
                 Packet input = (Packet) ois.readObject();
                 allMessages = input.getMessages();
-                //if(debug) System.out.println(m);
-                oos.close();  
-                os.close(); 
+
+                oos.close();
+                os.close();
                 is.close();
                 ois.close();
-                s.close(); 
+                s.close();
                 return allMessages;
             }
-        }catch(IOException | ClassNotFoundException e){
+        }
+        catch (IOException | ClassNotFoundException e) {
             Logger.getLogger(ClientReceive.class.getName()).log(Level.SEVERE, null, e);
         }
-        return null;		
-    }  
-        
-    private static byte[] getKeyFromServer(Message m){  
+        return null;
+    }
+
+    private static byte[] getKeyFromServer(Message m) {
         Message message = new Message();
         SSLSocket s;
         try {
             ClientSSL c = Console.User.clissl;
             s = c.main(12346);
             Packet p = Authentication.createPacket(m, c.getNodeAddress());
-            OutputStream os = s.getOutputStream(); 
+            OutputStream os = s.getOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(os);
             oos.writeObject(p);
-            InputStream is = s.getInputStream();  
+            InputStream is = s.getInputStream();
             ObjectInputStream ois = new ObjectInputStream(is);
-            Packet input = (Packet) ois.readObject();  
+            Packet input = (Packet) ois.readObject();
             message = input.getMessage();
             is.close();
             ois.close();
             return message.getKey();
-        } catch (IOException | ClassNotFoundException ex) {
+        }
+        catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(ClientSend.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("TEST");
+
         return null;
     }
 
@@ -85,7 +84,7 @@ public class ClientReceive {
         m.setReceiver(id);
         m.setNeedingKey(true);
         byte[] key = getKeyFromServer(m);
-        System.out.println(key);
+
         try {
             X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(key);
             KeyFactory kf = KeyFactory.getInstance("RSA");
@@ -96,5 +95,5 @@ public class ClientReceive {
             throw new RuntimeException(ex);
         }
     }
-}
 
+}

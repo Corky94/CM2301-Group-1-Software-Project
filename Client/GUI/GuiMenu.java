@@ -268,6 +268,25 @@ class GuiMenu	extends	JFrame
                 rep.reply(fromIDLabel.getText());
             }
         });
+        
+        delete.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent arg0) {                         
+                User.deleteMessage(m[inboxList.getSelectedIndex()]);
+                try {
+                    //inboxPanel.repaint();
+                    mainFrame.setVisible(false);
+                    new GuiMenu(); 
+                    //inboxPanel = new JPanel();
+                    JOptionPane.showMessageDialog(contactsPanel, "Message Deleted.", "",
+                    JOptionPane.INFORMATION_MESSAGE);
+                    
+                } catch(IOException ex) {  
+                    JOptionPane.showMessageDialog(contactsPanel, "Sorry an error has occured, Please restart program.", "Error",
+                    JOptionPane.ERROR_MESSAGE);     
+                }
+            }
+      });
                 
         forward.addActionListener(new ActionListener(){
             @Override

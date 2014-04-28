@@ -15,23 +15,19 @@ import javax.net.ssl.SSLSocket;
  * @author Marc
  */
 public class Send {
+
     private NodeList n = new NodeList();
 
-    public Send(Stack st){
-        
-        //n.addNode();
-        try {
-            
+    public Send(Stack st) {
 
-            System.out.println(n.getList());
-            System.out.println(st);
+        try {
+
             ServerSSL ss = new ServerSSL();
             String server = n.getNode();
             char[] pass = Connection.Server.getPassword();
-            while(server != null){
-                
-                System.out.println(server);
-                SSLSocket s = ss.send(server,12348,pass);
+            while (server != null) {
+
+                SSLSocket s = ss.send(server, 12348, pass);
                 OutputStream os = s.getOutputStream();
                 ObjectOutputStream oos = new ObjectOutputStream(os);
                 oos.writeObject(st);
@@ -40,13 +36,11 @@ public class Send {
                 s.close();
                 server = n.getNode();
             }
-            n =null;
-        }
-        catch (IOException ex) {
+            n = null;
+        } catch (IOException ex) {
             Logger.getLogger(Send.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-        n =null;
+        }
+        n = null;
     }
-   
-    
+
 }

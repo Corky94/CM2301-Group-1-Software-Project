@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package Connection;
 
 import Crypto.Ticket;
@@ -16,74 +15,74 @@ import java.util.Arrays;
  * @author maxchandler
  */
 public class Packet implements Serializable {
-    private  byte[] encryptedTicket;
-    private  Ticket t; 
-    private  Message[] m;
-    private  SessionKey sessionKey;
 
-    public Packet(){
-    
+    private byte[] encryptedTicket;
+    private Ticket t;
+    private Message[] m;
+    private SessionKey sessionKey;
+
+    public Packet() {
+
     }
-        
-    public Packet(byte[] t, Message[] messages){
+
+    public Packet(byte[] t, Message[] messages) {
         encryptedTicket = t;
         m = new Message[messages.length];
         m = messages;
     }
-    
-    public void setTicket(Ticket ticket){
+
+    public void setTicket(Ticket ticket) {
         t = ticket;
     }
 
-    public void setTicket(Ticket ticket, SessionKey key){
+    public void setTicket(Ticket ticket, SessionKey key) {
         t = ticket;
         sessionKey = key;
     }
-    
-    public void setMessages(Message[] messages){
+
+    public void setMessages(Message[] messages) {
         m = new Message[messages.length];
         m = messages;
     }
-    
-    public void setMessage(Message message){
+
+    public void setMessage(Message message) {
         m = new Message[1];
         m[0] = message;
     }
-    
-    
-    public void setEncryptedTicket(byte[] ticket){
+
+    public void setEncryptedTicket(byte[] ticket) {
         encryptedTicket = ticket;
     }
-    
-    public void setSessionKey(SessionKey key){
+
+    public void setSessionKey(SessionKey key) {
         sessionKey = key;
     }
-    
-    public byte[] getEncryptedTicket(){
+
+    public byte[] getEncryptedTicket() {
         return encryptedTicket;
     }
-    
-    public Ticket getTicket(){
+
+    public Ticket getTicket() {
         return t;
     }
 
-    public Message[] getMessages(){
+    public Message[] getMessages() {
         return m;
     }
-    
-    public Message getMessage(){
+
+    public Message getMessage() {
         return m[0];
     }
-    
-    public SessionKey getSessionKey(){
+
+    public SessionKey getSessionKey() {
         return sessionKey;
     }
-        
-    public void deleteTicket(){
+
+    public void deleteTicket() {
         t = null;
     }
-    
-    public void printPacket(){
+
+    public void printPacket() {
         System.out.println("--------------------------");
         System.out.println("Packet Contents");
         System.out.println("--------------------------");
@@ -93,8 +92,8 @@ public class Packet implements Serializable {
         System.out.println("Ticket:" + this.getTicket());
         System.out.println("--------------------------");
     }
-    
-    public void shortPrintPacket(){
+
+    public void shortPrintPacket() {
         System.out.println("--------------------------");
         System.out.println("Packet Contents");
         System.out.println("--------------------------");
@@ -104,4 +103,5 @@ public class Packet implements Serializable {
         System.out.println("Ticket:" + this.getTicket());
         System.out.println("--------------------------");
     }
+
 }
