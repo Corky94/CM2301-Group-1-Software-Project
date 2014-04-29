@@ -46,8 +46,7 @@ public class HashUtilsTest {
         System.out.println("hashKeyToString");
         KeyGen kg = new KeyGen();
         Key inputKey = (kg.generateRSAKeys()).getPublic();
-        HashUtils instance = new HashUtils();
-        instance.hashKeyToString(inputKey);
+        HashUtils.hashKeyToString(inputKey);
     }
 
     /**
@@ -58,8 +57,7 @@ public class HashUtilsTest {
         System.out.println("hashKeyToByte");
         KeyGen kg = new KeyGen();
         Key inputKey = (kg.generateRSAKeys()).getPublic();
-        HashUtils instance = new HashUtils();
-        instance.hashKeyToByte(inputKey);
+        HashUtils.hashKeyToByte(inputKey);
     }
 
     /**
@@ -70,8 +68,7 @@ public class HashUtilsTest {
         System.out.println("hashSha256");
         KeyGen kg = new KeyGen();
         byte[] input = ((kg.generateRSAKeys()).getPublic()).getEncoded();
-        HashUtils instance = new HashUtils();
-        instance.hashSha256(input);
+        HashUtils.hashSha256(input);
     }
 
     /**
@@ -82,8 +79,7 @@ public class HashUtilsTest {
         System.out.println("doubleSha256");
         KeyGen kg = new KeyGen();
         byte[] input = ((kg.generateRSAKeys()).getPublic()).getEncoded();
-        HashUtils instance = new HashUtils();
-        instance.doubleSha256(input);
+        HashUtils.doubleSha256(input);
     }
     
 }

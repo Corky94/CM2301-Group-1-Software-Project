@@ -10,6 +10,7 @@ import Console.User;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.PublicKey;
+import java.security.cert.Certificate;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -29,12 +30,18 @@ public class KeyVaultTest {
     @BeforeClass
     public static void setUpClass() {
         User.setPassword("password".toCharArray());
+        if(KeyVault.checkIfKsExists() == true)
+            KeyVault.destroyKeyStore();
+        if(KeyVault.checkIfTsExists() == true)
+            KeyVault.destroyTrustStore();
     }
     
     @AfterClass
     public static void tearDownClass() {
         if(KeyVault.checkIfKsExists() == true)
             KeyVault.destroyKeyStore();
+        if(KeyVault.checkIfTsExists() == true)
+            KeyVault.destroyTrustStore();
     }
     
     @Before
@@ -45,6 +52,7 @@ public class KeyVaultTest {
     @After
     public void tearDown() {
         KeyVault.destroyKeyStore();
+        KeyVault.destroyTrustStore();
     }
 
     /**
@@ -54,9 +62,8 @@ public class KeyVaultTest {
     public void testCheckPassword() {
         System.out.println("checkPassword");
         char[] localPassword = "password".toCharArray();
-        KeyVault kv = new KeyVault();
         boolean expResult = true;
-        boolean result = kv.checkPassword(localPassword);
+        boolean result = KeyVault.checkPassword(localPassword);
         assertEquals(expResult, result);
     }
     
@@ -67,9 +74,8 @@ public class KeyVaultTest {
     public void testCheckBadPassword() {
         System.out.println("checkBadPassword");
         char[] localPassword = "badPassword".toCharArray();
-        KeyVault kv = new KeyVault();
         boolean expResult = false;
-        boolean result = kv.checkPassword(localPassword);
+        boolean result = KeyVault.checkPassword(localPassword);
         assertEquals(expResult, result);
     }
 
@@ -164,6 +170,67 @@ public class KeyVaultTest {
         System.out.println(k);
         Key result = KeyVault.getAESKey();
         assertEquals(k, result);
+    }
+
+    /**
+     * Test of checkIfKsExists method, of class KeyVault.
+     */
+    @Test
+    public void testCheckIfKsExists() {
+        System.out.println("checkIfKsExists");
+        boolean expResult = true;
+        boolean result = KeyVault.checkIfKsExists();
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of createTrustStore method, of class KeyVault.
+     */
+    @Test
+    public void testCreateTrustStore() {
+        System.out.println("createTrustStore");
+        KeyVault.destroyTrustStore();
+        KeyVault.createTrustStore();
+    }
+
+    /**
+     * Test of destroyTrustStore method, of class KeyVault.
+     */
+    @Test
+    public void testDestroyTrustStore() {
+        System.out.println("destroyTrustStore");
+        KeyVault.destroyTrustStore();
+        KeyVault.createTrustStore();
+    }
+
+    /**
+     * Test of loadTrustStore method, of class KeyVault.
+     */
+    @Test
+    public void testLoadTrustStore() {
+        System.out.println("loadTrustStore");
+        KeyVault.loadTrustStore();
+    }
+
+    /**
+     * Test of addTrust method, of class KeyVault.
+     */
+    @Test
+    public void testAddTrust() {
+        System.out.println("addTrust");
+        Certificate trustedCert = null ;
+        KeyVault.addTrust(trustedCert);
+    }
+
+    /**
+     * Test of checkIfTsExists method, of class KeyVault.
+     */
+    @Test
+    public void testCheckIfTsExists() {
+        System.out.println("checkIfTsExists");
+        boolean expResult = true;
+        boolean result = KeyVault.checkIfTsExists();
+        assertEquals(expResult, result);
     }
     
 }

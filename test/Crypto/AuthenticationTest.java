@@ -14,7 +14,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -54,13 +53,9 @@ public class AuthenticationTest {
     @Test
     public void testCreatePacket() {
         System.out.println("createPacket");
-        Message messages = null;
-        String nodeAddress = "";
-        Packet expResult = null;
-        Packet result = Authentication.createPacket(messages, nodeAddress);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Message messages = new Message();
+        String nodeAddress = "Node Address";
+        Authentication.createPacket(messages, nodeAddress);
     }
 
     /**
@@ -70,11 +65,7 @@ public class AuthenticationTest {
     public void testAuth() {
         System.out.println("auth");
         String nodeAddress = "";
-        Packet expResult = null;
         Packet result = Authentication.auth(nodeAddress);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -86,9 +77,6 @@ public class AuthenticationTest {
         Packet p = null;
         Packet expResult = null;
         Packet result = Authentication.handleChallenge(p);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
     
 }

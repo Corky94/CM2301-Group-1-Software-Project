@@ -77,18 +77,6 @@ public class AuthenticatedList{
         return null;
     }
     
-    /*public static Ticket getTicket(String nodeId){
-        Ticket out = null;
-        SecureDetails sd = new SecureDetails(User.getPassword());
-        for(Authenticated a : list){
-            if(a != null){
-                if (a.getAuth().getNodeId().equals(nodeId))
-                    return new Ticket(sd.getID(), a.getAuth().getOtp(), KeyVault.getRSAKeys().getPublic(), false);
-            }
-        }
-        return null;
-    }*/
-    
     public static void deleteAuth(String clientId){
         for(int i = 0; i < list.length; i++){
             if(list[i] != null){
@@ -101,22 +89,12 @@ public class AuthenticatedList{
     public static boolean exists(String nodeAddress){
         for(Authenticated a : list){
             if(a != null){
-                if (a.getTicket().getNodeAddress().equals(nodeAddress))
+                if(a.getTicket().getNodeAddress().equals(nodeAddress))
                     return true;
             }
         }
         return false;
     }
-    
-    /*private static Authenticated getUser(String userId){
-        for(Authenticated a : list){
-            if(a != null){
-                if (a.getAuth().getId().equals(userId))
-                    return a;
-            }
-        }
-        return null;
-    }*/
     
     private static void expand(){
         Authenticated[] temp = list;
