@@ -27,11 +27,11 @@ import org.bouncycastle.x509.X509V3CertificateGenerator;
 */
 
 public class KeyGen{
-    static private int RSA_KEY_LENGTH = 2048;
-    static private int AES_KEY_LENGTH = 128;
-    static private int IV_LENGTH = 16;
+    private static final int RSA_KEY_LENGTH = 2048;
+    private static final int AES_KEY_LENGTH = 128;
+    private static final int IV_LENGTH = 16;
     // 010 for Nodes, 000 for Clients
-    static private int VERSION_NUMBER = 000;
+    private static final int VERSION_NUMBER = 000;
     final protected static char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
     static { Security.addProvider(new BouncyCastleProvider());}
 

@@ -81,7 +81,7 @@ public class AuthenticatedListTest {
             true
         );
         AuthenticatedList.addAuth(newTicket);
-        if(AuthenticatedList.getNodeAuthentication("Node ID 1").equals(newTicket))
+        if(AuthenticatedList.getNodeAuthentication("Node ID 1").getNodeId().equals(newTicket.getNodeId()))
             System.out.println("passed");
         else
             fail();
@@ -125,7 +125,7 @@ public class AuthenticatedListTest {
             true
         );
         AuthenticatedList.addAuth(newTicket);
-        if(AuthenticatedList.getClientAuthentication("Client ID").equals(newTicket))
+        if(AuthenticatedList.getClientAuthentication("Client ID").getClientId().equals(newTicket.getClientId()))
             System.out.println("passed");
         else
             fail();
@@ -137,10 +137,18 @@ public class AuthenticatedListTest {
     @Test
     public void testDeleteAuth() {
         System.out.println("deleteAuth");
-        String clientId = "";
-        AuthenticatedList.deleteAuth(clientId);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Ticket newTicket =  new Ticket(
+            "Client ID",
+            "Node ID 1",
+            "Node Address",
+            "One Time Password",
+            KeyVault.getRSAKeys().getPublic(),
+            KeyVault.getRSAKeys().getPublic(),
+            true
+        );
+        AuthenticatedList.addAuth(newTicket);
+        AuthenticatedList.deleteAuth("Client ID");
+        System.out.println("passed");
     }
 
     /**
@@ -149,12 +157,20 @@ public class AuthenticatedListTest {
     @Test
     public void testExists() {
         System.out.println("exists");
-        String nodeAddress = "";
-        boolean expResult = false;
-        boolean result = AuthenticatedList.exists(nodeAddress);
+        Ticket newTicket =  new Ticket(
+            "Client ID",
+            "Node ID 1",
+            "Node Address",
+            "One Time Password",
+            KeyVault.getRSAKeys().getPublic(),
+            KeyVault.getRSAKeys().getPublic(),
+            true
+        );
+        boolean expResult = true;
+        AuthenticatedList.addAuth(newTicket);
+        boolean result = AuthenticatedList.exists("Node Address");
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("passed");
     }
 
     /**
@@ -174,6 +190,7 @@ public class AuthenticatedListTest {
         );
         AuthenticatedList.addAuth(newTicket);
         AuthenticatedList.removeExpiredAuth();
+        System.out.println("passed");
     }
 
     /**
@@ -193,6 +210,7 @@ public class AuthenticatedListTest {
         );
         AuthenticatedList.addAuth(newTicket);
         AuthenticatedList.printList();
+        System.out.println("passed");
     }
     
 }

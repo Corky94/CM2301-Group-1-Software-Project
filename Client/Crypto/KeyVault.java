@@ -162,7 +162,7 @@ public class KeyVault{
         try {
             KeyStore trustStore = KeyStore.getInstance(TRUST_STORE_TYPE);  
             trustStore.load(null, User.getPassword());
-            if (checkIfKsExists() != true){
+            if (checkIfTsExists() != true){
                 try (FileOutputStream fos = new FileOutputStream(TRUST_STORE_DIR + TRUST_STORE_NAME)) {
                     trustStore.store(fos, User.getPassword());
                 }
@@ -172,6 +172,11 @@ public class KeyVault{
         }catch(IOException | RuntimeException | KeyStoreException | NoSuchAlgorithmException | CertificateException ex){
             throw new RuntimeException(ex);
         }
+    }
+    
+    public static boolean checkIfTsExists(){
+        File f = new File(TRUST_STORE_DIR + TRUST_STORE_NAME);
+        return f.exists() && !f.isDirectory();
     }
     
     public static boolean destroyTrustStore(){
