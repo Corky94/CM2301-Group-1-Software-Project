@@ -6,14 +6,17 @@
 
 package Connection;
 
-import Crypto.Ticket;
+import Console.User;
+import Crypto.Encryption;
+import Crypto.KeyGen;
+import Crypto.KeyVault;
 import Message.Message;
+import java.security.Key;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
@@ -24,20 +27,30 @@ public class PacketTest {
     public PacketTest() {
     }
     
-    @BeforeClass
     public static void setUpClass() {
+        User.setPassword("password".toCharArray());
+        if(KeyVault.checkIfKsExists() == true)
+            KeyVault.destroyKeyStore();
     }
     
     @AfterClass
     public static void tearDownClass() {
+        if(KeyVault.checkIfKsExists() == true)
+            KeyVault.destroyKeyStore();
     }
     
     @Before
     public void setUp() {
+        User.setPassword("password".toCharArray());
+        if(KeyVault.checkIfKsExists() == true)
+            KeyVault.destroyKeyStore();
+        KeyVault.createKeyStore();
+        KeyVault.setRSAKeys();
     }
     
     @After
     public void tearDown() {
+        KeyVault.destroyKeyStore();
     }
 
     /**
@@ -46,11 +59,18 @@ public class PacketTest {
     @Test
     public void testSetTicket_Ticket() {
         System.out.println("setTicket");
-        Ticket ticket = null;
+        Key pk = KeyVault.getRSAKeys().getPublic();
+        Ticket t = new Ticket(
+            "clientId",
+            "nodeId",
+            "nodeAddress",
+            "password",
+            pk,
+            pk, 
+            true
+        );
         Packet instance = new Packet();
         instance.setTicket(ticket);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -59,12 +79,11 @@ public class PacketTest {
     @Test
     public void testSetTicket_Ticket_SessionKey() {
         System.out.println("setTicket");
-        Ticket ticket = null;
-        SessionKey key = null;
+        Key pk = KeyVault.getRSAKeys().getPublic();
+        Ticket ticket = new Ticket("1","1","1","1",pk,pk,false);
+        SessionKey key = KeyGen.generateSessionKey();
         Packet instance = new Packet();
         instance.setTicket(ticket, key);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -73,11 +92,18 @@ public class PacketTest {
     @Test
     public void testSetMessages() {
         System.out.println("setMessages");
+        Ticket expResult = new Ticket(
+            "Client ID",
+            null,
+            "Node Address",
+            null,
+            KeyVault.getRSAKeys().getPublic(),
+            null,
+            true
+        );
         Message[] messages = null;
         Packet instance = new Packet();
         instance.setMessages(messages);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -86,11 +112,9 @@ public class PacketTest {
     @Test
     public void testSetMessage() {
         System.out.println("setMessage");
-        Message message = null;
+        Message message = new Message();
         Packet instance = new Packet();
         instance.setMessage(message);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -99,11 +123,12 @@ public class PacketTest {
     @Test
     public void testSetEncryptedTicket() {
         System.out.println("setEncryptedTicket");
+        SessionKey sk = KeyGen.generateSessionKey();
+        Ticket t = new Ticket();
+        Encryption.encryptTicket(null)
         byte[] ticket = null;
         Packet instance = new Packet();
         instance.setEncryptedTicket(ticket);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -115,8 +140,6 @@ public class PacketTest {
         SessionKey key = null;
         Packet instance = new Packet();
         instance.setSessionKey(key);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -129,8 +152,6 @@ public class PacketTest {
         byte[] expResult = null;
         byte[] result = instance.getEncryptedTicket();
         assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**

@@ -6,13 +6,17 @@
 
 package Connection;
 
+import Console.User;
+import Crypto.Encryption;
+import Crypto.KeyGen;
+import Crypto.KeyVault;
 import javax.crypto.SecretKey;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -23,20 +27,30 @@ public class SessionKeyTest {
     public SessionKeyTest() {
     }
     
-    @BeforeClass
-    public static void setUpClass() {
+        public static void setUpClass() {
+        User.setPassword("password".toCharArray());
+        if(KeyVault.checkIfKsExists() == true)
+            KeyVault.destroyKeyStore();
     }
     
     @AfterClass
     public static void tearDownClass() {
+        if(KeyVault.checkIfKsExists() == true)
+            KeyVault.destroyKeyStore();
     }
     
     @Before
     public void setUp() {
+        User.setPassword("password".toCharArray());
+        if(KeyVault.checkIfKsExists() == true)
+            KeyVault.destroyKeyStore();
+        KeyVault.createKeyStore();
+        KeyVault.setRSAKeys();
     }
     
     @After
     public void tearDown() {
+        KeyVault.destroyKeyStore();
     }
 
     /**
@@ -45,12 +59,10 @@ public class SessionKeyTest {
     @Test
     public void testGetKey() {
         System.out.println("getKey");
-        SessionKey instance = new SessionKey();
-        SecretKey expResult = null;
+        SessionKey instance = KeyGen.generateSessionKey();
+        SecretKey expResult = instance.getKey();
         SecretKey result = instance.getKey();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -59,12 +71,10 @@ public class SessionKeyTest {
     @Test
     public void testGetEncryptedKey() {
         System.out.println("getEncryptedKey");
-        SessionKey instance = new SessionKey();
-        byte[] expResult = null;
+        SessionKey instance = Encryption.encryptSessionKey(KeyGen.generateSessionKey(), KeyVault.getRSAKeys().getPublic());
+        byte[] expResult = instance.getEncryptedKey();
         byte[] result = instance.getEncryptedKey();
         assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -73,12 +83,10 @@ public class SessionKeyTest {
     @Test
     public void testGetIvSpec() {
         System.out.println("getIvSpec");
-        SessionKey instance = new SessionKey();
-        byte[] expResult = null;
+        SessionKey instance = KeyGen.generateSessionKey();
+        byte[] expResult = instance.getIvSpec();
         byte[] result = instance.getIvSpec();
         assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -87,11 +95,10 @@ public class SessionKeyTest {
     @Test
     public void testSetKey() {
         System.out.println("setKey");
-        SecretKey key = null;
+        SessionKey sk = KeyGen.generateSessionKey();
         SessionKey instance = new SessionKey();
+        SecretKey key = sk.getKey();
         instance.setKey(key);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -103,8 +110,6 @@ public class SessionKeyTest {
         byte[] key = null;
         SessionKey instance = new SessionKey();
         instance.setEncryptedKey(key);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -116,8 +121,6 @@ public class SessionKeyTest {
         byte[] iv = null;
         SessionKey instance = new SessionKey();
         instance.setIvSpec(iv);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -126,10 +129,8 @@ public class SessionKeyTest {
     @Test
     public void testDeleteKey() {
         System.out.println("deleteKey");
-        SessionKey instance = new SessionKey();
+        SessionKey instance = KeyGen.generateSessionKey();
         instance.deleteKey();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -138,10 +139,9 @@ public class SessionKeyTest {
     @Test
     public void testDeleteEncryptedKey() {
         System.out.println("deleteEncryptedKey");
-        SessionKey instance = new SessionKey();
+        SessionKey instance = KeyGen.generateSessionKey();
+        instance.setEncryptedKey(null);
         instance.deleteEncryptedKey();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
     
 }
