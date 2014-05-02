@@ -45,7 +45,7 @@ public class Sql {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             con = DriverManager.getConnection(url, user, password);
         } catch (SQLException ex) {
-            //throw new RuntimeException(ex);
+            return null;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -373,13 +373,13 @@ public class Sql {
         if (tableExist(con) == false) {
             id.updateDetails(id);
             setUpMessageTable(con);
+            ServerStorage ss = new ServerStorage();
+            ss.updateOtherServers();
             return true;
         }
         System.out.println("Database Already Set up");
         return false;
-//         ServerStorage ss = new ServerStorage();
-//         ss.updateOtherServers();
-//         this.deleteIDTest(con);
+
 
     }
 
@@ -395,13 +395,12 @@ public class Sql {
         if (tableExist(con) == false) {
             mes.updateDetails(mes);
             setUpMessageTable(con);
+            ServerStorage ss = new ServerStorage();
+            ss.updateOtherServers();
             return true;
         }
         System.out.println("Database Already Set up");
         return false;
-//         ServerStorage ss = new ServerStorage();
-//         ss.updateOtherServers();
-//         this.deleteMessageTest(con);
 
     }
 

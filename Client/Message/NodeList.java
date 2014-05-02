@@ -42,10 +42,8 @@ public class NodeList {
             } 
             catch (IOException ex) {
             }
-        } catch (IOException ex) {
+        } catch (IOException | ClassNotFoundException ex) {
             
-        } catch (ClassNotFoundException ex) {
-           
         }
         shuffle();
         
@@ -69,10 +67,32 @@ public class NodeList {
             catch (IOException ex) {
             }
     }
+        private void addNode(String address) {
+      
+            if (!(nodeList.contains(address))) {
+                nodeList.add(address);
+                System.out.println("address added to stack");
+                saveNodeList();
+            } else {
+                System.out.println("address already in stack, no need to add");
 
-    public void updateStack(Stack s){
-        this.nodeList = s;
-        saveNodeList();
+            }
+
+       
+
+    }
+
+        public void updateList(Stack s) {
+        try{
+        String adr = (String) s.pop();
+        while(adr != null){
+            
+            this.addNode(adr);
+            adr = (String) s.pop();
+        }
+        }catch(EmptyStackException ex){
+            
+        }
     }
     
     public String getNode(){

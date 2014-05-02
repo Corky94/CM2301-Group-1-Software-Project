@@ -4,6 +4,7 @@
  */
 package Connection;
 
+import Console.*;
 import Message.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,28 +21,24 @@ import javax.net.ssl.SSLSocket;
  * @author Marc
  */
 public class ClientUpdate {
-
     NodeList n = new NodeList();
-
-    ClientUpdate() {
-        ClientSSL clissl = new ClientSSL();
-        try (SSLSocket s = clissl.main(12347); OutputStream os = s.getOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(os)) {
-            InputStream is = s.getInputStream();
-            ObjectInputStream ois = new ObjectInputStream(is);
+    
+    public ClientUpdate(){
+     ClientSSL clissl = User.clissl;
+        try (SSLSocket s = clissl.main(12347); OutputStream os = s.getOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(os)) {    
+            InputStream is = s.getInputStream();  
+            ObjectInputStream ois = new ObjectInputStream(is); 
             Stack st = (Stack) ois.readObject();
-            n.updateStack(st);
-            oos.close();
-            os.close();
+            n.updateList(st);
+            oos.close();  
+            os.close(); 
             is.close();
             ois.close();
-            s.close();
-        }
-        catch (IOException e) {
+            s.close(); 
+        } catch (IOException e) {
             System.out.println(e);
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             throw new RuntimeException(ex);
         }
     }
-
 }

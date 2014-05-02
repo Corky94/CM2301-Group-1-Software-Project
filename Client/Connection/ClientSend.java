@@ -1,6 +1,7 @@
 package Connection;
 
-import Crypto.Authentication;
+import Console.*;
+import Crypto.*;
 import Message.Message;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -43,9 +44,15 @@ Socket:
     }
 
     public static void stressTest() {
-        ClientSSL clissl = Console.User.clissl;
+        User.setPassword("pass".toCharArray());
+        KeyVault.createTrustStore();
+        KeyVault.createKeyStore();
+        KeyVault.setRSAKeys();
+        KeyVault.setAESKey();
+        ClientSSL clissl = new ClientSSL();
+        User.clissl = clissl;
         Message m = null;
-        Packet p = Authentication.createPacket(m, null);
+        Packet p = Authentication.createPacket(m, clissl.getNodeAddress());
         p.setMessage(new Message());
         while (true) {
             try (SSLSocket s = clissl.main(12346); OutputStream os = s.getOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(os)) {
