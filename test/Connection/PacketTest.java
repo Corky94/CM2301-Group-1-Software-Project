@@ -7,9 +7,11 @@
 package Connection;
 
 import Console.User;
+import Crypto.Authentication;
 import Crypto.Encryption;
 import Crypto.KeyGen;
 import Crypto.KeyVault;
+import Crypto.Ticket;
 import Message.Message;
 import java.security.Key;
 import org.junit.After;
@@ -59,18 +61,9 @@ public class PacketTest {
     @Test
     public void testSetTicket_Ticket() {
         System.out.println("setTicket");
-        Key pk = KeyVault.getRSAKeys().getPublic();
-        Ticket t = new Ticket(
-            "clientId",
-            "nodeId",
-            "nodeAddress",
-            "password",
-            pk,
-            pk, 
-            true
-        );
+        Ticket t = Authentication.auth("0").getTicket();
         Packet instance = new Packet();
-        instance.setTicket(ticket);
+        instance.setTicket(t);
     }
 
     /**
@@ -79,11 +72,10 @@ public class PacketTest {
     @Test
     public void testSetTicket_Ticket_SessionKey() {
         System.out.println("setTicket");
-        Key pk = KeyVault.getRSAKeys().getPublic();
-        Ticket ticket = new Ticket("1","1","1","1",pk,pk,false);
+        Ticket t = Authentication.auth("0").getTicket();
         SessionKey key = KeyGen.generateSessionKey();
         Packet instance = new Packet();
-        instance.setTicket(ticket, key);
+        instance.setTicket(t, key);
     }
 
     /**
@@ -92,15 +84,6 @@ public class PacketTest {
     @Test
     public void testSetMessages() {
         System.out.println("setMessages");
-        Ticket expResult = new Ticket(
-            "Client ID",
-            null,
-            "Node Address",
-            null,
-            KeyVault.getRSAKeys().getPublic(),
-            null,
-            true
-        );
         Message[] messages = null;
         Packet instance = new Packet();
         instance.setMessages(messages);
@@ -123,12 +106,10 @@ public class PacketTest {
     @Test
     public void testSetEncryptedTicket() {
         System.out.println("setEncryptedTicket");
-        SessionKey sk = KeyGen.generateSessionKey();
-        Ticket t = new Ticket();
-        Encryption.encryptTicket(null)
-        byte[] ticket = null;
+        Ticket t = Authentication.auth("0").getTicket();
+        Packet p = Encryption.encryptTicket(t);
         Packet instance = new Packet();
-        instance.setEncryptedTicket(ticket);
+        instance.setEncryptedTicket(p.getEncryptedTicket());
     }
 
     /**
@@ -137,7 +118,7 @@ public class PacketTest {
     @Test
     public void testSetSessionKey() {
         System.out.println("setSessionKey");
-        SessionKey key = null;
+        SessionKey key = KeyGen.generateSessionKey();
         Packet instance = new Packet();
         instance.setSessionKey(key);
     }
@@ -148,10 +129,11 @@ public class PacketTest {
     @Test
     public void testGetEncryptedTicket() {
         System.out.println("getEncryptedTicket");
+        Ticket t = Authentication.auth("0").getTicket();
+        Packet p = Encryption.encryptTicket(t);
         Packet instance = new Packet();
-        byte[] expResult = null;
-        byte[] result = instance.getEncryptedTicket();
-        assertArrayEquals(expResult, result);
+        instance.setEncryptedTicket(p.getEncryptedTicket());
+        instance.getEncryptedTicket();
     }
 
     /**
@@ -161,11 +143,11 @@ public class PacketTest {
     public void testGetTicket() {
         System.out.println("getTicket");
         Packet instance = new Packet();
-        Ticket expResult = null;
+        Ticket t = Authentication.auth("0").getTicket();
+        Ticket expResult = t;
+        instance.setTicket(t);
         Ticket result = instance.getTicket();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -178,8 +160,6 @@ public class PacketTest {
         Message[] expResult = null;
         Message[] result = instance.getMessages();
         assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -192,8 +172,6 @@ public class PacketTest {
         Message expResult = null;
         Message result = instance.getMessage();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -203,11 +181,10 @@ public class PacketTest {
     public void testGetSessionKey() {
         System.out.println("getSessionKey");
         Packet instance = new Packet();
-        SessionKey expResult = null;
+        SessionKey expResult = KeyGen.generateSessionKey();
+        instance.setSessionKey(expResult);
         SessionKey result = instance.getSessionKey();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -218,8 +195,6 @@ public class PacketTest {
         System.out.println("deleteTicket");
         Packet instance = new Packet();
         instance.deleteTicket();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -230,8 +205,6 @@ public class PacketTest {
         System.out.println("printPacket");
         Packet instance = new Packet();
         instance.printPacket();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -242,8 +215,6 @@ public class PacketTest {
         System.out.println("shortPrintPacket");
         Packet instance = new Packet();
         instance.shortPrintPacket();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
     
 }

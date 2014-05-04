@@ -64,8 +64,8 @@ public class AuthenticationTest {
     @Test
     public void testAuth() {
         System.out.println("auth");
-        String nodeAddress = "";
-        Packet result = Authentication.auth(nodeAddress);
+        String nodeAddress = "0";
+        Authentication.auth(nodeAddress);
     }
 
     /**

@@ -6,10 +6,8 @@
 
 package Crypto;
 
-import Connection.Packet;
 import Connection.SessionKey;
 import Console.User;
-import java.io.FileOutputStream;
 import java.security.KeyPair;
 import java.util.Arrays;
 import org.junit.After;
@@ -79,7 +77,6 @@ public class EncryptionTest {
         if(! decrypted.equals(data)){
             fail("Did not decrypt secussfully");
         }
-        KeyVault.destroyKeyStore();
     }
 
     /**
@@ -101,15 +98,11 @@ public class EncryptionTest {
     @Test
     public void testEncryptTicket() {
         System.out.println("encryptTicket");
-        KeyVault.createKeyStore();
-        KeyVault.setRSAKeys();
-        KeyVault.setAESKey();
         Ticket t = Ticket.generateRequest("123123" , "Node Address");
         SessionKey sKey = KeyGen.generateSessionKey();
         System.out.println("Session Key:" + sKey);
         System.out.println("Encrypt Auth: " + Arrays.toString(Encryption.encryptAuth(sKey, t)));
         System.out.println("Decrypt Auth:" + Encryption.decryptAuth(sKey, Encryption.encryptAuth(sKey, t)));
-        KeyVault.destroyKeyStore();
     }
     
     /**
@@ -118,7 +111,6 @@ public class EncryptionTest {
     @Test
     public void testEncryptSessionKey() {
         System.out.println("encrypt & decrypt session key");
-        KeyVault.createKeyStore();
         KeyVault.setRSAKeys();
         KeyVault.setAESKey();
         KeyPair kp = KeyVault.getRSAKeys();
@@ -126,7 +118,6 @@ public class EncryptionTest {
         SessionKey encrypted = Encryption.encryptSessionKey(sessionKey, kp.getPublic());
         SessionKey decrypted = Encryption.decryptSessionKey(encrypted);
         System.out.println("Do the keys match? " + decrypted.equals(sessionKey));
-        KeyVault.destroyKeyStore();
     }
 
     /**
@@ -135,12 +126,16 @@ public class EncryptionTest {
     @Test
     public void testDecryptTicket() {
         System.out.println("decryptTicket");
-        Packet p = null;
-        Packet expResult = null;
-        Packet result = Encryption.decryptTicket(p);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Ticket t = new Ticket(
+            "Client ID",
+            "Node ID 1",
+            "Node Address",
+            "One Time Password",
+            KeyVault.getRSAKeys().getPublic(),
+            KeyVault.getRSAKeys().getPublic(),
+            true
+        );
+        Encryption.decryptTicket(Encryption.encryptTicket(t));
     }
 
     /**
@@ -149,8 +144,16 @@ public class EncryptionTest {
     @Test
     public void testEncryptAuth() {
         System.out.println("encryptAuth");
-        SessionKey sKey = null;
-        Ticket t = null;
+        SessionKey sKey = KeyGen.generateSessionKey();;
+        Ticket t = new Ticket(
+            "Client ID",
+            "Node ID 1",
+            "Node Address",
+            "One Time Password",
+            KeyVault.getRSAKeys().getPublic(),
+            KeyVault.getRSAKeys().getPublic(),
+            true
+        );
         Encryption.encryptAuth(sKey, t);
     }
 
@@ -161,7 +164,6 @@ public class EncryptionTest {
     public void testDecryptAuth() {
         System.out.println("decryptAuth");
         SessionKey sessionKey = KeyGen.generateSessionKey();
-        KeyPair kp = KeyVault.getRSAKeys();
         Ticket newTicket =  new Ticket(
             "Client ID",
             "Node ID 1",
@@ -181,35 +183,6 @@ public class EncryptionTest {
     @Test
     public void testDecryptSessionKey() {
         System.out.println("decryptSessionKey");
-        SessionKey sKey = null;
-        SessionKey expResult = null;
-        SessionKey result = Encryption.decryptSessionKey(sKey);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of encryptFile method, of class Encryption.
-     */
-    @Test
-    public void testEncryptFile() {
-        System.out.println("encryptFile");
-        FileOutputStream data = null;
-        Encryption.encryptFile(data);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of decryptFile method, of class Encryption.
-     */
-    @Test
-    public void testDecryptFile() {
-        System.out.println("decryptFile");
-        String dir = "";
-        Encryption.decryptFile(dir);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        Encryption.decryptSessionKey(Encryption.encryptSessionKey(KeyGen.generateSessionKey(), KeyVault.getRSAKeys().getPublic()));
     }
 }
