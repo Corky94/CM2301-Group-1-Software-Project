@@ -35,12 +35,10 @@ public class UserTest {
     @AfterClass
     public static void tearDownClass() {
         File details = new File("user2.ser");
-        File kv = new File("keyStoreName");
+        File kv = new File("keystore");
         details.delete();
         kv.delete();
-        Message m = null;
-        ClientSend c = new ClientSend();
-        c.sendMessage(m);
+
     }
     
     @Before
@@ -58,49 +56,27 @@ public class UserTest {
     public void testLogin() {
         System.out.println("login");
         char[] password = "pass".toCharArray();
-        User instance = new User();
-        instance.login(password);
-        assertEquals(true, instance.loggedIn);
+        User.login(password);
+        assertNotNull(User.clissl);
         // TODO review the generated test code and remove the default call to fail.
     }
 
-    /**
-     * Test of logout method, of class User.
-     */
-    @Test
-    public void testLogout() {
-        System.out.println("logout");
-        User instance = new User();
-        instance.logout();
 
-    }
 
-    /**
-     * Test of readMessages method, of class User.
-     */
-    @Ignore
-    public void testReadMessages() {
-        System.out.println("readMessages");
-        User instance = new User();
-        instance.readMessages();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
 
 
 
     /**
      * Test of createMessage method, of class User.
      */
-    @Test
+    @Ignore
     public void testCreateMessage() {
         System.out.println("createMessage");
         SecureDetails s = new SecureDetails();
         String contents = "";
         String recipitent = s.getID();
         String subject = "";
-        User instance = new User();
-        instance.createMessage(contents, recipitent, subject);
+        User.createMessage(contents, recipitent, subject);
         
 
     }
@@ -109,14 +85,10 @@ public class UserTest {
      */
     @Test
     public void testReceiveEmails() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(UserTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
         System.out.println("receiveEmails");
-        User instance = new User();
-        Message m[] =instance.receiveEmails();
+        
+        Message m[] =User.receiveEmails();
         // TODO review the generated test code and remove the default call to fail.
 
     }
@@ -127,22 +99,30 @@ public class UserTest {
     @Ignore
     public void testDeleteMessage() {
         System.out.println("deleteMessage");
-        int x = 0;
-        User instance = new User();
-        instance.deleteMessage(x);
+        Message m = null;
+        User.deleteMessage(m);
         // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    }
+
+   
+
+    /**
+     * Test of setPassword method, of class User.
+     */
+    @Test
+    public void testPassword() {
+        System.out.println("setPassword");
+        char[] p = null;
+        User.setPassword(p);
+        System.out.println("getPassword");
+        // TODO review the generated test code and remove the default call to fail.
+         char[] result = User.getPassword();
+        assertArrayEquals(p, result);
     }
 
     /**
-     * Test of main method, of class User.
+     * Test of getPassword method, of class User.
      */
-    @Ignore
-    public void testMain() {
-        System.out.println("main");
-        String[] args = null;
-        User.main(args);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+    
+    
 }

@@ -16,7 +16,7 @@ import org.junit.runners.Suite;
  * @author Marc
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({Console.UserTest.class, Console.RegisterTest.class,})
+@Suite.SuiteClasses({Console.UserTest.class, Console.RegisterTest.class, Console.SecureDetailsTest.class})
 public class ConsoleSuite {
 
     @BeforeClass
